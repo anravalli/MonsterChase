@@ -39,7 +39,52 @@ typedef struct {
     PlayerStates state;
     int pos_x;
     int pos_y;
+    bool rage_available;
 } PlayerModel;
+
+class PlayerSm {
+public:
+    //virtual PlayerSm(PlayerModel* model) = 0;
+    virtual void tick() = 0;
+    virtual void enter() = 0;
+    virtual ~PlayerSm(){}
+};
+
+class PlayerRunning: PlayerSm {
+public:
+    PlayerRunning(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick();
+    virtual void enter();
+    virtual ~PlayerRunning(){}
+private:
+    PlayerModel* _model;
+};
+
+class PlayerOnRage: PlayerSm {
+public:
+    PlayerOnRage(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick();
+    virtual void enter();
+    virtual ~PlayerOnRage(){}
+private:
+    PlayerModel* _model;
+};
+
+class PlayerDead: PlayerSm {
+public:
+    PlayerDead(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick();
+    virtual void enter();
+    virtual ~PlayerDead(){}
+private:
+    PlayerModel* _model;
+};
 
 class PlayerShape : public QGraphicsItem
 {
@@ -67,6 +112,8 @@ public:
 
 private:
     QColor color;
+    QColor color_rage[2];
+    int color_rage_idx = 0;
     PlayerModel * model;
 };
 

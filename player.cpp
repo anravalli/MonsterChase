@@ -31,9 +31,11 @@ Player::Player(QGraphicsScene * s){
 }
 
 void Player::tick(){
-    if (model.energy<MAX_ENERGY){
+    if (model.energy<MAX_ENERGY && model.state==running){
         model.energy++;
     }
+    if(model.energy == MAX_ENERGY)
+        model.rage_available = true;
     energy_gauge->update();
     qDebug("Player energy %d", model.energy);
 }
@@ -66,6 +68,9 @@ PlayerEnergyGauge::PlayerEnergyGauge(PlayerModel *m)
     :model(m)
 {
     color = QColor(0,255,0,127);
+    color_rage[0] = QColor(255,0,0,127);
+    color_rage[1] = QColor(255,100,0,127);
+    color_rage_idx = 0;
 }
 
 
@@ -87,6 +92,12 @@ void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     //draw inner rectangle
     qDebug("energy %d", model->energy);
     painter->setPen(Qt::NoPen);
-    painter->setBrush(color);
+    if(!model->rage_available)
+        painter->setBrush(color);
+    else{
+        painter->setBrush(color_rage[color_rage_idx]);
+        color_rage_idx=1-color_rage_idx;
+    }
+
     painter->drawRect(2,2,model->energy,16);
 }
