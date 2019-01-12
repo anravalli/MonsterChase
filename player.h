@@ -89,7 +89,7 @@ private:
 class PlayerShape : public QGraphicsItem
 {
 public:
-    PlayerShape();
+    PlayerShape(PlayerModel* m);
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
@@ -99,7 +99,9 @@ protected:
 //    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    QColor color;
+    QColor color[2];
+    int color_idx=0;
+    PlayerModel* model;
 };
 
 class PlayerEnergyGauge : public QGraphicsItem
@@ -133,11 +135,14 @@ public:
     void tick();
 
 protected:
+    bool event(QEvent* ev) Q_DECL_OVERRIDE;
 
 private:
     PlayerModel model = {DEF_ENERGY,running,25,25};
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;
+
+    void handleKey(int key, bool released);
 };
 
 

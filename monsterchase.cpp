@@ -85,11 +85,11 @@ void MonsterChase::addPlayer(){
     player = new Player(scene);
     QGraphicsItem* p_shape = player->getShape();
     p_shape->setPos(25,25);
-    scene->addItem(p_shape);
+    //scene->addItem(p_shape);
 
     QGraphicsItem* p_gauge = player->getEnergyGauge();
     p_gauge->setPos(10,550);
-    scene->addItem(p_gauge);
+    //scene->addItem(p_gauge);
 }
 
 void MonsterChase::addMonster(){

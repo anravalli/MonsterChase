@@ -24,7 +24,7 @@
 
 Player::Player(QGraphicsScene * s){
 
-    shape = new PlayerShape();
+    shape = new PlayerShape(&model);
     energy_gauge = new PlayerEnergyGauge(&model);
     s->addItem(energy_gauge);
     s->addItem(shape);
@@ -37,13 +37,60 @@ void Player::tick(){
     if(model.energy == MAX_ENERGY)
         model.rage_available = true;
     energy_gauge->update();
+    shape->update();
     qDebug("Player energy %d", model.energy);
 }
 
-PlayerShape::PlayerShape()
-    : color(qrand() % 256, qrand() % 256, qrand() % 256)
+bool Player::event(QEvent* ev)
 {
+    qDebug("Event received by Player");
+    if (ev->type() == QEvent::KeyPress) {
+        qDebug("KeyPress received by Player");
+        QKeyEvent* ke = static_cast<QKeyEvent*>(ev);
+        int key = ke->key();
+        handleKey(key, false);
+        return true;
+    } else  if (ev->type() == QEvent::KeyRelease) {
+        QKeyEvent* ke = static_cast<QKeyEvent*>(ev);
+        int key = ke->key();
+        handleKey(key, true);
+        return true;
+    }
+    // Make sure the rest of events are handled
+    return QObject::event(ev);
 }
+
+void Player::handleKey(int key, bool released){
+    switch(key){
+    case Qt::Key_Space:
+        if (model.rage_available){
+            model.state = on_rage;
+            model.rage_available=false;
+        }
+        if(model.state == on_rage){
+            model.state = running;
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+PlayerShape::PlayerShape(PlayerModel* m)
+{
+    color[0] = QColor(Qt::green);
+    color[1] = QColor(Qt::red);
+    model = m;
+}
+
+//void PlayerShape::tick()
+//{
+//    if (_model->state == on_rage)
+//        color = QColor(Qt::red);
+//    if (_model->state == running)
+//        color = QColor(Qt::red);
+//    update();
+//}
 
 
 QRectF PlayerShape::boundingRect() const
@@ -55,11 +102,22 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
+
+    switch(model->state){
+    case on_rage:
+        color_idx = 1;
+        break;
+    case running:
+        color_idx = 0;
+        break;
+    default:
+        break;
+    }
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::darkGray);
     painter->drawEllipse(-12, -12, 30, 30);
     painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(QBrush(color));
+    painter->setBrush(QBrush(color[color_idx]));
     painter->drawEllipse(-15, -15, 30, 30);
 }
 
