@@ -35,7 +35,7 @@ Player::Player(QGraphicsScene * s){
 
 void Player::tick(){
     if (model.energy<MAX_ENERGY && model.state==normal){
-        model.energy++;
+        model.energy=model.energy+0.25;
     }
     if(model.energy == MAX_ENERGY)
         model.rage_available = true;
@@ -198,9 +198,28 @@ QRectF PlayerEnergyGauge::boundingRect() const
     return QRectF(0,0, 104,20);
 }
 
+int PlayerEnergyGauge::blink()
+{
+    if(iteration==4){
+        color_rage_idx=1-color_rage_idx;
+        iteration = 0;
+    } else
+        iteration++;
+    return color_rage_idx;
+}
+
 void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     //QPoint origin(mapFromScene(0,0));
+//    int iteration=0;
+//    auto blink = [this, &iteration]()->int {
+//            if(iteration==10){
+//                color_rage_idx=1-color_rage_idx;
+//                iteration = 0;
+//            } else
+//                iteration++;
+//            return color_rage_idx;
+//        };
 
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -213,9 +232,9 @@ void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     if(!model->rage_available)
         painter->setBrush(color);
     else{
-        painter->setBrush(color_rage[color_rage_idx]);
-        color_rage_idx=1-color_rage_idx;
+        painter->setBrush(color_rage[blink()]);
+        //color_rage_idx=1-color_rage_idx;
     }
 
-    painter->drawRect(2,2,model->energy,16);
+    painter->drawRect(2,2,(int)model->energy,16);
 }

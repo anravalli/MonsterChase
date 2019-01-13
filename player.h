@@ -47,7 +47,7 @@ enum PlayerDirection {
 };
 
 typedef struct {
-    int energy;
+    float energy;
     PlayerStates state;
     PlayerSubStates sub_state;
     int pos_x;
@@ -130,6 +130,10 @@ private:
     QColor color_rage[2];
     int color_rage_idx = 0;
     PlayerModel * model;
+
+    int iteration = 0;
+    int blink();
+
 };
 
 class Player : public QObject
@@ -152,7 +156,7 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    PlayerModel model = {DEF_ENERGY,normal,idle,25,25};
+    PlayerModel model = {DEF_ENERGY,normal,idle,25,25,false};
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;
     bool direction[4]={false,false,false,false};

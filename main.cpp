@@ -22,11 +22,13 @@
 #include "monsterchase.h"
 #include <QApplication>
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MonsterChase game;
     game.show();
-
+    //Filter* f = new Filter();
+    //a.installEventFilter(f);
     return a.exec();
 }
