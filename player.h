@@ -29,14 +29,27 @@
 #define MAX_ENERGY 100
 
 typedef enum {
-    running,
+    normal,
     on_rage,
     dead
 } PlayerStates;
 
+typedef enum {
+    idle,
+    moving
+} PlayerSubStates;
+
+enum PlayerDirection {
+    player_up,
+    player_down,
+    player_left,
+    player_right
+};
+
 typedef struct {
     int energy;
     PlayerStates state;
+    PlayerSubStates sub_state;
     int pos_x;
     int pos_y;
     bool rage_available;
@@ -135,14 +148,17 @@ public:
     void tick();
 
 protected:
-    bool event(QEvent* ev) Q_DECL_OVERRIDE;
+    //bool event(QEvent* ev) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    PlayerModel model = {DEF_ENERGY,running,25,25};
+    PlayerModel model = {DEF_ENERGY,normal,idle,25,25};
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;
+    bool direction[4]={false,false,false,false};
 
-    void handleKey(int key, bool released);
+    void move();
+    bool handleKey(int key, bool released);
 };
 
 

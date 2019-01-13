@@ -31,5 +31,4 @@ SOURCES += main.cpp\
 HEADERS  += monsterchase.h \
     player.h
 
-#FORMS    += \
-#    ___monsterchase.ui
+

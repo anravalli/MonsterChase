@@ -22,58 +22,117 @@
 #include <QtWidgets>
 #include "player.h"
 
+
 Player::Player(QGraphicsScene * s){
 
     shape = new PlayerShape(&model);
     energy_gauge = new PlayerEnergyGauge(&model);
+    //setFocusPolicy(Qt::StrongFocus);
     s->addItem(energy_gauge);
     s->addItem(shape);
+    QApplication::instance()->installEventFilter(this);
 }
 
 void Player::tick(){
-    if (model.energy<MAX_ENERGY && model.state==running){
+    if (model.energy<MAX_ENERGY && model.state==normal){
         model.energy++;
     }
     if(model.energy == MAX_ENERGY)
         model.rage_available = true;
+    move();
+
     energy_gauge->update();
+    shape->setPos(model.pos_x,model.pos_y);
     shape->update();
+#ifdef  DEBUG
     qDebug("Player energy %d", model.energy);
+#endif
 }
 
-bool Player::event(QEvent* ev)
+bool Player::eventFilter(QObject *watched, QEvent *event)
 {
-    qDebug("Event received by Player");
-    if (ev->type() == QEvent::KeyPress) {
-        qDebug("KeyPress received by Player");
-        QKeyEvent* ke = static_cast<QKeyEvent*>(ev);
+    if (event->type() == QEvent::KeyPress) {
+        //qDebug("%d KeyPress received by Player", __LINE__);
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
         int key = ke->key();
-        handleKey(key, false);
-        return true;
-    } else  if (ev->type() == QEvent::KeyRelease) {
-        QKeyEvent* ke = static_cast<QKeyEvent*>(ev);
+        return handleKey(key, false);
+    } else  if (event->type() == QEvent::KeyRelease) {
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
         int key = ke->key();
-        handleKey(key, true);
-        return true;
+        return handleKey(key, true);
     }
     // Make sure the rest of events are handled
-    return QObject::event(ev);
+    return QObject::eventFilter(watched, event);
 }
 
-void Player::handleKey(int key, bool released){
+bool Player::handleKey(int key, bool released){
+    bool ret = false;
+//    if (!released and
+//            (key==Qt::Key_D or key==Qt::Key_S or
+//             key==Qt::Key_A or key==Qt::Key_W))
+//        model.sub_state=moving;
+//    else if (released and
+//             (key==Qt::Key_D or key==Qt::Key_S or
+//              key==Qt::Key_A or key==Qt::Key_W))
+//        model.sub_state=idle;
+
     switch(key){
     case Qt::Key_Space:
-        if (model.rage_available){
-            model.state = on_rage;
-            model.rage_available=false;
+#ifdef  DEBUG
+        qDebug("--> Handling Spacebar");
+#endif
+        switch(model.state){
+        case normal:
+            if (!released and model.rage_available){
+#ifdef  DEBUG
+                qDebug("%d - rage_available, swtching to on_rage", __LINE__);
+#endif
+                model.state = on_rage;
+                model.rage_available=false;
+            }
+            break;
+        case on_rage:
+#ifdef  DEBUG
+            qDebug("%d - swtching to running", __LINE__);
+#endif
+            if (!released) model.state = normal;
+            break;
+        case dead:
+        default:
+            break;
         }
-        if(model.state == on_rage){
-            model.state = running;
-        }
+        ret = true;
+        break;
+    case Qt::Key_D:
+        //if(model.sub_state==moving) model.pos_x=model.pos_x+5;
+        direction[player_right]=!released;
+        break;
+    case Qt::Key_A:
+        //if(model.sub_state==moving) model.pos_x=model.pos_x-5;
+        direction[player_left]=!released;
+        break;
+    case Qt::Key_W:
+        direction[player_up]=!released;
+        break;
+    case Qt::Key_S:
+        direction[player_down]=!released;
         break;
     default:
         break;
     }
+    return ret;
+}
+
+void Player::move(){
+    if(direction[player_up])
+        model.pos_y=model.pos_y-5;
+    if(direction[player_down])
+        model.pos_y=model.pos_y+5;
+    if(direction[player_left])
+        model.pos_x=model.pos_x-5;
+    if(direction[player_right])
+        model.pos_x=model.pos_x+5;
+    return;
 }
 
 PlayerShape::PlayerShape(PlayerModel* m)
@@ -105,9 +164,11 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     switch(model->state){
     case on_rage:
+        //qDebug("%d on_rage", __LINE__);
         color_idx = 1;
         break;
-    case running:
+    case normal:
+        //qDebug("%d running", __LINE__);
         color_idx = 0;
         break;
     default:
@@ -148,7 +209,6 @@ void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->setBrush(Qt::NoBrush);
     painter->drawRect(0,0, 104,20);
     //draw inner rectangle
-    qDebug("energy %d", model->energy);
     painter->setPen(Qt::NoPen);
     if(!model->rage_available)
         painter->setBrush(color);

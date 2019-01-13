@@ -28,12 +28,22 @@ class GameView : public QGraphicsView
 public:
     GameView(QGraphicsScene *scene) : QGraphicsView(scene)
     {
+        setFocusPolicy(Qt::StrongFocus);
     }
 
 protected:
+    virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE {
+#ifdef  DEBUG
+        qDebug("Event received by GameView %d (%s)",event->key(), event->text().toStdString().c_str());
+#endif
+        QGraphicsView::keyPressEvent(event);
+        return;
+    }
 //    virtual void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE
 //    {
 //    }
+private:
+
 };
 
 MonsterChase::MonsterChase()
@@ -44,7 +54,7 @@ MonsterChase::MonsterChase()
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
-    timer->start(1000);
+    timer->start(1000/25);
 
     e.start();
 }
@@ -84,7 +94,7 @@ void MonsterChase::addFpsCounter(){
 void MonsterChase::addPlayer(){
     player = new Player(scene);
     QGraphicsItem* p_shape = player->getShape();
-    p_shape->setPos(25,25);
+    //p_shape->setPos(25,25);
     //scene->addItem(p_shape);
 
     QGraphicsItem* p_gauge = player->getEnergyGauge();
@@ -129,8 +139,10 @@ void MonsterChase::addMonster(){
 
 void MonsterChase::gameStep(){
     QTime t = QTime::currentTime();
+#ifdef  DEBUG
     qDebug("iteration %s", t.toString().toStdString().c_str());
     qDebug("-> elapsed %d", e.elapsed());
+#endif
     //scene->advance();
     player->tick();
     e.restart();
