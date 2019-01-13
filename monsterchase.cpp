@@ -93,7 +93,7 @@ void MonsterChase::addFpsCounter(){
 
 void MonsterChase::addPlayer(){
     player = new Player(scene);
-    QGraphicsItem* p_shape = player->getShape();
+    //QGraphicsItem* p_shape = player->getShape();
     //p_shape->setPos(25,25);
     //scene->addItem(p_shape);
 
@@ -138,8 +138,8 @@ void MonsterChase::addMonster(){
 //}
 
 void MonsterChase::gameStep(){
-    QTime t = QTime::currentTime();
 #ifdef  DEBUG
+    QTime t = QTime::currentTime();
     qDebug("iteration %s", t.toString().toStdString().c_str());
     qDebug("-> elapsed %d", e.elapsed());
 #endif
