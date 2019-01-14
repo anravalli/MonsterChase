@@ -23,23 +23,151 @@
 #include "player.h"
 
 
+class PlayerNormal: public PlayerSm {
+public:
+    PlayerNormal(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick(){
+        _model->energy=_model->energy+0.25;
+        if(_model->energy == MAX_ENERGY)
+            _model->state = rage_available;
+        move();
+    }
+    virtual void toggleRage(){}
+    virtual ~PlayerNormal(){}
+
+private:
+    int _speed=5;
+protected:
+    PlayerModel* _model;
+
+    void move(){
+        if(_model->direction[player_up])
+            _model->pos_y=_model->pos_y-_speed;
+        if(_model->direction[player_down])
+            _model->pos_y=_model->pos_y+_speed;
+        if(_model->direction[player_left])
+            _model->pos_x=_model->pos_x-_speed;
+        if(_model->direction[player_right])
+            _model->pos_x=_model->pos_x+_speed;
+        return;
+    }
+};
+
+class PlayerRageAvailable: public PlayerNormal {
+public:
+    PlayerRageAvailable(PlayerModel* model)
+        :PlayerNormal(model){}
+    virtual void tick(){
+        move();
+    }
+    virtual void toggleRage(){
+        _model->state=on_rage;
+    }
+};
+
+class PlayerOnRage: public PlayerSm {
+public:
+    PlayerOnRage(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick(){
+        _model->energy=_model->energy-0.25;
+        if(_model->energy == DEF_ENERGY)
+            _model->state = normal;
+        move();
+    }
+    virtual void toggleRage(){
+        _model->state=normal;
+    }
+    virtual ~PlayerOnRage(){}
+private:
+    PlayerModel* _model;
+    int _speed=10;
+
+    void move(){
+        if(_model->direction[player_up])
+            _model->pos_y=_model->pos_y-_speed;
+        if(_model->direction[player_down])
+            _model->pos_y=_model->pos_y+_speed;
+        if(_model->direction[player_left])
+            _model->pos_x=_model->pos_x-_speed;
+        if(_model->direction[player_right])
+            _model->pos_x=_model->pos_x+_speed;
+        return;
+    }
+};
+
+class PlayerDead: public PlayerSm {
+public:
+    PlayerDead(PlayerModel* model)
+        :_model(model){}
+
+    virtual void tick(){}
+    virtual void toggleRage(){}
+    virtual ~PlayerDead(){}
+private:
+    PlayerModel* _model;
+};
+
+class PlayerScore : public QGraphicsSimpleTextItem
+{
+public:
+    PlayerScore(PlayerModel* m)
+        :_model(m)
+    {
+        this->setPen(QPen(Qt::blue));
+        QFont font("Helvetica",14,QFont::Bold);
+        this->setFont(font);
+        this->setBrush(Qt::NoBrush);
+        this->setText(QString::asprintf("%06d", _model->score));
+    }
+
+//    QRectF boundingRect() const Q_DECL_OVERRIDE{
+//        return QRectF(0,0,16,80);
+//    }
+
+//    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
+//        Q_UNUSED(option);
+//        Q_UNUSED(widget);
+
+//        painter->setPen(Qt::blue);
+//        QFont font("Helvetica",14,QFont::Bold);
+//        painter->setFont(font);
+//        painter->setBrush(Qt::NoBrush);
+//        painter->drawText(QPoint(0,0), QString::asprintf("%06d", _model->score));
+//    }
+
+protected:
+
+private:
+    //QColor color;
+    //int color_idx=0;
+    PlayerModel* _model;
+};
+
 Player::Player(QGraphicsScene * s){
 
     shape = new PlayerShape(&model);
     energy_gauge = new PlayerEnergyGauge(&model);
-    //setFocusPolicy(Qt::StrongFocus);
-    s->addItem(energy_gauge);
+    score = new PlayerScore(&model);
+
+    //init state machine
+    pstates[normal] = new PlayerNormal(&model);
+    pstates[rage_available] = new PlayerRageAvailable(&model);
+    pstates[on_rage] = new PlayerOnRage(&model);
+    pstates[dead] = new PlayerDead(&model);
+    //the order we add the items to the scene affects the z-order
     s->addItem(shape);
+    s->addItem(score);
+    s->addItem(energy_gauge);
+    score->setPos(500,30);
     QApplication::instance()->installEventFilter(this);
 }
 
 void Player::tick(){
-    if (model.energy<MAX_ENERGY && model.state==normal){
-        model.energy=model.energy+0.25;
-    }
-    if(model.energy == MAX_ENERGY)
-        model.rage_available = true;
-    move();
+    pstates[model.state]->tick();
 
     energy_gauge->update();
     shape->setPos(model.pos_x,model.pos_y);
@@ -67,55 +195,26 @@ bool Player::eventFilter(QObject *watched, QEvent *event)
 
 bool Player::handleKey(int key, bool released){
     bool ret = false;
-//    if (!released and
-//            (key==Qt::Key_D or key==Qt::Key_S or
-//             key==Qt::Key_A or key==Qt::Key_W))
-//        model.sub_state=moving;
-//    else if (released and
-//             (key==Qt::Key_D or key==Qt::Key_S or
-//              key==Qt::Key_A or key==Qt::Key_W))
-//        model.sub_state=idle;
 
     switch(key){
     case Qt::Key_Space:
 #ifdef  DEBUG
         qDebug("--> Handling Spacebar");
 #endif
-        switch(model.state){
-        case normal:
-            if (!released and model.rage_available){
-#ifdef  DEBUG
-                qDebug("%d - rage_available, swtching to on_rage", __LINE__);
-#endif
-                model.state = on_rage;
-                model.rage_available=false;
-            }
-            break;
-        case on_rage:
-#ifdef  DEBUG
-            qDebug("%d - swtching to running", __LINE__);
-#endif
-            if (!released) model.state = normal;
-            break;
-        case dead:
-        default:
-            break;
-        }
+        if(!released)pstates[model.state]->toggleRage();
         ret = true;
         break;
     case Qt::Key_D:
-        //if(model.sub_state==moving) model.pos_x=model.pos_x+5;
-        direction[player_right]=!released;
+        model.direction[player_right]=!released;
         break;
     case Qt::Key_A:
-        //if(model.sub_state==moving) model.pos_x=model.pos_x-5;
-        direction[player_left]=!released;
+        model.direction[player_left]=!released;
         break;
     case Qt::Key_W:
-        direction[player_up]=!released;
+        model.direction[player_up]=!released;
         break;
     case Qt::Key_S:
-        direction[player_down]=!released;
+        model.direction[player_down]=!released;
         break;
     default:
         break;
@@ -123,17 +222,19 @@ bool Player::handleKey(int key, bool released){
     return ret;
 }
 
-void Player::move(){
-    if(direction[player_up])
-        model.pos_y=model.pos_y-5;
-    if(direction[player_down])
-        model.pos_y=model.pos_y+5;
-    if(direction[player_left])
-        model.pos_x=model.pos_x-5;
-    if(direction[player_right])
-        model.pos_x=model.pos_x+5;
-    return;
+Player::~Player(){
+    delete pstates[normal];
+    delete pstates[on_rage];
+    delete pstates[dead];
+    //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
+    // they belongs to
+    delete shape;
+    delete energy_gauge;
 }
+
+/*
+ * PlayerShape methods implementation
+ */
 
 PlayerShape::PlayerShape(PlayerModel* m)
 {
@@ -141,16 +242,6 @@ PlayerShape::PlayerShape(PlayerModel* m)
     color[1] = QColor(Qt::red);
     model = m;
 }
-
-//void PlayerShape::tick()
-//{
-//    if (_model->state == on_rage)
-//        color = QColor(Qt::red);
-//    if (_model->state == running)
-//        color = QColor(Qt::red);
-//    update();
-//}
-
 
 QRectF PlayerShape::boundingRect() const
 {
@@ -168,7 +259,7 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         color_idx = 1;
         break;
     case normal:
-        //qDebug("%d running", __LINE__);
+        //qDebug("%d normal", __LINE__);
         color_idx = 0;
         break;
     default:
@@ -210,16 +301,6 @@ int PlayerEnergyGauge::blink()
 
 void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //QPoint origin(mapFromScene(0,0));
-//    int iteration=0;
-//    auto blink = [this, &iteration]()->int {
-//            if(iteration==10){
-//                color_rage_idx=1-color_rage_idx;
-//                iteration = 0;
-//            } else
-//                iteration++;
-//            return color_rage_idx;
-//        };
 
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -229,11 +310,12 @@ void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->drawRect(0,0, 104,20);
     //draw inner rectangle
     painter->setPen(Qt::NoPen);
-    if(!model->rage_available)
-        painter->setBrush(color);
-    else{
+    if(model->state == rage_available)
         painter->setBrush(color_rage[blink()]);
-        //color_rage_idx=1-color_rage_idx;
+    else if(model->state == on_rage)
+        painter->setBrush(color_rage[0]);
+    else{
+        painter->setBrush(color);
     }
 
     painter->drawRect(2,2,(int)model->energy,16);

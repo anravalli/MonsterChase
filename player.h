@@ -30,6 +30,7 @@
 
 typedef enum {
     normal,
+    rage_available,
     on_rage,
     dead
 } PlayerStates;
@@ -52,51 +53,17 @@ typedef struct {
     PlayerSubStates sub_state;
     int pos_x;
     int pos_y;
-    bool rage_available;
+    bool direction[4];
+    int score;
 } PlayerModel;
 
 class PlayerSm {
 public:
-    //virtual PlayerSm(PlayerModel* model) = 0;
     virtual void tick() = 0;
-    virtual void enter() = 0;
+    virtual void toggleRage() = 0;
+    //virtual void enter() = 0;
+    //virtual void exit() = 0;
     virtual ~PlayerSm(){}
-};
-
-class PlayerRunning: PlayerSm {
-public:
-    PlayerRunning(PlayerModel* model)
-        :_model(model){}
-
-    virtual void tick();
-    virtual void enter();
-    virtual ~PlayerRunning(){}
-private:
-    PlayerModel* _model;
-};
-
-class PlayerOnRage: PlayerSm {
-public:
-    PlayerOnRage(PlayerModel* model)
-        :_model(model){}
-
-    virtual void tick();
-    virtual void enter();
-    virtual ~PlayerOnRage(){}
-private:
-    PlayerModel* _model;
-};
-
-class PlayerDead: PlayerSm {
-public:
-    PlayerDead(PlayerModel* model)
-        :_model(model){}
-
-    virtual void tick();
-    virtual void enter();
-    virtual ~PlayerDead(){}
-private:
-    PlayerModel* _model;
 };
 
 class PlayerShape : public QGraphicsItem
@@ -136,6 +103,8 @@ private:
 
 };
 
+class PlayerScore;
+
 class Player : public QObject
 {
     Q_OBJECT
@@ -151,15 +120,26 @@ public:
 
     void tick();
 
+    ~Player();
+
 protected:
-    //bool event(QEvent* ev) Q_DECL_OVERRIDE;
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    PlayerModel model = {DEF_ENERGY,normal,idle,25,25,false};
+    PlayerModel model = {
+        DEF_ENERGY, //energy
+        normal, //state
+        idle, //sub_state
+        100, //pos_x
+        100, //pos_y
+        {false,false,false,false}, //direction
+        0 // score
+    };
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;
-    bool direction[4]={false,false,false,false};
+    PlayerScore* score;
+    //bool direction[4]={false,false,false,false};
+    PlayerSm* pstates[4]={nullptr,nullptr,nullptr,nullptr};
 
     void move();
     bool handleKey(int key, bool released);

@@ -26,6 +26,7 @@
 #include <QtWidgets>
 
 class Player;
+class PlayTime;
 
 class MonsterChase : public QObject
 {
@@ -48,11 +49,12 @@ private:
     QTimer* timer;
 
     Player* player;
+    PlayTime* ptime;
 
     QTime e;
 
     void setUpView();
-    void addFpsCounter();
+    void addPlayTime();
     void addPlayer();
     void addMonster();
 

@@ -46,11 +46,42 @@ private:
 
 };
 
+class PlayTime : public QGraphicsSimpleTextItem
+{
+public:
+    PlayTime()
+        :color(255,127,127)
+    {
+        QFont font("Helvetica",14,QFont::Bold);
+        this->setFont(font);
+        this->setPen(QPen(color));
+    }
+
+    void increase(){
+        if(!frame_counter){
+            frame_counter=25;
+            time++;
+        }
+        else
+            frame_counter--;
+        this->setText(QString::asprintf("%04d", time));
+        return;
+    }
+
+private:
+    QColor color;
+    PlayerModel* _model;
+    int time=0;
+    int frame_counter=25;
+};
+
 MonsterChase::MonsterChase()
 {
     setUpView();
-    addFpsCounter();
     addPlayer();
+    addMonster();
+    //keep this as the last in order to have it on top of the Z-stack
+    addPlayTime();
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
@@ -87,8 +118,10 @@ MonsterChase::~MonsterChase()
     delete view;
 }
 
-void MonsterChase::addFpsCounter(){
-
+void MonsterChase::addPlayTime(){
+    ptime = new PlayTime();
+    ptime->setPos(30,30);
+    scene->addItem(ptime);
 }
 
 void MonsterChase::addPlayer(){
@@ -144,6 +177,7 @@ void MonsterChase::gameStep(){
     qDebug("-> elapsed %d", e.elapsed());
 #endif
     //scene->advance();
+    ptime->increase();
     player->tick();
     e.restart();
 
