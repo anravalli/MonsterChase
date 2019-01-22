@@ -26,9 +26,11 @@ QMAKE_CXXFLAGS += -O2 -std=c++11
 
 SOURCES += main.cpp\
         monsterchase.cpp \
-    player.cpp
+    player.cpp \
+    monster.cpp
 
 HEADERS  += monsterchase.h \
-    player.h
+    player.h \
+    monster.h
 
 
