@@ -22,6 +22,7 @@
 #include "monsterchase.h"
 //#include "ui_monsterchase.h"
 #include "player.h"
+#include "monster.h"
 
 class GameView : public QGraphicsView
 {
@@ -136,7 +137,7 @@ void MonsterChase::addPlayer(){
 }
 
 void MonsterChase::addMonster(){
-
+    monster = new Monster::Monster(scene);
 }
 
 //void MonsterChase::gameStep(){
@@ -179,6 +180,7 @@ void MonsterChase::gameStep(){
     //scene->advance();
     ptime->increase();
     player->tick();
+    monster->tick();
     e.restart();
 
 }

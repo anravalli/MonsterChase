@@ -24,92 +24,91 @@
 
 #include <QGraphicsItem>
 
-#define DEF_ENERGY 50
-#define MIN_ENERGY 0
-#define MAX_ENERGY 100
+ namespace Monster{
 
-typedef enum {
-    normal,
-    rage_available,
-    on_rage,
-    dead
-} MonsterStates;
+    typedef enum {
+        patrol,
+        attack,
+        flee
+    } MonsterStates;
 
-typedef enum {
-    idle,
-    moving
-} MonsterSubStates;
+    typedef enum {
+        moving,
+        scanning
+    } MonsterSubStates;
 
-enum MonsterDirection {
-    Monster_up,
-    Monster_down,
-    Monster_left,
-    Monster_right
-};
-
-typedef struct {
-    //float energy;
-    MonsterStates state;
-    MonsterSubStates sub_state;
-    int pos_x;
-    int pos_y;
-    bool direction[4];
-    //int score;
-} MonsterModel;
-
-class MonsterSm {
-public:
-    virtual void tick() = 0;
-    //virtual void toggleRage() = 0;
-    //virtual void enter() = 0;
-    //virtual void exit() = 0;
-    virtual ~MonsterSm(){}
-};
-
-class MonsterShape : public QGraphicsItem
-{
-public:
-    MonsterShape(MonsterModel* m);
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
-
-private:
-    QColor color[2];
-    int color_idx=0;
-    MonsterModel* model;
-};
-
-class Monster : public QObject
-{
-    Q_OBJECT
-
-public:
-    Monster(QGraphicsScene * s);
-    MonsterShape* getShape(){
-        return shape;
-    }
-
-    void tick();
-
-    ~Monster();
-
-protected:
-    //bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
-
-private:
-    MonsterModel model = {
-        normal, //state
-        idle, //sub_state
-        100, //pos_x
-        100, //pos_y
-        {false,false,false,false}, //direction
+    enum MonsterDirection {
+        Monster_up,
+        Monster_down,
+        Monster_left,
+        Monster_right
     };
-    MonsterShape* shape;
-    MonsterSm* pstates[4]={nullptr,nullptr,nullptr,nullptr};
 
-    void move();
-};
+    typedef struct {
+        MonsterStates state;
+        MonsterSubStates sub_state;
+        int pos_x;
+        int pos_y;
+        int direction;
+        //bool direction[4];
+        //int score;
+    } MonsterModel;
 
+    class MonsterSm {
+    public:
+        virtual void tick() = 0;
+        //virtual void toggleRage() = 0;
+        //virtual void enter() = 0;
+        //virtual void exit() = 0;
+        virtual ~MonsterSm(){}
+    };
 
+    class MonsterShape : public QGraphicsItem
+    {
+    public:
+        MonsterShape(MonsterModel* m);
+        QRectF boundingRect() const Q_DECL_OVERRIDE;
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
+
+    private:
+        QColor color[3];
+        MonsterModel* model;
+    };
+
+    class MonsterSight;
+
+    class Monster : public QObject
+    {
+        Q_OBJECT
+
+    public:
+        Monster(QGraphicsScene * s);
+        MonsterShape* getShape(){
+            return shape;
+        }
+
+        void tick();
+
+        ~Monster();
+
+    protected:
+        //bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
+
+    private:
+        MonsterModel model = {
+            patrol, //state
+            MonsterSubStates::moving, //sub_state
+            200, //pos_x
+            200, //pos_y
+            0, //direction
+        };
+        MonsterShape* shape=0;
+        MonsterSight* sight=0;
+        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+
+        void move();
+    };
+
+} //namescpace Monster
 
 #endif // Monster_H

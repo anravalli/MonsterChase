@@ -238,7 +238,7 @@ Player::~Player(){
 
 PlayerShape::PlayerShape(PlayerModel* m)
 {
-    color[0] = QColor(Qt::green);
+    color[0] = QColor(Qt::yellow);
     color[1] = QColor(Qt::red);
     model = m;
 }

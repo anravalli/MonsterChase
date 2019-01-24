@@ -22,153 +22,156 @@
 #include <QtWidgets>
 #include "monster.h"
 
+namespace Monster{
 
-class MonsterNormal: public MonsterSm {
-public:
-    MonsterNormal(MonsterModel* model)
-        :_model(model){}
+    class MonsterPatrol: public MonsterSm {
+    public:
+        MonsterPatrol(MonsterModel* model)
+            :_model(model){}
 
-    virtual void tick(){
-        move();
-    }
-    virtual ~MonsterNormal(){}
+        virtual void tick(){
+            move();
+        }
+        virtual ~MonsterPatrol(){}
 
-private:
-    int _speed=5;
-protected:
-    MonsterModel* _model;
+    private:
+        int _speed=5;
+    protected:
+        MonsterModel* _model;
 
-    void move(){
-        if(_model->direction[Monster_up])
-            _model->pos_y=_model->pos_y-_speed;
-        if(_model->direction[Monster_down])
-            _model->pos_y=_model->pos_y+_speed;
-        if(_model->direction[Monster_left])
+        void move(){
+            if(_model->direction<=360)
+                _model->direction++;
+            else
+                _model->direction=0;
+            return;
+        }
+    };
+
+    class MonsterAttack: public MonsterSm {
+    public:
+        MonsterAttack(MonsterModel* model)
+            :_model(model){}
+        virtual void tick(){
+            move();
+        }
+    private:
+        MonsterModel* _model;
+
+        void move(){
+            return;
+        }
+    };
+
+    class MonsterFlee: public MonsterSm {
+    public:
+        MonsterFlee(MonsterModel* model)
+            :_model(model){}
+
+        virtual void tick(){
+            move();
+        }
+        virtual ~MonsterFlee(){}
+    private:
+        MonsterModel* _model;
+        int _speed=10;
+
+        void move(){
             _model->pos_x=_model->pos_x-_speed;
-        if(_model->direction[Monster_right])
             _model->pos_x=_model->pos_x+_speed;
-        return;
+            return;
+        }
+    };
+
+    class MonsterSight : public QGraphicsItem
+    {
+    public:
+        MonsterSight(MonsterModel* m)
+            :model(m){};
+        QRectF boundingRect() const Q_DECL_OVERRIDE{
+            return QRectF(-100,-165,200,300);
+        }
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
+            Q_UNUSED(option);
+            Q_UNUSED(widget);
+
+            painter->setBrush(QBrush(QColor(0,255,50,50)));
+            painter->drawPie(-100,-165,200,300,50*16,80*16);
+        }
+
+    private:
+        MonsterModel* model;
+    };
+
+    Monster::Monster(QGraphicsScene * s)
+    {
+
+        shape = new MonsterShape(&model);
+        //sight = new MonsterSight(&model);
+
+        //init state machine
+        mstates[patrol] = new MonsterPatrol(&model);
+        mstates[attack] = new MonsterAttack(&model);
+        mstates[flee] = new MonsterFlee(&model);
+
+        //the order we add the items to the scene affects the z-order
+        s->addItem(shape);
+        //s->addItem(sight);
+
+        QApplication::instance()->installEventFilter(this);
     }
-};
 
-class MonsterRageAvailable: public MonsterNormal {
-public:
-    MonsterRageAvailable(MonsterModel* model)
-        :MonsterNormal(model){}
-    virtual void tick(){
-        move();
+    void Monster::tick(){
+        mstates[model.state]->tick();
+
+        shape->setPos(model.pos_x,model.pos_y);
+        shape->setRotation(model.direction);
+        shape->update();
     }
-};
 
-class MonsterOnRage: public MonsterSm {
-public:
-    MonsterOnRage(MonsterModel* model)
-        :_model(model){}
-
-    virtual void tick(){
-        move();
+    Monster::~Monster(){
+        delete mstates[patrol];
+        delete mstates[attack];
+        delete mstates[flee];
+        //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
+        // they belongs to
+        delete shape;
     }
-    virtual void toggleRage(){
-        _model->state=normal;
+
+    /*
+     * MonsterShape methods implementation
+     */
+
+    MonsterShape::MonsterShape(MonsterModel* m)
+    {
+        color[patrol] = QColor(0,127,127);
+        color[attack] = QColor(255,50,127);
+        color[flee] = QColor(0,127,255);
+        model = m;
     }
-    virtual ~MonsterOnRage(){}
-private:
-    MonsterModel* _model;
-    int _speed=10;
 
-    void move(){
-        if(_model->direction[Monster_up])
-            _model->pos_y=_model->pos_y-_speed;
-        if(_model->direction[Monster_down])
-            _model->pos_y=_model->pos_y+_speed;
-        if(_model->direction[Monster_left])
-            _model->pos_x=_model->pos_x-_speed;
-        if(_model->direction[Monster_right])
-            _model->pos_x=_model->pos_x+_speed;
-        return;
+    QRectF MonsterShape::boundingRect() const
+    {
+        return QRectF(-15.5, -15.5, 34, 34);
     }
-};
 
-class MonsterDead: public MonsterSm {
-public:
-    MonsterDead(MonsterModel* model)
-        :_model(model){}
+    void MonsterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+    {
+        Q_UNUSED(option);
+        Q_UNUSED(widget);
 
-    virtual void tick(){}
-    virtual void toggleRage(){}
-    virtual ~MonsterDead(){}
-private:
-    MonsterModel* _model;
-};
-
-Monster::Monster(QGraphicsScene * s){
-
-    shape = new MonsterShape(&model);
-
-    //init state machine
-    pstates[normal] = new MonsterNormal(&model);
-    pstates[rage_available] = new MonsterRageAvailable(&model);
-    pstates[on_rage] = new MonsterOnRage(&model);
-    pstates[dead] = new MonsterDead(&model);
-    //the order we add the items to the scene affects the z-order
-    s->addItem(shape);
-    QApplication::instance()->installEventFilter(this);
-}
-
-void Monster::tick(){
-    pstates[model.state]->tick();
-
-    shape->setPos(model.pos_x,model.pos_y);
-    shape->update();
-}
-
-Monster::~Monster(){
-    delete pstates[normal];
-    delete pstates[on_rage];
-    delete pstates[dead];
-    //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
-    // they belongs to
-    delete shape;
-}
-
-/*
- * MonsterShape methods implementation
- */
-
-MonsterShape::MonsterShape(MonsterModel* m)
-{
-    color[0] = QColor(Qt::green);
-    color[1] = QColor(Qt::red);
-    model = m;
-}
-
-QRectF MonsterShape::boundingRect() const
-{
-    return QRectF(-15.5, -15.5, 34, 34);
-}
-
-void MonsterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    switch(model->state){
-    case on_rage:
-        //qDebug("%d on_rage", __LINE__);
-        color_idx = 1;
-        break;
-    case normal:
-        //qDebug("%d normal", __LINE__);
-        color_idx = 0;
-        break;
-    default:
-        break;
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(Qt::darkGray);
+        painter->drawRect(-12, -12, 30, 30);
+        painter->setPen(QPen(Qt::black, 1));
+        painter->setBrush(QBrush(color[model->state]));
+        painter->drawRect(-15, -15, 30, 30);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QBrush(QColor(0,255,50,50)));
+        painter->drawPie(-100,-165,200,300,50*16,80*16);
+        //temp
+        painter->setBrush(QBrush(QColor(0,255,50,50)));
+        painter->drawPie(-100,-165,200,300,50*16,80*16);
     }
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-12, -12, 30, 30);
-    painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(QBrush(color[color_idx]));
-    painter->drawEllipse(-15, -15, 30, 30);
-}
 
+} //namescpace Monster

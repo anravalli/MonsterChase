@@ -27,6 +27,9 @@
 
 class Player;
 class PlayTime;
+namespace Monster {
+class Monster;
+}
 
 class MonsterChase : public QObject
 {
@@ -50,6 +53,8 @@ private:
 
     Player* player;
     PlayTime* ptime;
+
+    Monster::Monster* monster;
 
     QTime e;
 
