@@ -107,7 +107,7 @@ namespace Monster{
     {
 
         shape = new MonsterShape(&model);
-        //sight = new MonsterSight(&model);
+        sight = new MonsterSight(&model);
 
         //init state machine
         mstates[patrol] = new MonsterPatrol(&model);
@@ -116,7 +116,7 @@ namespace Monster{
 
         //the order we add the items to the scene affects the z-order
         s->addItem(shape);
-        //s->addItem(sight);
+        s->addItem(sight);
 
         QApplication::instance()->installEventFilter(this);
     }
@@ -126,7 +126,10 @@ namespace Monster{
 
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
+        sight->setPos(model.pos_x,model.pos_y);
+        sight->setRotation(model.direction);
         shape->update();
+        sight->update();
     }
 
     Monster::~Monster(){
@@ -136,6 +139,7 @@ namespace Monster{
         //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
         // they belongs to
         delete shape;
+        delete sight;
     }
 
     /*
@@ -167,11 +171,9 @@ namespace Monster{
         painter->setBrush(QBrush(color[model->state]));
         painter->drawRect(-15, -15, 30, 30);
         painter->setPen(Qt::NoPen);
-        painter->setBrush(QBrush(QColor(0,255,50,50)));
-        painter->drawPie(-100,-165,200,300,50*16,80*16);
         //temp
-        painter->setBrush(QBrush(QColor(0,255,50,50)));
-        painter->drawPie(-100,-165,200,300,50*16,80*16);
+        //painter->setBrush(QBrush(QColor(0,255,50,50)));
+        //painter->drawPie(-100,-165,200,300,50*16,80*16);
     }
 
 } //namescpace Monster

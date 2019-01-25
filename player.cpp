@@ -120,7 +120,7 @@ public:
         this->setPen(QPen(Qt::blue));
         QFont font("Helvetica",14,QFont::Bold);
         this->setFont(font);
-        this->setBrush(Qt::NoBrush);
+        this->setBrush(Qt::white);
         this->setText(QString::asprintf("%06d", _model->score));
     }
 

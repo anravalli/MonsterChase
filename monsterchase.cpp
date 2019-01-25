@@ -30,6 +30,10 @@ public:
     GameView(QGraphicsScene *scene) : QGraphicsView(scene)
     {
         setFocusPolicy(Qt::StrongFocus);
+        setDragMode(NoDrag);
+        setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+        setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+        setFixedSize(QSize(700,700));
     }
 
 protected:
@@ -40,9 +44,9 @@ protected:
         QGraphicsView::keyPressEvent(event);
         return;
     }
-//    virtual void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE
-//    {
-//    }
+    virtual void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE
+    {
+    }
 private:
 
 };
@@ -99,18 +103,16 @@ void MonsterChase::show(){
 void MonsterChase::setUpView(){
     scene = new QGraphicsScene();
     scene->setSceneRect(0, 0, 600, 600);
-    scene->setItemIndexMethod(QGraphicsScene::NoIndex);;
-    scene->setSceneRect(0, 0, 600, 600);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     view = new GameView(scene);
     view->setRenderHint(QPainter::Antialiasing);
-    //view.setBackgroundBrush(QPixmap(":/images/cheese.jpg"));
+    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet-500x500.jpg"));
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    view->setDragMode(QGraphicsView::ScrollHandDrag);
+    //view->setDragMode(QGraphicsView::ScrollHandDrag);
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
-    view->resize(600, 600);
+    //view->resize(600, 600);
 }
 
 MonsterChase::~MonsterChase()

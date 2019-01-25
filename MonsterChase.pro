@@ -33,4 +33,7 @@ HEADERS  += monsterchase.h \
     player.h \
     monster.h
 
+RESOURCES += \
+    monsterchase.qrc
+
 

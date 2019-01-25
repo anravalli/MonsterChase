@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/textured-stainless-steel-sheet-500x500.jpg</file>
+    </qresource>
+</RCC>
