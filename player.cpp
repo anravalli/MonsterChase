@@ -142,8 +142,6 @@ public:
 protected:
 
 private:
-    //QColor color;
-    //int color_idx=0;
     PlayerModel* _model;
 };
 
@@ -162,7 +160,7 @@ Player::Player(QGraphicsScene * s){
     s->addItem(shape);
     s->addItem(score);
     s->addItem(energy_gauge);
-    score->setPos(500,30);
+    score->setPos((s->sceneRect()).width()-100, 50);
     QApplication::instance()->installEventFilter(this);
 }
 

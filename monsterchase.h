@@ -25,6 +25,7 @@
 //#include <QMainWindow>
 #include <QtWidgets>
 
+class Arena;
 class Player;
 class PlayTime;
 namespace Monster {
@@ -51,8 +52,10 @@ private:
     QGraphicsScene* scene;
     QTimer* timer;
 
-    Player* player;
+    Arena* arena;
     PlayTime* ptime;
+
+    Player* player;
 
     Monster::Monster* monster;
 
@@ -62,6 +65,7 @@ private:
     void addPlayTime();
     void addPlayer();
     void addMonster();
+    void buildArena();
 
 };
 

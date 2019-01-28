@@ -118,6 +118,10 @@ public:
         return energy_gauge;
     }
 
+    PlayerScore* getScoreCounter(){
+        return score;
+    }
+
     void tick();
 
     ~Player();

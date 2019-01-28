@@ -23,6 +23,18 @@
 //#include "ui_monsterchase.h"
 #include "player.h"
 #include "monster.h"
+#include "arena.h"
+
+#define PLAYGROUND_WIDTH 800
+#define PLAYGROUND_HEIGHT 800
+#define PLAYGROUND_BORDER_WIDTH 50
+#define PLAYGROUND_BORDER_HEIGHT 50
+#define PLAYGROUND_VIEW_EXTRA_WIDTH 100
+#define PLAYGROUND_VIEW_EXTRA_HEIGHT 100
+#define PLAYGROUND_VIEW_WIDTH PLAYGROUND_WIDTH + PLAYGROUND_VIEW_EXTRA_WIDTH
+#define PLAYGROUND_VIEW_HEIGHT PLAYGROUND_HEIGHT + PLAYGROUND_VIEW_EXTRA_HEIGHT
+
+#define FRAMERATE 1000/25
 
 class GameView : public QGraphicsView
 {
@@ -33,7 +45,15 @@ public:
         setDragMode(NoDrag);
         setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
         setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-        setFixedSize(QSize(700,700));
+        setFixedSize(QSize(PLAYGROUND_VIEW_WIDTH,PLAYGROUND_VIEW_HEIGHT));
+        inner_border = new QRect(PLAYGROUND_BORDER_WIDTH,
+                                 PLAYGROUND_BORDER_HEIGHT,
+                                 PLAYGROUND_WIDTH-PLAYGROUND_BORDER_WIDTH,
+                                 PLAYGROUND_HEIGHT-PLAYGROUND_BORDER_HEIGHT);
+    }
+
+    QRect const * innerBorder(){
+        return inner_border;
     }
 
 protected:
@@ -48,6 +68,7 @@ protected:
     {
     }
 private:
+    QRect* inner_border;
 
 };
 
@@ -83,6 +104,9 @@ private:
 MonsterChase::MonsterChase()
 {
     setUpView();
+
+    buildArena();
+
     addPlayer();
     addMonster();
     //keep this as the last in order to have it on top of the Z-stack
@@ -90,11 +114,14 @@ MonsterChase::MonsterChase()
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
-    timer->start(1000/25);
+    timer->start(FRAMERATE);
 
     e.start();
 }
 
+void MonsterChase::buildArena(){
+    arena = new Arena(":/resources/map.txt",scene);
+}
 
 void MonsterChase::show(){
     view->show();
@@ -102,7 +129,7 @@ void MonsterChase::show(){
 
 void MonsterChase::setUpView(){
     scene = new QGraphicsScene();
-    scene->setSceneRect(0, 0, 600, 600);
+    scene->setSceneRect(0, 0, PLAYGROUND_WIDTH, PLAYGROUND_WIDTH);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     view = new GameView(scene);
@@ -112,7 +139,6 @@ void MonsterChase::setUpView(){
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     //view->setDragMode(QGraphicsView::ScrollHandDrag);
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
-    //view->resize(600, 600);
 }
 
 MonsterChase::~MonsterChase()
@@ -123,55 +149,22 @@ MonsterChase::~MonsterChase()
 
 void MonsterChase::addPlayTime(){
     ptime = new PlayTime();
-    ptime->setPos(30,30);
+    ptime->setPos(PLAYGROUND_BORDER_WIDTH,PLAYGROUND_BORDER_HEIGHT);
     scene->addItem(ptime);
 }
 
 void MonsterChase::addPlayer(){
     player = new Player(scene);
-    //QGraphicsItem* p_shape = player->getShape();
-    //p_shape->setPos(25,25);
-    //scene->addItem(p_shape);
 
-    QGraphicsItem* p_gauge = player->getEnergyGauge();
-    p_gauge->setPos(10,550);
-    //scene->addItem(p_gauge);
+    //TODO: move this to the player
+    //QGraphicsItem* p_gauge = player->getEnergyGauge();
+    player->getEnergyGauge()->setPos(PLAYGROUND_BORDER_WIDTH,PLAYGROUND_WIDTH-PLAYGROUND_BORDER_HEIGHT);
+    //player->getScoreCounter()->setPos(PLAYGROUND_BORDER_WIDTH-100,PLAYGROUND_BORDER_HEIGHT);
 }
 
 void MonsterChase::addMonster(){
     monster = new Monster::Monster(scene);
 }
-
-//void MonsterChase::gameStep(){
-//    QTime t = QTime::currentTime();
-//    qDebug("iteration %s", t.toString().toStdString().c_str());
-//    qDebug("-> elapsed %d", e.elapsed());
-//    e.restart();
-
-//    int delay = qrand()%1000;
-//    if (delay < 1)
-//        delay = 1;
-//    qDebug("-> delay %d", delay);
-//    QThread::msleep(delay);
-
-//    int interval = 1000 - e.elapsed();
-//    timer->setInterval(interval < 0 ? 0 : interval);
-//}
-
-//void MonsterChase::gameStep(){
-//    QTime t = QTime::currentTime();
-//    qDebug("iteration %s", t.toString().toStdString().c_str());
-//    qDebug("-> elapsed %d", e.elapsed());
-
-//    int delay = qrand()%1000;
-//    if (delay < 1)
-//        delay = 1;
-//    QThread::msleep(delay);
-//    qDebug("-> delay %d", delay);
-//    int interval = 1000 - e.elapsed();
-//    timer->setInterval(interval < 0 ? 0 : interval);
-//    e.restart();
-//}
 
 void MonsterChase::gameStep(){
 #ifdef  DEBUG
