@@ -105,26 +105,31 @@ MonsterChase::MonsterChase()
 {
     setUpView();
 
-    buildArena();
-
+    arena = new Arena(":/resources/map.txt",scene);
     addPlayer();
     addMonster();
     //keep this as the last in order to have it on top of the Z-stack
     addPlayTime();
 
+    connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
-    timer->start(FRAMERATE);
-
-    e.start();
-}
-
-void MonsterChase::buildArena(){
-    arena = new Arena(":/resources/map.txt",scene);
+    arena->startShowMap();
 }
 
 void MonsterChase::show(){
     view->show();
+}
+void MonsterChase::start(){
+    player->show();
+    monster->show();
+    timer->start(FRAMERATE);
+}
+void MonsterChase::pause(){
+    //player->hide();
+    //monster->hide();
+    timer->stop();
 }
 
 void MonsterChase::setUpView(){
@@ -134,7 +139,7 @@ void MonsterChase::setUpView(){
 
     view = new GameView(scene);
     view->setRenderHint(QPainter::Antialiasing);
-    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet-500x500.jpg"));
+    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     //view->setDragMode(QGraphicsView::ScrollHandDrag);
@@ -149,21 +154,23 @@ MonsterChase::~MonsterChase()
 
 void MonsterChase::addPlayTime(){
     ptime = new PlayTime();
-    ptime->setPos(PLAYGROUND_BORDER_WIDTH,PLAYGROUND_BORDER_HEIGHT);
+    ptime->setPos(-PLAYGROUND_BORDER_WIDTH/2,-PLAYGROUND_BORDER_HEIGHT*0.6);
+    //ptime->hide();
     scene->addItem(ptime);
 }
 
 void MonsterChase::addPlayer(){
     player = new Player(scene);
-
-    //TODO: move this to the player
-    //QGraphicsItem* p_gauge = player->getEnergyGauge();
-    player->getEnergyGauge()->setPos(PLAYGROUND_BORDER_WIDTH,PLAYGROUND_WIDTH-PLAYGROUND_BORDER_HEIGHT);
-    //player->getScoreCounter()->setPos(PLAYGROUND_BORDER_WIDTH-100,PLAYGROUND_BORDER_HEIGHT);
+    //player->getEnergyGauge()->setPos(-PLAYGROUND_BORDER_WIDTH/2,PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
+    player->setEnergyGaugePos(PLAYGROUND_WIDTH/2-(player->getEnergyGauge()->boundingRect().width()/2),
+                                     PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
+    player->setScorePos(PLAYGROUND_WIDTH-35,-PLAYGROUND_BORDER_HEIGHT*0.6);
+    player->hide();
 }
 
 void MonsterChase::addMonster(){
     monster = new Monster::Monster(scene);
+    monster->hide();
 }
 
 void MonsterChase::gameStep(){
@@ -176,7 +183,7 @@ void MonsterChase::gameStep(){
     ptime->increase();
     player->tick();
     monster->tick();
-    e.restart();
+    //e.restart();
 
 }
 

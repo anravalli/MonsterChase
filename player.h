@@ -111,20 +111,29 @@ class Player : public QObject
 
 public:
     Player(QGraphicsScene * s);
-    PlayerShape* getShape(){
-        return shape;
+    void tick();
+    ~Player();
+
+    void show(){
+        shape->show();
     }
+    void hide(){
+        shape->hide();
+    }
+    void setEnergyGaugePos(int x, int y){
+        energy_gauge->setPos(x,y);
+    }
+    void setScorePos(int x, int y);
+//    PlayerShape* getShape(){
+//        return shape;
+//    }
     PlayerEnergyGauge* getEnergyGauge(){
         return energy_gauge;
     }
+//    PlayerScore* getScoreCounter(){
+//        return score;
+//    }
 
-    PlayerScore* getScoreCounter(){
-        return score;
-    }
-
-    void tick();
-
-    ~Player();
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;

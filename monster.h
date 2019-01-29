@@ -22,6 +22,7 @@
 #ifndef Monster_H
 #define Monster_H
 
+#include <QtWidgets>
 #include <QGraphicsItem>
 
  namespace Monster{
@@ -75,7 +76,25 @@
         MonsterModel* model;
     };
 
-    class MonsterSight;
+    class MonsterSight : public QGraphicsItem
+    {
+    public:
+        MonsterSight(MonsterModel* m)
+            :model(m){};
+        QRectF boundingRect() const Q_DECL_OVERRIDE{
+            return QRectF(-100,-165,200,300);
+        }
+        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
+            Q_UNUSED(option);
+            Q_UNUSED(widget);
+
+            painter->setBrush(QBrush(QColor(0,255,50,50)));
+            painter->drawPie(-100,-165,200,300,50*16,80*16);
+        }
+
+    private:
+        MonsterModel* model;
+    };
 
     class Monster : public QObject
     {
@@ -83,10 +102,20 @@
 
     public:
         Monster(QGraphicsScene * s);
-        MonsterShape* getShape(){
-            return shape;
+        void show(){
+            shape->show();
+            sight->show();
         }
-
+        void hide(){
+            shape->hide();
+            sight->hide();
+        }
+//        MonsterShape* getShape(){
+//            return shape;
+//        }
+//        MonsterSight* getSight(){
+//            return sight;
+//        }
         void tick();
 
         ~Monster();

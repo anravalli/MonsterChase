@@ -160,7 +160,7 @@ Player::Player(QGraphicsScene * s){
     s->addItem(shape);
     s->addItem(score);
     s->addItem(energy_gauge);
-    score->setPos((s->sceneRect()).width()-100, 50);
+    //score->setPos((s->sceneRect()).width()-35, -50*0.6);
     QApplication::instance()->installEventFilter(this);
 }
 
@@ -218,6 +218,10 @@ bool Player::handleKey(int key, bool released){
         break;
     }
     return ret;
+}
+
+void Player::setScorePos(int x, int y){
+    score->setPos(x,y);
 }
 
 Player::~Player(){

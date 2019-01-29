@@ -22,24 +22,27 @@ class Brick: public QGraphicsRectItem
 {
 public:
     Brick(QRectF br_shape);
-//    void show(){
-//        shape->show();
-//    }
-//    void hide(){
-//        shape->hide();
-//    }
 
     void setIndex(std::pair<int,int> idx);
 private:
     std::pair<int,int> _idx;
-    //QGraphicsRectItem * shape = 0;
 };
 
-class Arena
+class Arena: public QObject
 {
+    Q_OBJECT
+
+signals:
+    void build_complete();
+
 public:
     Arena(QString fname, QGraphicsScene *scene);
-    void buildMap();
+
+    bool mapComplete();
+    void startShowMap();
+
+public slots:
+    void showNextBrick();
 
 private:
     char bin_map[MAP_HEIGHT][MAP_WIDTH];
@@ -47,6 +50,7 @@ private:
 
     int brick_count = 0;
     bool completion_status = false;
+    QTimer* timer;
 
     QGraphicsScene *_scene;
 
@@ -57,8 +61,6 @@ private:
     float map_cell_w;
     float map_cell_h;
     Brick* addBrick(QGraphicsScene *s, std::pair<int,int> idx );
-    void showBrick(std::pair<int,int> idx);
-    bool mapComplete();
 
 };
 

@@ -19,7 +19,6 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtWidgets>
 #include "monster.h"
 
 namespace Monster{
@@ -81,26 +80,6 @@ namespace Monster{
             _model->pos_x=_model->pos_x+_speed;
             return;
         }
-    };
-
-    class MonsterSight : public QGraphicsItem
-    {
-    public:
-        MonsterSight(MonsterModel* m)
-            :model(m){};
-        QRectF boundingRect() const Q_DECL_OVERRIDE{
-            return QRectF(-100,-165,200,300);
-        }
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
-            Q_UNUSED(option);
-            Q_UNUSED(widget);
-
-            painter->setBrush(QBrush(QColor(0,255,50,50)));
-            painter->drawPie(-100,-165,200,300,50*16,80*16);
-        }
-
-    private:
-        MonsterModel* model;
     };
 
     Monster::Monster(QGraphicsScene * s)

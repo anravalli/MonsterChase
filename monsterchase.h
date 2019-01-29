@@ -44,7 +44,9 @@ public:
 
     //void paintEvent(QPaintEvent *) override;
 public slots:
-    void  gameStep() ;
+    void gameStep() ;
+    void pause();
+    void start();
 
 private:
     //Ui::MonsterChase *ui;
@@ -59,7 +61,7 @@ private:
 
     Monster::Monster* monster;
 
-    QTime e;
+    //QTime e;
 
     void setUpView();
     void addPlayTime();

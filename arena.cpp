@@ -34,84 +34,85 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
     QFile map_file(fname);
     if (!map_file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
-    if (map_file.canReadLine())
-        qDebug("File can be read");
-    if (map_file.isOpen())
-        qDebug("File is open");
-    if (map_file.exists())
-        qDebug("File exist");
-    if (map_file.size())
-        qDebug("File size is %d", map_file.size());
-    //QByteArray()
+
     QTextStream in(&map_file);
-    //QString str = in.readAll();
-    //qDebug("File size %d", str.size());
-    //qDebug("File content %s", str);
-    for (int i=0; i<100 and not in.atEnd(); i++){
-        QString line = in.readLine(100);
+    for (int y=0; y<100 and not in.atEnd(); y++){
+        //read all char and discard the newline in the for loop
+        QString line = in.readLine();
         //assert(line.size()==100);
-        if(line.size()<100)
+        if(line.size()<100){
+            qDebug("Skipping line of %d char: 5s", line.size(), line);
+            y--;
             continue;
+        }
         line.data();
-        for (int j=0; j<100; j++){
-            const char b = line.at(j).toLatin1();
-            std::pair<int,int> idx(i,j);
+        for (int x=0; x<100; x++){
+            const char b = line.at(x).toLatin1();
+            std::pair<int,int> idx(x,y);
             switch(b){
             case BRICK_NONE:
-                bin_map[i][j]=none;
-                map[i][j]=nullptr;
+                bin_map[y][x]=none;
+                map[y][x]=nullptr;
                 break;
             case BRICK_STANDARD:
-                bin_map[i][j]=standard;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=standard;
+                map[y][x]=addBrick(scene, idx);
                 break;
             case BRICK_CAP_UP:
-                bin_map[i][j]=cap_up;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=cap_up;
+                map[y][x]=addBrick(scene, idx);
                 break;
             case BRICK_CAP_DW:
-                bin_map[i][j]=cap_dw;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=cap_dw;
+                map[y][x]=addBrick(scene, idx);
                 break;
             case BRICK_CAP_LX:
-                bin_map[i][j]=cap_lx;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=cap_lx;
+                map[y][x]=addBrick(scene, idx);
                 break;
             case BRICK_CAP_RX:
-                bin_map[i][j]=cap_rx;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=cap_rx;
+                map[y][x]=addBrick(scene, idx);
                 break;
             case BRICK_THROWABLE:
-                bin_map[i][j]=throwable;
-                map[i][j]=addBrick(scene, idx);
+                bin_map[y][x]=throwable;
+                map[y][x]=addBrick(scene, idx);
                 break;
             }
         }
     }
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(showNextBrick()));
 }
 
-void Arena::buildMap(){
-    if(not mapComplete()){
-        //addBrick();
-    }
+void Arena::startShowMap(){
+    timer->start(10);
 }
 
-//void Arena::addBrick(){
-//    if(brick_count<100*100)
-//        brick_count++;
-//    else
-//        completion_status = true;
-//}
 
 Brick* Arena::addBrick(QGraphicsScene *s, std::pair<int,int> idx ){
     Brick* b = new Brick( QRectF( idxToPos(idx.first,idx.second),QSizeF(map_cell_w,map_cell_h) ) );
-    //b->hide();
+    b->hide();
     s->addItem(b);
     return b;
 }
 
-void Arena::showBrick(std::pair<int,int> idx){
-    map[idx.first][idx.second]->show();
+void Arena::showNextBrick(){
+    if(brick_count<MAP_WIDTH*MAP_HEIGHT){
+        brick_count++;
+        Brick* b = map[brick_count%MAP_WIDTH][brick_count-MAP_WIDTH*(brick_count%MAP_WIDTH)-1];
+
+        if(b == nullptr)
+            showNextBrick();
+        else
+            b->show();
+    }
+    else{
+        completion_status = true;
+        emit build_complete();
+        timer->stop();
+       //check if disconnect can be useful here
+    }
 }
 
 bool Arena::mapComplete(){
