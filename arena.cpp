@@ -40,8 +40,9 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
         //read all char and discard the newline in the for loop
         QString line = in.readLine();
         //assert(line.size()==100);
-        if(line.size()<100){
-            qDebug("Skipping line of %d char: 5s", line.size(), line);
+        if(line.size()<MAP_WIDTH){
+            qDebug("WARNING: line is shorter than expected (%d<%d)/nDumping line: %s",
+                   MAP_WIDTH, line.size(), line.toStdString().c_str());
             y--;
             continue;
         }
@@ -100,7 +101,10 @@ Brick* Arena::addBrick(QGraphicsScene *s, std::pair<int,int> idx ){
 void Arena::showNextBrick(){
     if(brick_count<MAP_WIDTH*MAP_HEIGHT){
         brick_count++;
-        Brick* b = map[brick_count%MAP_WIDTH][brick_count-MAP_WIDTH*(brick_count%MAP_WIDTH)-1];
+//        int y = brick_count/MAP_WIDTH;
+//        int x = brick_count-MAP_WIDTH*(brick_count/MAP_WIDTH);
+//        Brick* b = map[y][x];
+        Brick* b = map[0][brick_count-1];
 
         if(b == nullptr)
             showNextBrick();

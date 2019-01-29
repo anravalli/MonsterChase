@@ -48,7 +48,7 @@ private:
     char bin_map[MAP_HEIGHT][MAP_WIDTH];
     Brick* map[MAP_HEIGHT][MAP_WIDTH];
 
-    int brick_count = 0;
+    int brick_count = 0;//-1;
     bool completion_status = false;
     QTimer* timer;
 
