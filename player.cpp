@@ -26,10 +26,12 @@
 class PlayerNormal: public PlayerSm {
 public:
     PlayerNormal(PlayerModel* model)
-        :_model(model){}
+        :_model(model){
+        _speed_45 = _speed/sqrt(2);
+    }
 
     virtual void tick(){
-        _model->energy=_model->energy+0.25;
+        _model->energy=_model->energy+0.125;
         if(_model->energy == MAX_ENERGY)
             _model->state = rage_available;
         move();
@@ -38,19 +40,25 @@ public:
     virtual ~PlayerNormal(){}
 
 private:
-    int _speed=5;
+    int _speed=3;
+    double _speed_45=0;
 protected:
     PlayerModel* _model;
 
     void move(){
+        double speed = _speed;
+        if((_model->direction[player_up] or _model->direction[player_down])
+                and (_model->direction[player_left] or _model->direction[player_right])){
+            speed = _speed_45;
+        }
         if(_model->direction[player_up])
-            _model->pos_y=_model->pos_y-_speed;
+            _model->pos_y=_model->pos_y-speed;
         if(_model->direction[player_down])
-            _model->pos_y=_model->pos_y+_speed;
+            _model->pos_y=_model->pos_y+speed;
         if(_model->direction[player_left])
-            _model->pos_x=_model->pos_x-_speed;
+            _model->pos_x=_model->pos_x-speed;
         if(_model->direction[player_right])
-            _model->pos_x=_model->pos_x+_speed;
+            _model->pos_x=_model->pos_x+speed;
         return;
     }
 };
@@ -70,10 +78,12 @@ public:
 class PlayerOnRage: public PlayerSm {
 public:
     PlayerOnRage(PlayerModel* model)
-        :_model(model){}
+        :_model(model){
+        _speed_45 = _speed/sqrt(2);
+    }
 
     virtual void tick(){
-        _model->energy=_model->energy-0.25;
+        _model->energy=_model->energy-0.125;
         if(_model->energy == DEF_ENERGY)
             _model->state = normal;
         move();
@@ -84,17 +94,23 @@ public:
     virtual ~PlayerOnRage(){}
 private:
     PlayerModel* _model;
-    int _speed=10;
+    int _speed=5;
+    double _speed_45=0;
 
     void move(){
+        float speed = _speed;
+        if((_model->direction[player_up] or _model->direction[player_down])
+                and (_model->direction[player_left] or _model->direction[player_right])){
+            speed = _speed_45;
+        }
         if(_model->direction[player_up])
-            _model->pos_y=_model->pos_y-_speed;
+            _model->pos_y=_model->pos_y-speed;
         if(_model->direction[player_down])
-            _model->pos_y=_model->pos_y+_speed;
+            _model->pos_y=_model->pos_y+speed;
         if(_model->direction[player_left])
-            _model->pos_x=_model->pos_x-_speed;
+            _model->pos_x=_model->pos_x-speed;
         if(_model->direction[player_right])
-            _model->pos_x=_model->pos_x+_speed;
+            _model->pos_x=_model->pos_x+speed;
         return;
     }
 };
