@@ -27,11 +27,13 @@
 #define DEF_ENERGY 50
 #define MIN_ENERGY 0
 #define MAX_ENERGY 100
+#define BLINK_DELAY 10
 
 typedef enum {
     normal,
     rage_available,
     on_rage,
+    on_damage,
     dead
 } PlayerStates;
 
@@ -59,11 +61,19 @@ typedef struct {
 
 class PlayerSm {
 public:
-    virtual void tick() = 0;
+    virtual void move() = 0;
+    virtual void updateEnergy() = 0;
     virtual void toggleRage() = 0;
+    virtual void collisionWithMonster() = 0;
     //virtual void enter() = 0;
     //virtual void exit() = 0;
     virtual ~PlayerSm(){}
+protected:
+    int _max_speed;
+    double _max_speed_45;
+    PlayerModel* _model;
+public:
+    void moveBy(double step_x, double step_y);
 };
 
 class PlayerShape : public QGraphicsItem
@@ -81,7 +91,10 @@ protected:
 private:
     QColor color[2];
     int color_idx=0;
+    int blink_delay=BLINK_DELAY;
     PlayerModel* model;
+
+    int blink();
 };
 
 class PlayerEnergyGauge : public QGraphicsItem
@@ -133,7 +146,7 @@ public:
 //    PlayerScore* getScoreCounter(){
 //        return score;
 //    }
-
+    QRectF getIntersectonWith(QRectF r);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
@@ -152,7 +165,7 @@ private:
     PlayerEnergyGauge* energy_gauge;
     PlayerScore* score;
     //bool direction[4]={false,false,false,false};
-    PlayerSm* pstates[4]={nullptr,nullptr,nullptr,nullptr};
+    PlayerSm* pstates[5]={nullptr,nullptr,nullptr,nullptr,nullptr};
 
     void move();
     bool handleKey(int key, bool released);

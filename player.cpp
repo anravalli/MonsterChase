@@ -22,109 +22,147 @@
 #include <QtWidgets>
 #include "player.h"
 
+#define DAMAGE 10
+#define HIT 10
+
+void PlayerSm::moveBy(double step_x, double step_y){
+    //double speed = _max_speed;
+
+    if(_model->direction[player_up])
+        _model->pos_y=_model->pos_y-step_y;
+    if(_model->direction[player_down])
+        _model->pos_y=_model->pos_y+step_y;
+    if(_model->direction[player_left])
+        _model->pos_x=_model->pos_x-step_x;
+    if(_model->direction[player_right])
+        _model->pos_x=_model->pos_x+step_x;
+    return;
+}
 
 class PlayerNormal: public PlayerSm {
 public:
-    PlayerNormal(PlayerModel* model)
-        :_model(model){
-        _speed_45 = _speed/sqrt(2);
+    PlayerNormal(PlayerModel* model) {
+        _model=model;
+        _max_speed = 3;
+        _max_speed_45 = _max_speed/sqrt(2);
+
     }
 
-    virtual void tick(){
+    virtual void updateEnergy() override {
         _model->energy=_model->energy+0.125;
         if(_model->energy == MAX_ENERGY)
             _model->state = rage_available;
-        move();
     }
-    virtual void toggleRage(){}
-    virtual ~PlayerNormal(){}
 
-private:
-    int _speed=3;
-    double _speed_45=0;
-protected:
-    PlayerModel* _model;
-
-    void move(){
-        double speed = _speed;
+    virtual void move() override {
+        double step = _max_speed;
         if((_model->direction[player_up] or _model->direction[player_down])
                 and (_model->direction[player_left] or _model->direction[player_right])){
-            speed = _speed_45;
+            step = _max_speed_45;
         }
-        if(_model->direction[player_up])
-            _model->pos_y=_model->pos_y-speed;
-        if(_model->direction[player_down])
-            _model->pos_y=_model->pos_y+speed;
-        if(_model->direction[player_left])
-            _model->pos_x=_model->pos_x-speed;
-        if(_model->direction[player_right])
-            _model->pos_x=_model->pos_x+speed;
-        return;
+        moveBy(step,step);
     }
+
+    virtual void collisionWithMonster() override {
+        _model->energy=_model->energy-DAMAGE;
+        if(_model->energy < 0)
+            _model->state = dead;
+        _model->state = on_damage;
+    }
+
+    virtual void toggleRage() override {}
+    virtual ~PlayerNormal(){}
+
 };
 
 class PlayerRageAvailable: public PlayerNormal {
 public:
     PlayerRageAvailable(PlayerModel* model)
         :PlayerNormal(model){}
-    virtual void tick(){
-        move();
+    virtual void updateEnergy() override {
+        //move();
+        return;
     }
-    virtual void toggleRage(){
+    virtual void toggleRage() override {
         _model->state=on_rage;
     }
+//    virtual void collisionWithMonster() override {
+//        _model->energy=_model->energy-DAMAGE;
+//        if(_model->energy <= DEF_ENERGY)
+//            _model->state = normal;
+//    }
+};
+
+class PlayerOnDamage: public PlayerNormal {
+public:
+    PlayerOnDamage(PlayerModel* model)
+        :PlayerNormal(model){}
+
+    virtual void updateEnergy() override {
+        PlayerNormal::updateEnergy();
+        no_damage_counter--;
+        if(no_damage_counter<=0){
+            _model->state=normal;
+            no_damage_counter=100;
+        }
+    }
+    //virtual void toggleRage() override {    }
+
+    virtual void collisionWithMonster() override {
+        return;
+    }
+private:
+    int no_damage_counter = 100;
 };
 
 class PlayerOnRage: public PlayerSm {
 public:
-    PlayerOnRage(PlayerModel* model)
-        :_model(model){
-        _speed_45 = _speed/sqrt(2);
+    PlayerOnRage(PlayerModel* model) {
+        _model=model;
+        _max_speed = 5;
+        _max_speed_45 = _max_speed/sqrt(2);
     }
 
-    virtual void tick(){
+    virtual void updateEnergy() override {
         _model->energy=_model->energy-0.125;
         if(_model->energy == DEF_ENERGY)
             _model->state = normal;
-        move();
     }
-    virtual void toggleRage(){
-        _model->state=normal;
-    }
-    virtual ~PlayerOnRage(){}
-private:
-    PlayerModel* _model;
-    int _speed=5;
-    double _speed_45=0;
 
-    void move(){
-        float speed = _speed;
+    virtual void move() override {
+        double step = _max_speed;
         if((_model->direction[player_up] or _model->direction[player_down])
                 and (_model->direction[player_left] or _model->direction[player_right])){
-            speed = _speed_45;
+            step = _max_speed_45;
         }
-        if(_model->direction[player_up])
-            _model->pos_y=_model->pos_y-speed;
-        if(_model->direction[player_down])
-            _model->pos_y=_model->pos_y+speed;
-        if(_model->direction[player_left])
-            _model->pos_x=_model->pos_x-speed;
-        if(_model->direction[player_right])
-            _model->pos_x=_model->pos_x+speed;
-        return;
+        moveBy(step,step);
     }
+    virtual void toggleRage() override {
+        _model->state=normal;
+    }
+    virtual void collisionWithMonster() override {
+        _model->score=_model->score+HIT;
+    }
+
+    virtual ~PlayerOnRage(){}
+private:
+    //PlayerModel* _model;
+
 };
 
 class PlayerDead: public PlayerSm {
 public:
-    PlayerDead(PlayerModel* model)
-        :_model(model){}
+    PlayerDead(PlayerModel* model) {
+        _model=model;
+    }
 
-    virtual void tick(){}
+    virtual void move(){}
+    virtual void updateEnergy(){}
     virtual void toggleRage(){}
+    virtual void collisionWithMonster() override { }
     virtual ~PlayerDead(){}
 private:
-    PlayerModel* _model;
+    //PlayerModel* _model;
 };
 
 class PlayerScore : public QGraphicsSimpleTextItem
@@ -140,20 +178,24 @@ public:
         this->setText(QString::asprintf("%06d", _model->score));
     }
 
+    void updateScore(){
+        this->setText(QString::asprintf("%06d", _model->score));
+    }
+
 //    QRectF boundingRect() const Q_DECL_OVERRIDE{
 //        return QRectF(0,0,16,80);
 //    }
 
-//    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
-//        Q_UNUSED(option);
-//        Q_UNUSED(widget);
+    /*void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
+        Q_UNUSED(option);
+        Q_UNUSED(widget);
 
-//        painter->setPen(Qt::blue);
-//        QFont font("Helvetica",14,QFont::Bold);
-//        painter->setFont(font);
-//        painter->setBrush(Qt::NoBrush);
-//        painter->drawText(QPoint(0,0), QString::asprintf("%06d", _model->score));
-//    }
+        painter->setPen(Qt::blue);
+        QFont font("Helvetica",14,QFont::Bold);
+        painter->setFont(font);
+        painter->setBrush(Qt::NoBrush);
+        painter->drawText(QPoint(0,0), QString::asprintf("%06d", _model->score));
+    }*/
 
 protected:
 
@@ -171,6 +213,7 @@ Player::Player(QGraphicsScene * s){
     pstates[normal] = new PlayerNormal(&model);
     pstates[rage_available] = new PlayerRageAvailable(&model);
     pstates[on_rage] = new PlayerOnRage(&model);
+    pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
     //the order we add the items to the scene affects the z-order
     s->addItem(shape);
@@ -181,14 +224,41 @@ Player::Player(QGraphicsScene * s){
 }
 
 void Player::tick(){
-    pstates[model.state]->tick();
+
+    PlayerSm* cstate = pstates[model.state];
+    cstate->updateEnergy();
+    cstate->move();
+    /* collision checking:
+     *
+    */
+    //checkCollisions()
+    QRectF m(200-15, //pos_x
+             200-14, //pos_y
+             30, //width
+             30 //heigth
+             );
+    QRectF i = getIntersectonWith(m);
+    if (not i.isEmpty()){
+        cstate->moveBy(-i.width(),-i.height());
+        cstate->collisionWithMonster();
+    }
 
     energy_gauge->update();
     shape->setPos(model.pos_x,model.pos_y);
     shape->update();
+    score->updateScore();
 #ifdef  DEBUG
     qDebug("Player energy %d", model.energy);
 #endif
+}
+
+QRectF Player::getIntersectonWith(QRectF r)
+{
+    int size = 30;
+    QRectF me (model.pos_x-size/2, model.pos_y-size/2,
+            size,size);
+    QRectF b = me.intersected(r);
+    return b;
 }
 
 bool Player::eventFilter(QObject *watched, QEvent *event)
@@ -277,8 +347,12 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         color_idx = 1;
         break;
     case normal:
+    case rage_available:
         //qDebug("%d normal", __LINE__);
         color_idx = 0;
+        break;
+    case on_damage:
+        blink();
         break;
     default:
         break;
@@ -289,6 +363,17 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setPen(QPen(Qt::black, 1));
     painter->setBrush(QBrush(color[color_idx]));
     painter->drawEllipse(-15, -15, 30, 30);
+}
+
+int PlayerShape::blink()
+{
+    if(blink_delay>0){
+        blink_delay--;
+    } else {
+        color_idx = 1-color_idx;
+        blink_delay = BLINK_DELAY;
+    }
+    return 0;
 }
 
 
@@ -309,7 +394,7 @@ QRectF PlayerEnergyGauge::boundingRect() const
 
 int PlayerEnergyGauge::blink()
 {
-    if(iteration==4){
+    if(iteration==5){
         color_rage_idx=1-color_rage_idx;
         iteration = 0;
     } else
