@@ -22,12 +22,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <QGraphicsItem>
+#include <QtWidgets>
 
 #define DEF_ENERGY 50
 #define MIN_ENERGY 0
 #define MAX_ENERGY 100
 #define BLINK_DELAY 10
+
+class PlayerSm;
 
 typedef enum {
     normal,
@@ -59,64 +61,9 @@ typedef struct {
     int score;
 } PlayerModel;
 
-class PlayerSm {
-public:
-    virtual void move() = 0;
-    virtual void updateEnergy() = 0;
-    virtual void toggleRage() = 0;
-    virtual void collisionWithMonster() = 0;
-    //virtual void enter() = 0;
-    //virtual void exit() = 0;
-    virtual ~PlayerSm(){}
-protected:
-    int _max_speed;
-    double _max_speed_45;
-    PlayerModel* _model;
-public:
-    void moveBy(double step_x, double step_y);
-};
-
-class PlayerShape : public QGraphicsItem
-{
-public:
-    PlayerShape(PlayerModel* m);
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
-
-protected:
-//    void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-//    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-//    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
-
-private:
-    QColor color[2];
-    int color_idx=0;
-    int blink_delay=BLINK_DELAY;
-    PlayerModel* model;
-
-    int blink();
-};
-
-class PlayerEnergyGauge : public QGraphicsItem
-{
-public:
-    PlayerEnergyGauge(PlayerModel* m);
-    void setEnergy(int e);
-    QRectF boundingRect() const Q_DECL_OVERRIDE;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
-
-private:
-    QColor color;
-    QColor color_rage[2];
-    int color_rage_idx = 0;
-    PlayerModel * model;
-
-    int iteration = 0;
-    int blink();
-
-};
-
 class PlayerScore;
+class PlayerEnergyGauge;
+class PlayerShape;
 
 class Player : public QObject
 {
@@ -127,25 +74,16 @@ public:
     void tick();
     ~Player();
 
-    void show(){
-        shape->show();
-    }
-    void hide(){
-        shape->hide();
-    }
-    void setEnergyGaugePos(int x, int y){
-        energy_gauge->setPos(x,y);
-    }
+    void show();
+
+    void hide();
+
+    void setEnergyGaugePos(int x, int y);
+
     void setScorePos(int x, int y);
-//    PlayerShape* getShape(){
-//        return shape;
-//    }
-    PlayerEnergyGauge* getEnergyGauge(){
-        return energy_gauge;
-    }
-//    PlayerScore* getScoreCounter(){
-//        return score;
-//    }
+
+    PlayerEnergyGauge* getEnergyGauge();
+
     QRectF getIntersectonWith(QRectF r);
 
 protected:
@@ -170,7 +108,5 @@ private:
     void move();
     bool handleKey(int key, bool released);
 };
-
-
 
 #endif // PLAYER_H

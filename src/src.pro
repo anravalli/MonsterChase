@@ -28,12 +28,16 @@ SOURCES += main.cpp\
         monsterchase.cpp \
     player.cpp \
     monster.cpp \
-    arena.cpp
+    arena.cpp \
+    playersm.cc \
+    playerqtviews.cpp
 
 HEADERS  += monsterchase.h \
     player.h \
     monster.h \
-    arena.h
+    arena.h \
+    playersm.h \
+    playerqtviews.h
 
 RESOURCES += \
     ../monsterchase.qrc 

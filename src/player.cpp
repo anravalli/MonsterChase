@@ -19,189 +19,10 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtWidgets>
 #include "player.h"
+#include "playersm.h"
+#include "playerqtviews.h"
 
-#define DAMAGE 10
-#define HIT 10
-
-void PlayerSm::moveBy(double step_x, double step_y){
-    //double speed = _max_speed;
-
-    if(_model->direction[player_up])
-        _model->pos_y=_model->pos_y-step_y;
-    if(_model->direction[player_down])
-        _model->pos_y=_model->pos_y+step_y;
-    if(_model->direction[player_left])
-        _model->pos_x=_model->pos_x-step_x;
-    if(_model->direction[player_right])
-        _model->pos_x=_model->pos_x+step_x;
-    return;
-}
-
-class PlayerNormal: public PlayerSm {
-public:
-    PlayerNormal(PlayerModel* model) {
-        _model=model;
-        _max_speed = 3;
-        _max_speed_45 = _max_speed/sqrt(2);
-
-    }
-
-    virtual void updateEnergy() override {
-        _model->energy=_model->energy+0.125;
-        if(_model->energy == MAX_ENERGY)
-            _model->state = rage_available;
-    }
-
-    virtual void move() override {
-        double step = _max_speed;
-        if((_model->direction[player_up] or _model->direction[player_down])
-                and (_model->direction[player_left] or _model->direction[player_right])){
-            step = _max_speed_45;
-        }
-        moveBy(step,step);
-    }
-
-    virtual void collisionWithMonster() override {
-        _model->energy=_model->energy-DAMAGE;
-        if(_model->energy < 0)
-            _model->state = dead;
-        _model->state = on_damage;
-    }
-
-    virtual void toggleRage() override {}
-    virtual ~PlayerNormal(){}
-
-};
-
-class PlayerRageAvailable: public PlayerNormal {
-public:
-    PlayerRageAvailable(PlayerModel* model)
-        :PlayerNormal(model){}
-    virtual void updateEnergy() override {
-        //move();
-        return;
-    }
-    virtual void toggleRage() override {
-        _model->state=on_rage;
-    }
-//    virtual void collisionWithMonster() override {
-//        _model->energy=_model->energy-DAMAGE;
-//        if(_model->energy <= DEF_ENERGY)
-//            _model->state = normal;
-//    }
-};
-
-class PlayerOnDamage: public PlayerNormal {
-public:
-    PlayerOnDamage(PlayerModel* model)
-        :PlayerNormal(model){}
-
-    virtual void updateEnergy() override {
-        PlayerNormal::updateEnergy();
-        no_damage_counter--;
-        if(no_damage_counter<=0){
-            _model->state=normal;
-            no_damage_counter=100;
-        }
-    }
-    //virtual void toggleRage() override {    }
-
-    virtual void collisionWithMonster() override {
-        return;
-    }
-private:
-    int no_damage_counter = 100;
-};
-
-class PlayerOnRage: public PlayerSm {
-public:
-    PlayerOnRage(PlayerModel* model) {
-        _model=model;
-        _max_speed = 5;
-        _max_speed_45 = _max_speed/sqrt(2);
-    }
-
-    virtual void updateEnergy() override {
-        _model->energy=_model->energy-0.125;
-        if(_model->energy == DEF_ENERGY)
-            _model->state = normal;
-    }
-
-    virtual void move() override {
-        double step = _max_speed;
-        if((_model->direction[player_up] or _model->direction[player_down])
-                and (_model->direction[player_left] or _model->direction[player_right])){
-            step = _max_speed_45;
-        }
-        moveBy(step,step);
-    }
-    virtual void toggleRage() override {
-        _model->state=normal;
-    }
-    virtual void collisionWithMonster() override {
-        _model->score=_model->score+HIT;
-    }
-
-    virtual ~PlayerOnRage(){}
-private:
-    //PlayerModel* _model;
-
-};
-
-class PlayerDead: public PlayerSm {
-public:
-    PlayerDead(PlayerModel* model) {
-        _model=model;
-    }
-
-    virtual void move(){}
-    virtual void updateEnergy(){}
-    virtual void toggleRage(){}
-    virtual void collisionWithMonster() override { }
-    virtual ~PlayerDead(){}
-private:
-    //PlayerModel* _model;
-};
-
-class PlayerScore : public QGraphicsSimpleTextItem
-{
-public:
-    PlayerScore(PlayerModel* m)
-        :_model(m)
-    {
-        this->setPen(QPen(Qt::blue));
-        QFont font("Helvetica",14,QFont::Bold);
-        this->setFont(font);
-        this->setBrush(Qt::white);
-        this->setText(QString::asprintf("%06d", _model->score));
-    }
-
-    void updateScore(){
-        this->setText(QString::asprintf("%06d", _model->score));
-    }
-
-//    QRectF boundingRect() const Q_DECL_OVERRIDE{
-//        return QRectF(0,0,16,80);
-//    }
-
-    /*void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
-        Q_UNUSED(option);
-        Q_UNUSED(widget);
-
-        painter->setPen(Qt::blue);
-        QFont font("Helvetica",14,QFont::Bold);
-        painter->setFont(font);
-        painter->setBrush(Qt::NoBrush);
-        painter->drawText(QPoint(0,0), QString::asprintf("%06d", _model->score));
-    }*/
-
-protected:
-
-private:
-    PlayerModel* _model;
-};
 
 Player::Player(QGraphicsScene * s){
 
@@ -221,6 +42,18 @@ Player::Player(QGraphicsScene * s){
     s->addItem(energy_gauge);
     //score->setPos((s->sceneRect()).width()-35, -50*0.6);
     QApplication::instance()->installEventFilter(this);
+}
+
+void Player::show(){
+    shape->show();
+}
+void Player::hide(){
+    shape->hide();
+}
+
+void Player::setEnergyGaugePos(int x, int y){
+    x = x - energy_gauge->boundingRect().width()/2;
+    energy_gauge->setPos(x,y);
 }
 
 void Player::tick(){
@@ -310,6 +143,10 @@ void Player::setScorePos(int x, int y){
     score->setPos(x,y);
 }
 
+PlayerEnergyGauge *Player::getEnergyGauge(){
+    return energy_gauge;
+}
+
 Player::~Player(){
     delete pstates[normal];
     delete pstates[on_rage];
@@ -318,108 +155,4 @@ Player::~Player(){
     // they belongs to
     delete shape;
     delete energy_gauge;
-}
-
-/*
- * PlayerShape methods implementation
- */
-
-PlayerShape::PlayerShape(PlayerModel* m)
-{
-    color[0] = QColor(Qt::yellow);
-    color[1] = QColor(Qt::red);
-    model = m;
-}
-
-QRectF PlayerShape::boundingRect() const
-{
-    return QRectF(-15.5, -15.5, 34, 34);
-}
-
-void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    switch(model->state){
-    case on_rage:
-        //qDebug("%d on_rage", __LINE__);
-        color_idx = 1;
-        break;
-    case normal:
-    case rage_available:
-        //qDebug("%d normal", __LINE__);
-        color_idx = 0;
-        break;
-    case on_damage:
-        blink();
-        break;
-    default:
-        break;
-    }
-    painter->setPen(Qt::NoPen);
-    painter->setBrush(Qt::darkGray);
-    painter->drawEllipse(-12, -12, 30, 30);
-    painter->setPen(QPen(Qt::black, 1));
-    painter->setBrush(QBrush(color[color_idx]));
-    painter->drawEllipse(-15, -15, 30, 30);
-}
-
-int PlayerShape::blink()
-{
-    if(blink_delay>0){
-        blink_delay--;
-    } else {
-        color_idx = 1-color_idx;
-        blink_delay = BLINK_DELAY;
-    }
-    return 0;
-}
-
-
-PlayerEnergyGauge::PlayerEnergyGauge(PlayerModel *m)
-    :model(m)
-{
-    color = QColor(0,255,0,127);
-    color_rage[0] = QColor(255,0,0,127);
-    color_rage[1] = QColor(255,100,0,127);
-    color_rage_idx = 0;
-}
-
-
-QRectF PlayerEnergyGauge::boundingRect() const
-{
-    return QRectF(0,0, 104,20);
-}
-
-int PlayerEnergyGauge::blink()
-{
-    if(iteration==5){
-        color_rage_idx=1-color_rage_idx;
-        iteration = 0;
-    } else
-        iteration++;
-    return color_rage_idx;
-}
-
-void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-    //draw external rectangle
-    painter->setPen(QPen(Qt::black, 2));
-    painter->setBrush(Qt::NoBrush);
-    painter->drawRect(0,0, 104,20);
-    //draw inner rectangle
-    painter->setPen(Qt::NoPen);
-    if(model->state == rage_available)
-        painter->setBrush(color_rage[blink()]);
-    else if(model->state == on_rage)
-        painter->setBrush(color_rage[0]);
-    else{
-        painter->setBrush(color);
-    }
-
-    painter->drawRect(2,2,(int)model->energy,16);
 }
