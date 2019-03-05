@@ -1,0 +1,161 @@
+/*
+ *	Monster Chase: a testing playground for behaviors trees
+ *
+ *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *
+ *	This file is part of Monster Chase.
+ *
+ *	Monster Chase is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+
+ *	Monster Chase is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+
+ *	You should have received a copy of the GNU General Public License
+ *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "player.h"
+#include "playersm.h"
+#include "playerqtviews.h"
+
+
+Player::Player(QGraphicsScene * s){
+
+    shape = new PlayerShape(&model);
+    energy_gauge = new PlayerEnergyGauge(&model);
+    score = new PlayerScore(&model);
+
+    //init state machine
+    pstates[normal] = new PlayerNormal(&model);
+    pstates[rage_available] = new PlayerRageAvailable(&model);
+    pstates[on_rage] = new PlayerOnRage(&model);
+    pstates[on_damage] = new PlayerOnDamage(&model);
+    pstates[dead] = new PlayerDead(&model);
+    //the order we add the items to the scene affects the z-order
+    s->addItem(shape);
+    s->addItem(score);
+    s->addItem(energy_gauge);
+    //score->setPos((s->sceneRect()).width()-35, -50*0.6);
+    QApplication::instance()->installEventFilter(this);
+}
+
+void Player::show(){
+    shape->show();
+}
+void Player::hide(){
+    shape->hide();
+}
+
+void Player::setEnergyGaugePos(int x, int y){
+    x = x - energy_gauge->boundingRect().width()/2;
+    energy_gauge->setPos(x,y);
+}
+
+void Player::tick(){
+
+    PlayerSm* cstate = pstates[model.state];
+    cstate->updateEnergy();
+    cstate->move();
+    /* collision checking:
+     *
+    */
+    //checkCollisions()
+    QRectF m(200-15, //pos_x
+             200-14, //pos_y
+             30, //width
+             30 //heigth
+             );
+    QRectF i = getIntersectonWith(m);
+    if (not i.isEmpty()){
+        int step = i.width();
+        if(i.height()<i.width())
+            step = i.height();
+        cstate->moveBy(-step,-step);
+        cstate->collisionWithMonster();
+    }
+
+    energy_gauge->update();
+    shape->setPos(model.pos_x,model.pos_y);
+    shape->update();
+    score->updateScore();
+#ifdef  DEBUG
+    qDebug("Player energy %d", model.energy);
+#endif
+}
+
+QRectF Player::getIntersectonWith(QRectF r)
+{
+    int size = 30;
+    QRectF me (model.pos_x-size/2, model.pos_y-size/2,
+            size,size);
+    QRectF b = me.intersected(r);
+    return b;
+}
+
+bool Player::eventFilter(QObject *watched, QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        //qDebug("%d KeyPress received by Player", __LINE__);
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        int key = ke->key();
+        return handleKey(key, false);
+    } else  if (event->type() == QEvent::KeyRelease) {
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        int key = ke->key();
+        return handleKey(key, true);
+    }
+    // Make sure the rest of events are handled
+    return QObject::eventFilter(watched, event);
+}
+
+bool Player::handleKey(int key, bool released){
+    bool ret = false;
+
+    switch(key){
+    case Qt::Key_Space:
+#ifdef  DEBUG
+        qDebug("--> Handling Spacebar");
+#endif
+        if(!released)pstates[model.state]->toggleRage();
+        ret = true;
+        break;
+    case Qt::Key_D:
+        model.direction[player_right]=!released;
+        break;
+    case Qt::Key_A:
+        model.direction[player_left]=!released;
+        break;
+    case Qt::Key_W:
+        model.direction[player_up]=!released;
+        break;
+    case Qt::Key_S:
+        model.direction[player_down]=!released;
+        break;
+    default:
+        break;
+    }
+    return ret;
+}
+
+void Player::setScorePos(int x, int y){
+    score->setPos(x,y);
+}
+
+PlayerEnergyGauge *Player::getEnergyGauge(){
+    return energy_gauge;
+}
+
+Player::~Player(){
+    delete pstates[normal];
+    delete pstates[on_rage];
+    delete pstates[dead];
+    //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
+    // they belongs to
+    delete shape;
+    delete energy_gauge;
+}

@@ -161,9 +161,7 @@ void MonsterChase::addPlayTime(){
 
 void MonsterChase::addPlayer(){
     player = new Player(scene);
-    //player->getEnergyGauge()->setPos(-PLAYGROUND_BORDER_WIDTH/2,PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
-    player->setEnergyGaugePos(PLAYGROUND_WIDTH/2-(player->getEnergyGauge()->boundingRect().width()/2),
-                                     PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
+    player->setEnergyGaugePos(PLAYGROUND_WIDTH/2, PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
     player->setScorePos(PLAYGROUND_WIDTH-35,-PLAYGROUND_BORDER_HEIGHT*0.6);
     player->hide();
 }
