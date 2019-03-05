@@ -72,7 +72,10 @@ void Player::tick(){
              );
     QRectF i = getIntersectonWith(m);
     if (not i.isEmpty()){
-        cstate->moveBy(-i.width(),-i.height());
+        int step = i.width();
+        if(i.height()<i.width())
+            step = i.height();
+        cstate->moveBy(-step,-step);
         cstate->collisionWithMonster();
     }
 

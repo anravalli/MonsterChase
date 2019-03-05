@@ -68,7 +68,10 @@ TEST_F(Collisoins, debouncing)
     cout << "intersection height: " << i.height() << endl;
 
     if (not i.isEmpty()){
-        cstate->moveBy(-i.width(),-i.height());
+        int step = i.width();
+        if(i.height()<i.width())
+            step = i.height();
+        cstate->moveBy(-step,-step);
         cstate->collisionWithMonster();
     }
 
