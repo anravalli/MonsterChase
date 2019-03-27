@@ -104,11 +104,14 @@ void Player::updateViews(){
 QRectF Player::getIntersectonWith(Monster::Monster* m)
 {
     QRectF mb = m->collisionBox();
+    return collisionBox().intersected(mb);
+}
+
+QRectF Player::collisionBox() const
+{
     int size = 30;
-    QRectF me (model.pos_x-size/2, model.pos_y-size/2,
-            size,size);
-    QRectF b = me.intersected(mb);
-    return b;
+    return QRectF(model.pos_x-size/2, model.pos_y-size/2,
+                  size,size);
 }
 
 bool Player::eventFilter(QObject *watched, QEvent *event)

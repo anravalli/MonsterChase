@@ -21,6 +21,7 @@
 
 #include "monster.h"
 #include "monsterchase.h"
+#include "player.h"
 
 namespace Monster{
 
@@ -102,6 +103,25 @@ namespace Monster{
         }
     };
 
+    class MonsterFreeze: public MonsterSm {
+    public:
+        MonsterFreeze(MonsterModel* model)
+            :_model(model){}
+
+        virtual void tick(){
+            if(_freeze_time>0)
+                _freeze_time--;
+            else{
+                _freeze_time=10;
+                _model->state=patrol;
+            }
+        }
+        virtual ~MonsterFreeze(){}
+    private:
+        MonsterModel* _model;
+        int _freeze_time=10;
+    };
+
     Monster::Monster(MonsterChase* w):
         world(w)
     {
@@ -113,6 +133,7 @@ namespace Monster{
         mstates[patrol] = new MonsterPatrol(&model);
         mstates[attack] = new MonsterAttack(&model);
         mstates[flee] = new MonsterFlee(&model);
+        mstates[freeze] = new MonsterFreeze(&model);
 
         //the order we add the items to the scene affects the z-order
         world->getScene()->addItem(shape);
@@ -131,13 +152,10 @@ namespace Monster{
         sight->hide();
     }
 
-    QRectF Monster::collisionBox() const
-    {
-        return QRectF(model.pos_x-15, model.pos_y-15, 30, 30);
-    }
-
     void Monster::update(){
         mstates[model.state]->tick();
+
+        checkCollisionsWithPlayer();
 
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
@@ -147,10 +165,35 @@ namespace Monster{
         sight->update();
     }
 
+    void Monster::checkCollisionsWithPlayer(){
+        MonsterSm* cstate = mstates[model.state];
+        Player* p = world->getPlayer();
+
+        QRectF i = getIntersectonWith(p);
+        if (not i.isEmpty()){
+            model.state=freeze;
+            //p->collisionWithMonster();
+        }
+    }
+
+    QRectF Monster::getIntersectonWith(Player* p)
+    {
+        QRectF mb = p->collisionBox();
+        return collisionBox().intersected(mb);
+    }
+
+    QRectF Monster::collisionBox() const
+    {
+        int size = 30;
+        return QRectF(model.pos_x-size/2, model.pos_y-size/2,
+                      size,size);
+    }
+
     Monster::~Monster(){
         delete mstates[patrol];
         delete mstates[attack];
         delete mstates[flee];
+        delete mstates[freeze];
         //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
         // they belongs to
         delete shape;

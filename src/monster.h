@@ -26,13 +26,15 @@
 #include <QGraphicsItem>
 
 class MonsterChase;
+class Player;
 
  namespace Monster{
 
     typedef enum {
         patrol,
         attack,
-        flee
+        flee,
+        freeze
     } MonsterStates;
 
     typedef enum {
@@ -82,7 +84,8 @@ class MonsterChase;
     {
     public:
         MonsterSight(MonsterModel* m)
-            :model(m){};
+            :model(m){}
+
         QRectF boundingRect() const Q_DECL_OVERRIDE{
             return QRectF(-100,-165,200,300);
         }
@@ -128,9 +131,10 @@ class MonsterChase;
         };
         MonsterShape* shape=0;
         MonsterSight* sight=0;
-        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+        MonsterSm* mstates[4]={nullptr,nullptr,nullptr,nullptr};
 
-        void move();
+        void checkCollisionsWithPlayer();
+        QRectF getIntersectonWith(Player *p);
     };
 
 } //namescpace Monster

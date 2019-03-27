@@ -91,6 +91,7 @@ public:
 
     QRectF getIntersectonWith(Monster::Monster *m);
 
+    QRectF collisionBox() const;
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
