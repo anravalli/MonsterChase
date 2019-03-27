@@ -25,6 +25,8 @@
 #include <QtWidgets>
 #include <QGraphicsItem>
 
+class MonsterChase;
+
  namespace Monster{
 
     typedef enum {
@@ -101,22 +103,14 @@
         Q_OBJECT
 
     public:
-        Monster(QGraphicsScene * s);
-        void show(){
-            shape->show();
-            sight->show();
-        }
-        void hide(){
-            shape->hide();
-            sight->hide();
-        }
-//        MonsterShape* getShape(){
-//            return shape;
-//        }
-//        MonsterSight* getSight(){
-//            return sight;
-//        }
-        void tick();
+        Monster(MonsterChase* world);
+        void show();
+
+        void hide();
+
+        QRectF collisionBox() const;
+
+        void update();
 
         ~Monster();
 
@@ -124,6 +118,7 @@
         //bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
     private:
+        MonsterChase* world;
         MonsterModel model = {
             patrol, //state
             MonsterSubStates::moving, //sub_state

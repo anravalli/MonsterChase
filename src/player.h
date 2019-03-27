@@ -31,6 +31,10 @@
 
 class PlayerSm;
 
+namespace Monster {
+class Monster;
+}
+
 typedef enum {
     normal,
     rage_available,
@@ -64,14 +68,15 @@ typedef struct {
 class PlayerScore;
 class PlayerEnergyGauge;
 class PlayerShape;
+class MonsterChase;
 
 class Player : public QObject
 {
     Q_OBJECT
 
 public:
-    Player(QGraphicsScene * s);
-    void tick();
+    Player(MonsterChase* w);
+    void update();
     ~Player();
 
     void show();
@@ -84,12 +89,13 @@ public:
 
     PlayerEnergyGauge* getEnergyGauge();
 
-    QRectF getIntersectonWith(QRectF r);
+    QRectF getIntersectonWith(Monster::Monster *m);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
+    MonsterChase* world;
     PlayerModel model = {
         DEF_ENERGY, //energy
         normal, //state
@@ -107,6 +113,10 @@ private:
 
     void move();
     bool handleKey(int key, bool released);
+
+    void computeState();
+    void checkCollisionsWithMonsters();
+    void updateViews();
 };
 
 #endif // PLAYER_H

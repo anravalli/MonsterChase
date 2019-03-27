@@ -26,6 +26,7 @@
 #include <QtWidgets>
 
 class Arena;
+class Brick;
 class Player;
 class PlayTime;
 namespace Monster {
@@ -35,6 +36,8 @@ class Monster;
 class MonsterChase : public QObject
 {
     Q_OBJECT
+    friend class Player;
+    friend class Monster::Monster;
 
 public:
     explicit MonsterChase();
@@ -48,6 +51,12 @@ public slots:
     void pause();
     void start();
 
+protected:
+    std::vector<Monster::Monster*> getMonsters();
+    std::vector<Brick*> getWallsAround(std::pair<int,int> pos);
+    Player* getPlayer();
+    QGraphicsScene* getScene();
+
 private:
     //Ui::MonsterChase *ui;
     QGraphicsView* view;
@@ -59,7 +68,7 @@ private:
 
     Player* player;
 
-    Monster::Monster* monster;
+    std::vector<Monster::Monster*> monsters;
 
     //QTime e;
 

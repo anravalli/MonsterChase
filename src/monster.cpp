@@ -20,6 +20,7 @@
 */
 
 #include "monster.h"
+#include "monsterchase.h"
 
 namespace Monster{
 
@@ -34,11 +35,30 @@ namespace Monster{
         virtual ~MonsterPatrol(){}
 
     private:
-        int _speed=5;
+        int _speed=2;
+        int xsteps = 0;
+        int ysteps = 0;
     protected:
         MonsterModel* _model;
 
         void move(){
+            if (xsteps < 100 and ysteps == 0){
+                _model->pos_x+=_speed;
+                xsteps++;
+            }
+            else if(xsteps == 100 and ysteps < 100){
+                _model->pos_y+=_speed;
+                ysteps++;
+            }
+            else if(xsteps > 0 and ysteps == 100){
+                _model->pos_x-=_speed;
+                xsteps--;
+            }
+            else if(xsteps == 0 and ysteps > 0){
+                _model->pos_y-=_speed;
+                ysteps--;
+            }
+
             if(_model->direction<=360)
                 _model->direction++;
             else
@@ -82,7 +102,8 @@ namespace Monster{
         }
     };
 
-    Monster::Monster(QGraphicsScene * s)
+    Monster::Monster(MonsterChase* w):
+        world(w)
     {
 
         shape = new MonsterShape(&model);
@@ -94,13 +115,28 @@ namespace Monster{
         mstates[flee] = new MonsterFlee(&model);
 
         //the order we add the items to the scene affects the z-order
-        s->addItem(shape);
-        s->addItem(sight);
+        world->getScene()->addItem(shape);
+        world->getScene()->addItem(sight);
 
         QApplication::instance()->installEventFilter(this);
     }
 
-    void Monster::tick(){
+    void Monster::show(){
+        shape->show();
+        sight->show();
+    }
+
+    void Monster::hide(){
+        shape->hide();
+        sight->hide();
+    }
+
+    QRectF Monster::collisionBox() const
+    {
+        return QRectF(model.pos_x-15, model.pos_y-15, 30, 30);
+    }
+
+    void Monster::update(){
         mstates[model.state]->tick();
 
         shape->setPos(model.pos_x,model.pos_y);

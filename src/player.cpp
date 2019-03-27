@@ -23,8 +23,12 @@
 #include "playersm.h"
 #include "playerqtviews.h"
 
+#include "monsterchase.h"
+#include "monster.h"
 
-Player::Player(QGraphicsScene * s){
+Player::Player(MonsterChase* w):
+    world(w)
+{
 
     shape = new PlayerShape(&model);
     energy_gauge = new PlayerEnergyGauge(&model);
@@ -37,9 +41,9 @@ Player::Player(QGraphicsScene * s){
     pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
     //the order we add the items to the scene affects the z-order
-    s->addItem(shape);
-    s->addItem(score);
-    s->addItem(energy_gauge);
+    world->getScene()->addItem(shape);
+    world->getScene()->addItem(score);
+    world->getScene()->addItem(energy_gauge);
     //score->setPos((s->sceneRect()).width()-35, -50*0.6);
     QApplication::instance()->installEventFilter(this);
 }
@@ -56,44 +60,54 @@ void Player::setEnergyGaugePos(int x, int y){
     energy_gauge->setPos(x,y);
 }
 
-void Player::tick(){
+void Player::update(){
+    computeState();
 
-    PlayerSm* cstate = pstates[model.state];
-    cstate->updateEnergy();
-    cstate->move();
-    /* collision checking:
-     *
-    */
-    //checkCollisions()
-    QRectF m(200-15, //pos_x
-             200-14, //pos_y
-             30, //width
-             30 //heigth
-             );
-    QRectF i = getIntersectonWith(m);
-    if (not i.isEmpty()){
-        int step = i.width();
-        if(i.height()<i.width())
-            step = i.height();
-        cstate->moveBy(-step,-step);
-        cstate->collisionWithMonster();
-    }
+    checkCollisionsWithMonsters();
 
-    energy_gauge->update();
-    shape->setPos(model.pos_x,model.pos_y);
-    shape->update();
-    score->updateScore();
+    updateViews();
+
 #ifdef  DEBUG
     qDebug("Player energy %d", model.energy);
 #endif
 }
 
-QRectF Player::getIntersectonWith(QRectF r)
+void Player::computeState(){
+    PlayerSm* cstate = pstates[model.state];
+    cstate->updateEnergy();
+    cstate->move();
+}
+
+void Player::checkCollisionsWithMonsters(){
+    PlayerSm* cstate = pstates[model.state];
+    std::vector<Monster::Monster*> monsters = world->getMonsters();
+    for (auto m: monsters){
+        QRectF i = getIntersectonWith(m);
+        if (not i.isEmpty()){
+            int step = i.width();
+            if(i.height()<i.width())
+                step = i.height();
+            cstate->moveBy(-step,-step);
+            cstate->collisionWithMonster();
+        }
+    }
+
+}
+
+void Player::updateViews(){
+    energy_gauge->update();
+    shape->setPos(model.pos_x,model.pos_y);
+    shape->update();
+    score->updateScore();
+}
+
+QRectF Player::getIntersectonWith(Monster::Monster* m)
 {
+    QRectF mb = m->collisionBox();
     int size = 30;
     QRectF me (model.pos_x-size/2, model.pos_y-size/2,
             size,size);
-    QRectF b = me.intersected(r);
+    QRectF b = me.intersected(mb);
     return b;
 }
 

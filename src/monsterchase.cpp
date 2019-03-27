@@ -123,7 +123,8 @@ void MonsterChase::show(){
 }
 void MonsterChase::start(){
     player->show();
-    monster->show();
+    for (auto m: monsters)
+        m->show();
     timer->start(FRAMERATE);
 }
 void MonsterChase::pause(){
@@ -160,15 +161,16 @@ void MonsterChase::addPlayTime(){
 }
 
 void MonsterChase::addPlayer(){
-    player = new Player(scene);
+    player = new Player(this);
     player->setEnergyGaugePos(PLAYGROUND_WIDTH/2, PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
     player->setScorePos(PLAYGROUND_WIDTH-35,-PLAYGROUND_BORDER_HEIGHT*0.6);
     player->hide();
 }
 
 void MonsterChase::addMonster(){
-    monster = new Monster::Monster(scene);
-    monster->hide();
+    Monster::Monster* m = new Monster::Monster(this);
+    m->hide();
+    monsters.push_back(m);
 }
 
 void MonsterChase::gameStep(){
@@ -179,9 +181,27 @@ void MonsterChase::gameStep(){
 #endif
     //scene->advance();
     ptime->increase();
-    player->tick();
-    monster->tick();
+    player->update();
+    for (auto m: monsters)
+        m->update();
     //e.restart();
+}
 
+std::vector<Monster::Monster*> MonsterChase::getMonsters(){
+    return monsters;
+}
+
+std::vector<Brick*> MonsterChase::getWallsAround(std::pair<int,int> pos){
+    //Brick*** bricks = arena->getBricksAround(QPoint(pos.first,pos.second));
+    std::vector<Brick*> b;
+    return b;
+}
+
+Player* MonsterChase::getPlayer(){
+    return player;
+}
+
+QGraphicsScene* MonsterChase::getScene(){
+    return scene;
 }
 
