@@ -12,8 +12,13 @@ QT += widgets
 CONFIG += qt
 
 HEADERS += \
-        tst_collisions.h
+        tst_collisions.h \
+        tst_arena.h \
+        ../src/arena.h
 
 SOURCES += \
         main.cpp \
-        ../src/playersm.cc
+        ../src/playersm.cc \
+        ../src/arena.cpp
+
+INCLUDEPATH += ../src
