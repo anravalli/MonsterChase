@@ -191,10 +191,22 @@ std::vector<Monster::Monster*> MonsterChase::getMonsters(){
     return monsters;
 }
 
-std::vector<Brick*> MonsterChase::getWallsAround(std::pair<int,int> pos){
-    //Brick*** bricks = arena->getBricksAround(QPoint(pos.first,pos.second));
-    std::vector<Brick*> b;
-    return b;
+std::vector<Brick*> MonsterChase::getWallsAround(QPointF tl, QPointF br){
+    std::pair<int,int> tl_idx = arena->posToIdx(tl);
+    std::pair<int,int> br_idx = arena->posToIdx(br);
+    std::pair<int,int> idx;
+    std::vector<Brick*> wall;
+    for(int x=tl_idx.first-1; x<br_idx.first+1; x++){
+        for (int y=tl_idx.second-1; y<br_idx.second+1; y++){
+            //TODO
+            idx.first = y;
+            idx.second = x;
+            Brick* b = arena->getBrick(idx);
+            if (!(b==nullptr))
+                wall.push_back(b);
+        }
+    }
+    return wall;
 }
 
 Player* MonsterChase::getPlayer(){

@@ -25,6 +25,7 @@
 
 #include "monsterchase.h"
 #include "monster.h"
+#include "arena.h"
 
 Player::Player(MonsterChase* w):
     world(w)
@@ -64,6 +65,7 @@ void Player::update(){
     computeState();
 
     checkCollisionsWithMonsters();
+    checkCollisionsWithWalls();
 
     updateViews();
 
@@ -89,6 +91,27 @@ void Player::checkCollisionsWithMonsters(){
                 step = i.height();
             cstate->moveBy(-step,-step);
             cstate->collisionWithMonster();
+        }
+    }
+
+}
+
+void Player::checkCollisionsWithWalls(){
+    PlayerSm* cstate = pstates[model.state];
+    //model.pos is the center of the collision box
+    //getWallsAround needs the top-left and bottom-right corners
+    std::vector<Brick*> walls = world->getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
+                                                      QPointF(model.pos_x+15,model.pos_y+15));
+    for (auto b: walls){
+//        if(b == nullptr)
+//            continue;
+        QRectF i = collisionBox().intersected(b->boundingRect());
+        if (not i.isEmpty()){
+            int step = i.width();
+            if(i.height()<i.width())
+                step = i.height();
+            cstate->moveBy(-step,-step);
+            //cstate->collisionWithMonster();
         }
     }
 

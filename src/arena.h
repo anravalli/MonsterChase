@@ -41,6 +41,11 @@ public:
     bool mapComplete();
     void startShowMap();
 
+    Brick *getBrick(std::pair<int, int> idx);
+
+    QPointF idxToPos(int ix, int iy);
+    std::pair<int, int> posToIdx(QPointF pos);
+
 public slots:
     void showNextBrick();
 
@@ -53,10 +58,6 @@ private:
     QTimer* timer;
 
     QGraphicsScene *_scene;
-
-    QPointF idxToPos(int ix, int iy){
-        return QPoint(map_cell_w*ix,map_cell_h*iy);
-    }
 
     float map_cell_w;
     float map_cell_h;

@@ -94,6 +94,7 @@ void Arena::startShowMap(){
 Brick* Arena::addBrick(QGraphicsScene *s, std::pair<int,int> idx ){
     Brick* b = new Brick( QRectF( idxToPos(idx.first,idx.second),QSizeF(map_cell_w,map_cell_h) ) );
     b->hide();
+    b->setIndex(idx);
     s->addItem(b);
     return b;
 }
@@ -113,10 +114,32 @@ void Arena::showNextBrick(){
     }
     else{
         completion_status = true;
+
         emit build_complete();
         timer->stop();
        //check if disconnect can be useful here
     }
+}
+
+QPointF Arena::idxToPos(int ix, int iy){
+    return QPoint(map_cell_w*ix,map_cell_h*iy);
+}
+
+std::pair<int,int> Arena::posToIdx( QPointF pos ){
+    int x = pos.x()/map_cell_w;
+    int y = pos.y()/map_cell_h;
+
+    return std::pair<int,int>(x,y);
+}
+
+Brick* Arena::getBrick(std::pair<int,int> idx ){
+    Brick* b= nullptr;
+    if(!(idx.first<0 and idx.first<MAP_WIDTH) and
+            !(idx.second<0 and idx.second<MAP_HEIGHT))
+        b = map[idx.first][idx.second];
+    else
+        qDebug("map border reached idx[%d,%d] ", idx.first, idx.second);
+    return b;
 }
 
 bool Arena::mapComplete(){

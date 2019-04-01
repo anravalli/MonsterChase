@@ -69,6 +69,7 @@ class PlayerScore;
 class PlayerEnergyGauge;
 class PlayerShape;
 class MonsterChase;
+class Brick;
 
 class Player : public QObject
 {
@@ -89,7 +90,6 @@ public:
 
     PlayerEnergyGauge* getEnergyGauge();
 
-    QRectF getIntersectonWith(Monster::Monster *m);
 
     QRectF collisionBox() const;
 protected:
@@ -118,6 +118,9 @@ private:
     void computeState();
     void checkCollisionsWithMonsters();
     void updateViews();
+    void checkCollisionsWithWalls();
+    QRectF getIntersectonWith(Monster::Monster *m);
+    //QRectF getIntersectonWith(Brick *b);
 };
 
 #endif // PLAYER_H

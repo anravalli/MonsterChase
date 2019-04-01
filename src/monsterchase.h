@@ -53,7 +53,7 @@ public slots:
 
 protected:
     std::vector<Monster::Monster*> getMonsters();
-    std::vector<Brick*> getWallsAround(std::pair<int,int> pos);
+    std::vector<Brick*> getWallsAround(QPointF tl, QPointF br);
     Player* getPlayer();
     QGraphicsScene* getScene();
 
