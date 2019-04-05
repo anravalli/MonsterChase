@@ -20,107 +20,12 @@
 */
 
 #include "monster.h"
+#include "monstersm.h"
+#include "monsterviews.h"
 #include "monsterchase.h"
 #include "player.h"
 
 namespace Monster{
-
-    class MonsterPatrol: public MonsterSm {
-    public:
-        MonsterPatrol(MonsterModel* model)
-            :_model(model){}
-
-        virtual void tick(){
-            move();
-        }
-        virtual ~MonsterPatrol(){}
-
-    private:
-        int _speed=2;
-        int xsteps = 0;
-        int ysteps = 0;
-    protected:
-        MonsterModel* _model;
-
-        void move(){
-            if (xsteps < 100 and ysteps == 0){
-                _model->pos_x+=_speed;
-                xsteps++;
-            }
-            else if(xsteps == 100 and ysteps < 100){
-                _model->pos_y+=_speed;
-                ysteps++;
-            }
-            else if(xsteps > 0 and ysteps == 100){
-                _model->pos_x-=_speed;
-                xsteps--;
-            }
-            else if(xsteps == 0 and ysteps > 0){
-                _model->pos_y-=_speed;
-                ysteps--;
-            }
-
-            if(_model->direction<=360)
-                _model->direction++;
-            else
-                _model->direction=0;
-            return;
-        }
-    };
-
-    class MonsterAttack: public MonsterSm {
-    public:
-        MonsterAttack(MonsterModel* model)
-            :_model(model){}
-        virtual void tick(){
-            move();
-        }
-    private:
-        MonsterModel* _model;
-
-        void move(){
-            return;
-        }
-    };
-
-    class MonsterFlee: public MonsterSm {
-    public:
-        MonsterFlee(MonsterModel* model)
-            :_model(model){}
-
-        virtual void tick(){
-            move();
-        }
-        virtual ~MonsterFlee(){}
-    private:
-        MonsterModel* _model;
-        int _speed=10;
-
-        void move(){
-            _model->pos_x=_model->pos_x-_speed;
-            _model->pos_x=_model->pos_x+_speed;
-            return;
-        }
-    };
-
-    class MonsterFreeze: public MonsterSm {
-    public:
-        MonsterFreeze(MonsterModel* model)
-            :_model(model){}
-
-        virtual void tick(){
-            if(_freeze_time>0)
-                _freeze_time--;
-            else{
-                _freeze_time=10;
-                _model->state=patrol;
-            }
-        }
-        virtual ~MonsterFreeze(){}
-    private:
-        MonsterModel* _model;
-        int _freeze_time=10;
-    };
 
     Monster::Monster(MonsterChase* w):
         world(w)
@@ -166,7 +71,7 @@ namespace Monster{
     }
 
     void Monster::checkCollisionsWithPlayer(){
-        MonsterSm* cstate = mstates[model.state];
+        //MonsterSm* cstate = mstates[model.state];
         Player* p = world->getPlayer();
 
         QRectF i = getIntersectonWith(p);
@@ -200,38 +105,6 @@ namespace Monster{
         delete sight;
     }
 
-    /*
-     * MonsterShape methods implementation
-     */
 
-    MonsterShape::MonsterShape(MonsterModel* m)
-    {
-        color[patrol] = QColor(0,127,127);
-        color[attack] = QColor(255,50,127);
-        color[flee] = QColor(0,127,255);
-        model = m;
-    }
-
-    QRectF MonsterShape::boundingRect() const
-    {
-        return QRectF(-15.5, -15.5, 34, 34);
-    }
-
-    void MonsterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-    {
-        Q_UNUSED(option);
-        Q_UNUSED(widget);
-
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::darkGray);
-        painter->drawRect(-12, -12, 30, 30);
-        painter->setPen(QPen(Qt::black, 1));
-        painter->setBrush(QBrush(color[model->state]));
-        painter->drawRect(-15, -15, 30, 30);
-        painter->setPen(Qt::NoPen);
-        //temp
-        //painter->setBrush(QBrush(QColor(0,255,50,50)));
-        //painter->drawPie(-100,-165,200,300,50*16,80*16);
-    }
 
 } //namescpace Monster

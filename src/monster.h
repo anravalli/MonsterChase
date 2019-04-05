@@ -22,13 +22,17 @@
 #ifndef Monster_H
 #define Monster_H
 
-#include <QtWidgets>
-#include <QGraphicsItem>
+#include <qobject.h>
 
 class MonsterChase;
 class Player;
 
- namespace Monster{
+
+namespace Monster{
+
+class MonsterShape;
+class MonsterSight;
+class MonsterSm;
 
     typedef enum {
         patrol,
@@ -58,48 +62,6 @@ class Player;
         //bool direction[4];
         //int score;
     } MonsterModel;
-
-    class MonsterSm {
-    public:
-        virtual void tick() = 0;
-        //virtual void toggleRage() = 0;
-        //virtual void enter() = 0;
-        //virtual void exit() = 0;
-        virtual ~MonsterSm(){}
-    };
-
-    class MonsterShape : public QGraphicsItem
-    {
-    public:
-        MonsterShape(MonsterModel* m);
-        QRectF boundingRect() const Q_DECL_OVERRIDE;
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
-
-    private:
-        QColor color[3];
-        MonsterModel* model;
-    };
-
-    class MonsterSight : public QGraphicsItem
-    {
-    public:
-        MonsterSight(MonsterModel* m)
-            :model(m){}
-
-        QRectF boundingRect() const Q_DECL_OVERRIDE{
-            return QRectF(-100,-165,200,300);
-        }
-        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE{
-            Q_UNUSED(option);
-            Q_UNUSED(widget);
-
-            painter->setBrush(QBrush(QColor(0,255,50,50)));
-            painter->drawPie(-100,-165,200,300,50*16,80*16);
-        }
-
-    private:
-        MonsterModel* model;
-    };
 
     class Monster : public QObject
     {
