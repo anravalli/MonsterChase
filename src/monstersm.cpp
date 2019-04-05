@@ -1,0 +1,82 @@
+/*
+ *	Monster Chase: a testing playground for behaviors trees
+ *
+ *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *
+ *	This file is part of Monster Chase.
+ *
+ *	Monster Chase is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+
+ *	Monster Chase is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+
+ *	You should have received a copy of the GNU General Public License
+ *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "monstersm.h"
+
+namespace Monster{
+
+void MonsterPatrol::tick(){
+    move();
+}
+
+void MonsterPatrol::move(){
+    if (xsteps < 100 and ysteps == 0){
+        _model->pos_x+=_speed;
+        xsteps++;
+    }
+    else if(xsteps == 100 and ysteps < 100){
+        _model->pos_y+=_speed;
+        ysteps++;
+    }
+    else if(xsteps > 0 and ysteps == 100){
+        _model->pos_x-=_speed;
+        xsteps--;
+    }
+    else if(xsteps == 0 and ysteps > 0){
+        _model->pos_y-=_speed;
+        ysteps--;
+    }
+
+    if(_model->direction<=360)
+        _model->direction++;
+    else
+        _model->direction=0;
+    return;
+}
+
+void MonsterAttack::tick(){
+    move();
+}
+
+void MonsterAttack::move(){
+    return;
+}
+
+void MonsterFlee::tick(){
+    move();
+}
+
+void MonsterFlee::move(){
+    _model->pos_x=_model->pos_x-_speed;
+    _model->pos_x=_model->pos_x+_speed;
+    return;
+}
+
+void MonsterFreeze::tick(){
+    if(_freeze_time>0)
+        _freeze_time--;
+    else{
+        _freeze_time=10;
+        _model->state=patrol;
+    }
+}
+
+}
