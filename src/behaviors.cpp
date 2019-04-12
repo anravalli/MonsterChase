@@ -19,23 +19,24 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "monsterchase.h"
-#include <QApplication>
+#include "behaviors.h"
+int addNumber(int a, int b){
+    return a + b;
+}
 
-//#include <QRandomGenerator>
-//#include <stdlib.h>     /* srand, rand */
-//#include <time.h>       /* time */
-//#include <unistd.h>
-
-
-int main(int argc, char *argv[])
+RandomDirection::RandomDirection(Monster::MonsterModel *m):
+    BasicBehavior(m)
 {
-    QApplication a(argc, argv);
-    MonsterChase game;
-    game.show();
+    std::random_device r;
+    std::default_random_engine engine(r());
+    std::uniform_int_distribution<int> distribution(0,359);
+    _direction = std::bind(distribution, engine);
+    //_direction = direction;
+}
 
-    //initialize random number generator for the whole game
-    //srand( time(VOID)+getpid() );
-
-    return a.exec();
+void RandomDirection::exec() {
+    //auto model = _monster->getModel();
+    _model->direction = _direction();
+//    if(_model->direction == 360)
+//        _model->direction = 0;
 }

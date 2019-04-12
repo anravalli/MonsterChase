@@ -24,6 +24,7 @@
 #include "monsterviews.h"
 #include "monsterchase.h"
 #include "player.h"
+#include "arena.h"
 
 namespace Monster{
 
@@ -38,7 +39,7 @@ namespace Monster{
         mstates[patrol] = new MonsterPatrol(&model);
         mstates[attack] = new MonsterAttack(&model);
         mstates[flee] = new MonsterFlee(&model);
-        mstates[freeze] = new MonsterFreeze(&model);
+        //mstates[freeze] = new MonsterPatrolFreeze(&model);
 
         //the order we add the items to the scene affects the z-order
         world->getScene()->addItem(shape);
@@ -61,11 +62,12 @@ namespace Monster{
         mstates[model.state]->tick();
 
         checkCollisionsWithPlayer();
+        //checkCollisionsWithWalls();
 
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
         sight->setPos(model.pos_x,model.pos_y);
-        sight->setRotation(model.direction);
+        sight->setRotation(model.direction+90);
         shape->update();
         sight->update();
     }
@@ -76,9 +78,39 @@ namespace Monster{
 
         QRectF i = getIntersectonWith(p);
         if (not i.isEmpty()){
-            model.state=freeze;
-            //p->collisionWithMonster();
+            model.sub_state=freeze;
         }
+    }
+
+    void Monster::checkCollisionsWithWalls(){
+        //MonsterSm* cstate = mstates[model.state];
+        //model.pos is the center of the collision box
+        //getWallsAround needs the top-left and bottom-right corners
+        std::vector<Brick*> walls = world->getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
+                                                          QPointF(model.pos_x+15,model.pos_y+15));
+        for (auto b: walls){
+            QRectF i = collisionBox().intersected(b->boundingRect());
+            if (not i.isEmpty()){
+                if( 0 <= model.direction and model.direction < 90){
+                    model.pos_x -= i.width();
+                    model.pos_y -= i.height();
+                }
+                else if( 90 <= model.direction and model.direction < 180){
+                    model.pos_x += i.width();
+                    model.pos_y -= i.height();
+                }
+                else if( 180 <= model.direction and model.direction < 270){
+                    model.pos_x += i.width();
+                    model.pos_y += i.height();
+                }
+                else if( 270 <= model.direction and model.direction < 360){
+                    model.pos_x -= i.width();
+                    model.pos_y += i.height();
+                }
+                model.sub_state=freeze;
+            }
+        }
+
     }
 
     QRectF Monster::getIntersectonWith(Player* p)
@@ -98,13 +130,18 @@ namespace Monster{
         delete mstates[patrol];
         delete mstates[attack];
         delete mstates[flee];
-        delete mstates[freeze];
+        //delete mstates[freeze];
         //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
         // they belongs to
         delete shape;
         delete sight;
     }
-
-
-
+    
+    MonsterModel *Monster::getModel()
+    {
+        return &model;
+    }
+    
+    
+    
 } //namescpace Monster

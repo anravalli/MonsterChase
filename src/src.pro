@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     playersm.cc \
     playerqtviews.cpp \
     monstersm.cpp \
-    monsterviews.cpp
+    monsterviews.cpp \
+    behaviors.cpp
 
 HEADERS  += monsterchase.h \
     player.h \
@@ -41,7 +42,8 @@ HEADERS  += monsterchase.h \
     playersm.h \
     playerqtviews.h \
     monstersm.h \
-    monsterviews.h
+    monsterviews.h \
+    behaviors.h
 
 RESOURCES += \
     ../monsterchase.qrc 

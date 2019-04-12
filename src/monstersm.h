@@ -23,30 +23,26 @@
 #define MONSTERSM_H
 
 #include "monster.h"
+#include "behaviors.h"
 
 namespace Monster{
 
 class MonsterSm {
 public:
     virtual void tick() = 0;
-    //virtual void toggleRage() = 0;
-    //virtual void enter() = 0;
-    //virtual void exit() = 0;
     virtual ~MonsterSm(){}
+protected:
+    MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 };
 
 class MonsterPatrol: public MonsterSm {
 public:
-    MonsterPatrol(MonsterModel* model)
-        :_model(model){}
+    MonsterPatrol(MonsterModel* model);
 
     virtual void tick();
     virtual ~MonsterPatrol(){}
 
 private:
-    int _speed=2;
-    int xsteps = 0;
-    int ysteps = 0;
 protected:
     MonsterModel* _model;
 
@@ -78,17 +74,46 @@ private:
     void move();
 };
 
-class MonsterFreeze: public MonsterSm {
+class MonsterPatrolFreeze: public MonsterSm {
 public:
-    MonsterFreeze(MonsterModel* model)
+    MonsterPatrolFreeze(MonsterModel* model)
         :_model(model){}
 
     virtual void tick();
-    virtual ~MonsterFreeze(){}
+    virtual ~MonsterPatrolFreeze(){}
 private:
     MonsterModel* _model;
     int _freeze_time=10;
 };
+
+class MonsterPatrolDecide: public MonsterSm {
+public:
+    MonsterPatrolDecide(MonsterModel* model)
+        :_model(model),selector(_model)
+    {  }
+
+    virtual void tick();
+    virtual ~MonsterPatrolDecide(){}
+private:
+    MonsterModel* _model;
+    RandomDirection selector;
+
+};
+
+class MonsterPatrolMove: public MonsterSm {
+public:
+    MonsterPatrolMove(MonsterModel* model)
+        :_model(model){}
+
+    virtual void tick();
+    virtual ~MonsterPatrolMove(){}
+private:
+    MonsterModel* _model;
+    int _speed=2;
+    int _steps = 0;
+    //int ysteps = 0;
+};
+
 
 }
 #endif // MONSTERSM_H

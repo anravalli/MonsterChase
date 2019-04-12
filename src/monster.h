@@ -34,17 +34,17 @@ class MonsterShape;
 class MonsterSight;
 class MonsterSm;
 
-    typedef enum {
+    enum MonsterStates {
         patrol,
         attack,
-        flee,
-        freeze
-    } MonsterStates;
+        flee
+    } ;
 
-    typedef enum {
-        moving,
-        scanning
-    } MonsterSubStates;
+    enum MonsterSubStates {
+        route,
+        move,
+        freeze
+    } ;
 
     enum MonsterDirection {
         Monster_up,
@@ -59,8 +59,6 @@ class MonsterSm;
         int pos_x;
         int pos_y;
         int direction;
-        //bool direction[4];
-        //int score;
     } MonsterModel;
 
     class Monster : public QObject
@@ -77,6 +75,8 @@ class MonsterSm;
 
         void update();
 
+        MonsterModel* getModel();
+
         ~Monster();
 
     protected:
@@ -86,17 +86,18 @@ class MonsterSm;
         MonsterChase* world;
         MonsterModel model = {
             patrol, //state
-            MonsterSubStates::moving, //sub_state
+            MonsterSubStates::move, //sub_state
             200, //pos_x
             200, //pos_y
             0, //direction
         };
         MonsterShape* shape=0;
         MonsterSight* sight=0;
-        MonsterSm* mstates[4]={nullptr,nullptr,nullptr,nullptr};
+        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         void checkCollisionsWithPlayer();
         QRectF getIntersectonWith(Player *p);
+        void checkCollisionsWithWalls();
     };
 
 } //namescpace Monster
