@@ -22,10 +22,10 @@
 #ifndef MONSTERVIEWS_H
 #define MONSTERVIEWS_H
 
+#include "monster.h"
+
 #include <QtWidgets>
 #include <QGraphicsItem>
-
-#include "monster.h"
 
 namespace Monster {
 
@@ -36,7 +36,8 @@ public:
     QRectF boundingRect() const Q_DECL_OVERRIDE;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
-private:
+protected:
+    MonsterShape(){};
     QColor color[3];
     MonsterModel* model;
 };
@@ -53,6 +54,12 @@ public:
 
 private:
     MonsterModel* model;
+};
+
+class MonsterTriangularShape: public MonsterShape{
+public:
+    MonsterTriangularShape(MonsterModel* m);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 };
 
 }

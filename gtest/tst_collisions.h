@@ -32,8 +32,8 @@ public:
 
 TEST_F(Collisoins, debouncing)
 {
-    int start_x = 185;
-    int start_y = 200;
+    float start_x = 185;
+    float start_y = 200;
 
     model = new PlayerModel {
             DEF_ENERGY, //energy

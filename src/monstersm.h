@@ -88,15 +88,13 @@ private:
 
 class MonsterPatrolDecide: public MonsterSm {
 public:
-    MonsterPatrolDecide(MonsterModel* model)
-        :_model(model),selector(_model)
-    {  }
+    MonsterPatrolDecide(MonsterModel* model);
 
     virtual void tick();
     virtual ~MonsterPatrolDecide(){}
 private:
     MonsterModel* _model;
-    RandomDirection selector;
+    BasicBehavior* selector;
 
 };
 

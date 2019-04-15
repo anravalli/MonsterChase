@@ -28,24 +28,63 @@
 
 namespace Monster{
 
+    //Monster *MonsterFactory::buildMonster(MonsterType mtype, MonsterChase* w, QPointF pos) {
+    Monster *monsterFactory(MonsterType type, MonsterChase *w, QPointF pos){
+        Monster* monster = new Monster(w);
+        //set position & type
+        monster->model.pos_x = pos.x();
+        monster->model.pos_y = pos.y();
+        monster->model.type = type;
+
+        //type related elements
+        switch (type){
+        case Blinky:
+            //set shapes
+            monster->shape = new MonsterShape(&(monster->model));
+            monster->sight = new MonsterSight(&(monster->model));
+            break;
+        case Pinky:
+            //set shapes
+            monster->shape = new MonsterTriangularShape(&(monster->model));
+            monster->sight = new MonsterSight(&(monster->model));
+            break;
+        case Inky:
+            //set shapes
+            monster->shape = new MonsterShape(&(monster->model));
+            monster->sight = new MonsterSight(&(monster->model));
+            break;
+        case Clyde:
+            //set shapes
+            monster->shape = new MonsterTriangularShape(&(monster->model));
+            monster->sight = new MonsterSight(&(monster->model));
+            break;
+        default:
+            exit(5);
+            break;
+        }
+
+        //init state machine
+        monster->mstates[patrol] = new MonsterPatrol(&(monster->model));
+        monster->mstates[attack] = new MonsterAttack(&(monster->model));
+        monster->mstates[flee] = new MonsterFlee(&(monster->model));
+
+        //ading views to scene
+        //the order we add the items to the scene affects the z-order
+        monster->addViewComponent(monster->shape);
+        monster->addViewComponent(monster->sight);
+        return monster;
+    }
+
     Monster::Monster(MonsterChase* w):
         world(w)
     {
-
-        shape = new MonsterShape(&model);
-        sight = new MonsterSight(&model);
-
-        //init state machine
-        mstates[patrol] = new MonsterPatrol(&model);
-        mstates[attack] = new MonsterAttack(&model);
-        mstates[flee] = new MonsterFlee(&model);
-        //mstates[freeze] = new MonsterPatrolFreeze(&model);
-
-        //the order we add the items to the scene affects the z-order
-        world->getScene()->addItem(shape);
-        world->getScene()->addItem(sight);
-
         QApplication::instance()->installEventFilter(this);
+    }
+
+    void Monster::addViewComponent(QGraphicsItem* component)
+    {
+        world->getScene()->addItem(component);
+        return;
     }
 
     void Monster::show(){
@@ -62,7 +101,7 @@ namespace Monster{
         mstates[model.state]->tick();
 
         checkCollisionsWithPlayer();
-        //checkCollisionsWithWalls();
+        checkCollisionsWithWalls();
 
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
@@ -91,19 +130,31 @@ namespace Monster{
         for (auto b: walls){
             QRectF i = collisionBox().intersected(b->boundingRect());
             if (not i.isEmpty()){
-                if( 0 <= model.direction and model.direction < 90){
+                if( 0 == model.direction ){
+                    model.pos_x -= i.width();
+                }
+                else if( 0 < model.direction and model.direction < 90 ){
                     model.pos_x -= i.width();
                     model.pos_y -= i.height();
                 }
-                else if( 90 <= model.direction and model.direction < 180){
+                else if( 90 == model.direction ){
+                    model.pos_y -= i.height();
+                }
+                else if( 90 < model.direction and model.direction < 180 ){
                     model.pos_x += i.width();
                     model.pos_y -= i.height();
                 }
-                else if( 180 <= model.direction and model.direction < 270){
+                else if( model.direction == 180 ){
+                    model.pos_x += i.width();
+                }
+                else if( 180 < model.direction and model.direction < 270 ){
                     model.pos_x += i.width();
                     model.pos_y += i.height();
                 }
-                else if( 270 <= model.direction and model.direction < 360){
+                else if( 270 == model.direction ){
+                    model.pos_y -= i.height();
+                }
+                else if( 270 < model.direction and model.direction < 360 ){
                     model.pos_x -= i.width();
                     model.pos_y += i.height();
                 }

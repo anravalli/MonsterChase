@@ -38,7 +38,7 @@ protected:
     Monster::MonsterModel* _model;
 };
 
-class RandomDirection: BasicBehavior
+class RandomDirection: public BasicBehavior
 {
 public:
     RandomDirection(Monster::MonsterModel* m);
@@ -47,4 +47,16 @@ public:
 private:
     std::function<int ()> _direction;
 };
+
+class PerpendicularDirection: public  BasicBehavior
+{
+public:
+    PerpendicularDirection(Monster::MonsterModel* m);
+    void exec() override;
+
+private:
+    std::function<int ()> _clockwise;
+};
+
+
 #endif // BEHAVIORS_H

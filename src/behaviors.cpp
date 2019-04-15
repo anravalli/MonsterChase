@@ -31,12 +31,26 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
     std::default_random_engine engine(r());
     std::uniform_int_distribution<int> distribution(0,359);
     _direction = std::bind(distribution, engine);
-    //_direction = direction;
 }
 
 void RandomDirection::exec() {
-    //auto model = _monster->getModel();
-    _model->direction = _direction();
-//    if(_model->direction == 360)
-//        _model->direction = 0;
+    _model->target_direction = _direction();
+}
+
+PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
+    BasicBehavior(m)
+{
+    std::random_device r;
+    std::default_random_engine engine(r());
+    std::uniform_int_distribution<int> distribution(0,1);
+    _clockwise = std::bind(distribution, engine);
+}
+
+void PerpendicularDirection::exec() {
+    int sign = 1;
+    if (_clockwise())
+        sign = -1;
+    _model->target_direction += sign*90;
+    if(_model->direction==360)
+        _model->direction = 0;
 }

@@ -60,20 +60,38 @@ void MonsterFlee::move(){
 }
 
 void MonsterPatrolFreeze::tick(){
-    if(_freeze_time>0)
+    if( (_freeze_time > 0) or (_model->target_direction > _model->direction) ) {
         _freeze_time--;
+        _model->direction = _model->direction >= 360 ? 0 : _model->direction+10;
+    }
     else{
         _freeze_time=10;
         _model->sub_state=MonsterSubStates::route;
     }
 }
 
+MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model)
+    :_model(model)
+{
+    switch(_model->type){
+    case Blinky:
+        selector = new RandomDirection(_model);
+        break;
+    case Pinky:
+    case Inky:
+    case Clyde:
+        selector = new PerpendicularDirection(_model);
+        break;
+    default:
+        exit(5);
+        break;
+    }
+}
+
 void MonsterPatrolDecide::tick()
 {
-    //selector.exec(); //_model->direction updated by selector
-    _model->direction += 90;
-    if(_model->direction==360)
-        _model->direction = 0;
+    selector->exec(); //_model->direction updated by selector
+
     _model->sub_state = MonsterSubStates::move;
     return;
 }
@@ -92,11 +110,9 @@ void MonsterPatrolMove::tick(){
         _model->sub_state = MonsterSubStates::route;
     }
 
-//    if(_model->direction<=360)
-//        _model->direction++;
-//    else
-//        _model->direction=0;
-//    return;
+    if( _model->target_direction > _model->direction ) {
+        _model->direction += 2;
+    }
 }
 
 }

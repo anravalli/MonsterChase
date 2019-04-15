@@ -75,7 +75,7 @@ private:
     void setUpView();
     void addPlayTime();
     void addPlayer();
-    void addMonster();
+    void addMonsters();
     void buildArena();
 
 };

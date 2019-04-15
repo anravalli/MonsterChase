@@ -59,8 +59,8 @@ typedef struct {
     float energy;
     PlayerStates state;
     PlayerSubStates sub_state;
-    int pos_x;
-    int pos_y;
+    float pos_x;
+    float pos_y;
     bool direction[4];
     int score;
 } PlayerModel;

@@ -51,9 +51,31 @@ void MonsterShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     painter->setBrush(QBrush(color[model->state]));
     painter->drawRect(-15, -15, 30, 30);
     painter->setPen(Qt::NoPen);
-    //temp
-    //painter->setBrush(QBrush(QColor(0,255,50,50)));
-    //painter->drawPie(-100,-165,200,300,50*16,80*16);
+}
+
+MonsterTriangularShape::MonsterTriangularShape(MonsterModel *m)
+{
+    color[patrol] = QColor(125,0,127);
+    color[attack] = QColor(255,50,127);
+    color[flee] = QColor(0,127,255);
+    model = m;
+}
+
+void MonsterTriangularShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(Qt::darkGray);
+    QPointF shadow[] = {QPointF(18 ,3), QPointF(-12, 18), QPointF(-12, -18)};
+    painter->drawPolygon( shadow, 3);
+    painter->setPen(QPen(Qt::black, 1));
+    painter->setBrush(QBrush(color[model->state]));
+    QPointF shape[] = {QPointF(15, 0), QPointF(-15, 15), QPointF(-15,-15)};
+    painter->drawPolygon( shape, 3);
+    //painter->drawRect(-15, -15, 30, 30);
+    painter->setPen(Qt::NoPen);
 }
 
 QRectF MonsterSight::boundingRect() const {
