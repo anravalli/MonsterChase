@@ -37,7 +37,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
 protected:
-    MonsterShape(){};
+    MonsterShape(){}
     QColor color[3];
     MonsterModel* model;
 };

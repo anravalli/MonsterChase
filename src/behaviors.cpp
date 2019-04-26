@@ -34,7 +34,8 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
 }
 
 void RandomDirection::exec() {
-    _model->target_direction = _direction();
+    //_model->target_direction = _direction();
+    _model->direction = _direction();
 }
 
 PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
@@ -51,6 +52,19 @@ void PerpendicularDirection::exec() {
     if (_clockwise())
         sign = -1;
     _model->target_direction += sign*90;
-    if(_model->direction==360)
+
+    //TODO: negative values workaraound - to be reviewed
+    if (_model->target_direction < 0)
+        _model->target_direction += 360;
+
+    if (_model->target_direction > 360)
+        abort();
+
+    _model->direction = _model->target_direction;
+
+    //error
+    if(_model->direction>=360){
         _model->direction = 0;
+        _model->target_direction = 0;
+    }
 }

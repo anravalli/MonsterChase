@@ -60,9 +60,14 @@ void MonsterFlee::move(){
 }
 
 void MonsterPatrolFreeze::tick(){
-    if( (_freeze_time > 0) or (_model->target_direction > _model->direction) ) {
+    if( (_freeze_time > 0) ){
+//        if(_model->target_direction > _model->direction) {
+//            _model->direction = _model->direction >= 360 ? 0 : _model->direction+10;
+//        }
+//        else if(_model->target_direction < _model->direction) {
+//                _model->direction = _model->direction-10;
+//        }
         _freeze_time--;
-        _model->direction = _model->direction >= 360 ? 0 : _model->direction+10;
     }
     else{
         _freeze_time=10;
@@ -110,9 +115,12 @@ void MonsterPatrolMove::tick(){
         _model->sub_state = MonsterSubStates::route;
     }
 
-    if( _model->target_direction > _model->direction ) {
-        _model->direction += 2;
-    }
+
+//    if( _model->target_direction > _model->direction ) {
+//        _model->direction += 2;
+//    }
+//    else
+//        _model->direction -= 2;
 }
 
 }
