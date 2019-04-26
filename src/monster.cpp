@@ -28,7 +28,6 @@
 
 namespace Monster{
 
-    //Monster *MonsterFactory::buildMonster(MonsterType mtype, MonsterChase* w, QPointF pos) {
     Monster *monsterFactory(MonsterType type, MonsterChase *w, QPointF pos){
         Monster* monster = new Monster(w);
         //set position & type
@@ -112,7 +111,6 @@ namespace Monster{
     }
 
     void Monster::checkCollisionsWithPlayer(){
-        //MonsterSm* cstate = mstates[model.state];
         Player* p = world->getPlayer();
 
         QRectF i = getIntersectonWith(p);
@@ -122,7 +120,6 @@ namespace Monster{
     }
 
     void Monster::checkCollisionsWithWalls(){
-        //MonsterSm* cstate = mstates[model.state];
         //model.pos is the center of the collision box
         //getWallsAround needs the top-left and bottom-right corners
         std::vector<Brick*> walls = world->getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
@@ -187,7 +184,6 @@ namespace Monster{
         delete mstates[patrol];
         delete mstates[attack];
         delete mstates[flee];
-        //delete mstates[freeze];
         //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
         // they belongs to
         delete shape;

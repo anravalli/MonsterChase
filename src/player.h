@@ -109,7 +109,6 @@ private:
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;
     PlayerScore* score;
-    //bool direction[4]={false,false,false,false};
     PlayerSm* pstates[5]={nullptr,nullptr,nullptr,nullptr,nullptr};
 
     void move();
@@ -120,7 +119,6 @@ private:
     void updateViews();
     void checkCollisionsWithWalls();
     QRectF getIntersectonWith(Monster::Monster *m);
-    //QRectF getIntersectonWith(Brick *b);
 };
 
 #endif // PLAYER_H

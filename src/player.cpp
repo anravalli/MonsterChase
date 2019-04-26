@@ -45,7 +45,6 @@ Player::Player(MonsterChase* w):
     world->getScene()->addItem(shape);
     world->getScene()->addItem(score);
     world->getScene()->addItem(energy_gauge);
-    //score->setPos((s->sceneRect()).width()-35, -50*0.6);
     QApplication::instance()->installEventFilter(this);
 }
 
@@ -111,7 +110,6 @@ void Player::checkCollisionsWithWalls(){
             if(i.height()<i.width())
                 step = i.height();
             cstate->moveBy(-step,-step);
-            //cstate->collisionWithMonster();
         }
     }
 
@@ -140,7 +138,9 @@ QRectF Player::collisionBox() const
 bool Player::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress) {
-        //qDebug("%d KeyPress received by Player", __LINE__);
+#ifdef  DEBUG
+        qDebug("%d KeyPress received by Player", __LINE__);
+#endif
         QKeyEvent* ke = static_cast<QKeyEvent*>(event);
         int key = ke->key();
         return handleKey(key, false);

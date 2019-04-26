@@ -21,7 +21,6 @@
 
 
 #include "playersm.h"
-//#include "player.h"
 
 #include <math.h>
 
@@ -30,8 +29,6 @@
 
 
 void PlayerSm::moveBy(double step_x, double step_y){
-    //double speed = _max_speed;
-
     if(_model->direction[player_up])
         _model->pos_y=_model->pos_y-step_y;
     if(_model->direction[player_down])

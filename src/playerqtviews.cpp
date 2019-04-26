@@ -61,12 +61,16 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     switch(model->state){
     case on_rage:
-        //qDebug("%d on_rage", __LINE__);
+#ifdef  DEBUG
+        qDebug("%d on_rage", __LINE__);
+#endif
         color_idx = 1;
         break;
     case normal:
     case rage_available:
-        //qDebug("%d normal", __LINE__);
+#ifdef  DEBUG
+        qDebug("%d normal", __LINE__);
+#endif
         color_idx = 0;
         break;
     case on_damage:

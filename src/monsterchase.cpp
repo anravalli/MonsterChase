@@ -128,8 +128,6 @@ void MonsterChase::start(){
     timer->start(FRAMERATE);
 }
 void MonsterChase::pause(){
-    //player->hide();
-    //monster->hide();
     timer->stop();
 }
 
@@ -156,7 +154,6 @@ MonsterChase::~MonsterChase()
 void MonsterChase::addPlayTime(){
     ptime = new PlayTime();
     ptime->setPos(-PLAYGROUND_BORDER_WIDTH/2,-PLAYGROUND_BORDER_HEIGHT*0.6);
-    //ptime->hide();
     scene->addItem(ptime);
 }
 
@@ -191,12 +188,10 @@ void MonsterChase::gameStep(){
     qDebug("iteration %s", t.toString().toStdString().c_str());
     qDebug("-> elapsed %d", e.elapsed());
 #endif
-    //scene->advance();
     ptime->increase();
     player->update();
     for (auto m: monsters)
         m->update();
-    //e.restart();
 }
 
 std::vector<Monster::Monster*> MonsterChase::getMonsters(){

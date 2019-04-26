@@ -22,20 +22,11 @@
 #include "monsterchase.h"
 #include <QApplication>
 
-//#include <QRandomGenerator>
-//#include <stdlib.h>     /* srand, rand */
-//#include <time.h>       /* time */
-//#include <unistd.h>
-
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MonsterChase game;
     game.show();
-
-    //initialize random number generator for the whole game
-    //srand( time(VOID)+getpid() );
 
     return a.exec();
 }

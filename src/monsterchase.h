@@ -22,7 +22,6 @@
 #ifndef MONSTERCHASE_H
 #define MONSTERCHASE_H
 
-//#include <QMainWindow>
 #include <QtWidgets>
 
 class Arena;
@@ -45,7 +44,6 @@ public:
 
     void show();
 
-    //void paintEvent(QPaintEvent *) override;
 public slots:
     void gameStep() ;
     void pause();
@@ -58,7 +56,6 @@ protected:
     QGraphicsScene* getScene();
 
 private:
-    //Ui::MonsterChase *ui;
     QGraphicsView* view;
     QGraphicsScene* scene;
     QTimer* timer;
@@ -69,8 +66,6 @@ private:
     Player* player;
 
     std::vector<Monster::Monster*> monsters;
-
-    //QTime e;
 
     void setUpView();
     void addPlayTime();

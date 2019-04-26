@@ -109,7 +109,6 @@ private:
     MonsterModel* _model;
     int _speed=2;
     int _steps = 0;
-    //int ysteps = 0;
 };
 
 

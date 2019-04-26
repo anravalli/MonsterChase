@@ -68,8 +68,6 @@ public:
     }
     virtual void toggleRage() override ;
 
-//    virtual void collisionWithMonster() override ;
-
 };
 
 class PlayerOnDamage: public PlayerNormal {
@@ -78,7 +76,6 @@ public:
         :PlayerNormal(model){}
 
     virtual void updateEnergy() override ;
-    //virtual void toggleRage() override {    }
 
     virtual void collisionWithMonster() override {
         return;
@@ -99,7 +96,6 @@ public:
 
     virtual ~PlayerOnRage(){}
 private:
-    //PlayerModel* _model;
 
 };
 
@@ -113,7 +109,6 @@ public:
     virtual void collisionWithMonster() override { }
     virtual ~PlayerDead(){}
 private:
-    //PlayerModel* _model;
 };
 
 #endif // PLAYERSM_H

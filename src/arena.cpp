@@ -12,9 +12,7 @@
 
 Brick::Brick(QRectF br_shape)
     : QGraphicsRectItem(br_shape){
-    //_idx = idx;
 
-    //shape = new QGraphicsRectItem(br_shape);
     setBrush(QBrush(Qt::darkGreen));
     setPen(QPen(QColor(Qt::black)));
 }
@@ -40,6 +38,7 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
         //read all char and discard the newline in the for loop
         QString line = in.readLine();
         //assert(line.size()==100);
+
         if(line.size()<MAP_WIDTH){
             qDebug("WARNING: line is shorter than expected (%d<%d)/nDumping line: %s",
                    MAP_WIDTH, line.size(), line.toStdString().c_str());
@@ -102,9 +101,7 @@ Brick* Arena::addBrick(QGraphicsScene *s, std::pair<int,int> idx ){
 void Arena::showNextBrick(){
     if(brick_count<MAP_WIDTH*MAP_HEIGHT){
         brick_count++;
-//        int y = brick_count/MAP_WIDTH;
-//        int x = brick_count-MAP_WIDTH*(brick_count/MAP_WIDTH);
-//        Brick* b = map[y][x];
+
         Brick* b = map[0][brick_count-1];
 
         if(b == nullptr)
