@@ -37,7 +37,9 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
     for (int y=0; y<100 and not in.atEnd(); y++){
         //read all char and discard the newline in the for loop
         QString line = in.readLine();
-        //assert(line.size()==100);
+#ifdef  DEBUG
+        assert(line.size()==100);
+#endif
 
         if(line.size()<MAP_WIDTH){
             qDebug("WARNING: line is shorter than expected (%d<%d)/nDumping line: %s",

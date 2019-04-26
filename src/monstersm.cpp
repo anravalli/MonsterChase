@@ -29,7 +29,6 @@ namespace Monster{
 MonsterPatrol::MonsterPatrol(MonsterModel *model)
     :_model(model)
 {
-    //;
     mstates[MonsterSubStates::route] = new MonsterPatrolDecide(_model);
     mstates[MonsterSubStates::move] = new MonsterPatrolMove(_model);
     mstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(_model);

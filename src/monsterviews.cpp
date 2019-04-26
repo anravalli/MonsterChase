@@ -74,7 +74,6 @@ void MonsterTriangularShape::paint(QPainter *painter, const QStyleOptionGraphics
     painter->setBrush(QBrush(color[model->state]));
     QPointF shape[] = {QPointF(15, 0), QPointF(-15, 15), QPointF(-15,-15)};
     painter->drawPolygon( shape, 3);
-    //painter->drawRect(-15, -15, 30, 30);
     painter->setPen(Qt::NoPen);
 }
 

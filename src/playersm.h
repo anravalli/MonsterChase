@@ -24,8 +24,6 @@
 #ifndef PLAYERSM_H
 #define PLAYERSM_H
 
-//struct PlayerModel;
-
 class PlayerSm {
 public:
     virtual void move() = 0;
@@ -63,7 +61,6 @@ public:
     PlayerRageAvailable(PlayerModel* model)
         :PlayerNormal(model){}
     virtual void updateEnergy() override {
-        //move();
         return;
     }
     virtual void toggleRage() override ;

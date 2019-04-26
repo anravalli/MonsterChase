@@ -95,7 +95,6 @@ class MonsterSm;
         ~Monster();
 
     protected:
-        //bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
         void addViewComponent(QGraphicsItem* componet);
 
     private:

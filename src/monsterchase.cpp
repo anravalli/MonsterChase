@@ -141,7 +141,6 @@ void MonsterChase::setUpView(){
     view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    //view->setDragMode(QGraphicsView::ScrollHandDrag);
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
 }
 

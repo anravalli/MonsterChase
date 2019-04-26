@@ -99,12 +99,6 @@ PlayerOnRage::PlayerOnRage(PlayerModel* model) {
     _max_speed_45 = _max_speed/sqrt(2);
 }
 
-/* virtual void collisionWithMonster() override {
-     _model->energy=_model->energy-DAMAGE;
-     if(_model->energy <= DEF_ENERGY)
-        _model->state = normal;
-}*/
-
 void PlayerOnRage::updateEnergy() {
     _model->energy=_model->energy-0.125;
     if(_model->energy == DEF_ENERGY)
@@ -125,7 +119,6 @@ void PlayerOnRage::toggleRage() {
 void PlayerOnRage::collisionWithMonster() {
     _model->score=_model->score+HIT;
 }
-
 
 //Player state Dead
 
