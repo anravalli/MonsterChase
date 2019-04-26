@@ -152,11 +152,17 @@ namespace Monster{
                     model.pos_y += i.height();
                 }
                 else if( 270 == model.direction ){
-                    model.pos_y -= i.height();
+                    model.pos_y += i.height();
                 }
                 else if( 270 < model.direction and model.direction < 360 ){
                     model.pos_x -= i.width();
                     model.pos_y += i.height();
+                }
+                else if( 360 == model.direction ){
+                    abort();
+                }
+                else if( 0 > model.direction ){
+                    abort();
                 }
                 model.sub_state=freeze;
             }
