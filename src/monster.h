@@ -27,6 +27,7 @@
 class MonsterChase;
 class Player;
 
+class QGraphicsItem;
 
 namespace Monster{
 
@@ -34,17 +35,17 @@ class MonsterShape;
 class MonsterSight;
 class MonsterSm;
 
-    typedef enum {
+    enum MonsterStates {
         patrol,
         attack,
-        flee,
-        freeze
-    } MonsterStates;
+        flee
+    } ;
 
-    typedef enum {
-        moving,
-        scanning
-    } MonsterSubStates;
+    enum MonsterSubStates {
+        route,
+        move,
+        freeze
+    } ;
 
     enum MonsterDirection {
         Monster_up,
@@ -53,22 +54,32 @@ class MonsterSm;
         Monster_right
     };
 
-    typedef struct {
+    enum MonsterType {
+        Blinky,
+        Pinky,
+        Inky,
+        Clyde
+    };
+
+    struct MonsterModel{
+        MonsterType type;
         MonsterStates state;
         MonsterSubStates sub_state;
-        int pos_x;
-        int pos_y;
-        int direction;
-        //bool direction[4];
-        //int score;
-    } MonsterModel;
+        float pos_x;
+        float pos_y;
+        float direction;
+        float target_direction;
+    } ;
+
+    class Monster;
+    Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
 
     class Monster : public QObject
     {
         Q_OBJECT
 
+
     public:
-        Monster(MonsterChase* world);
         void show();
 
         void hide();
@@ -77,27 +88,41 @@ class MonsterSm;
 
         void update();
 
+        MonsterModel* getModel();
+
+        friend Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
+
         ~Monster();
 
     protected:
         //bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
+        void addViewComponent(QGraphicsItem* componet);
 
     private:
+        Monster(MonsterChase* world);
         MonsterChase* world;
         MonsterModel model = {
-            patrol, //state
-            MonsterSubStates::moving, //sub_state
+            MonsterType::Blinky, //type
+            MonsterStates::patrol, //state
+            MonsterSubStates::move, //sub_state
             200, //pos_x
             200, //pos_y
             0, //direction
+            0 //target direction
         };
         MonsterShape* shape=0;
         MonsterSight* sight=0;
-        MonsterSm* mstates[4]={nullptr,nullptr,nullptr,nullptr};
+        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         void checkCollisionsWithPlayer();
         QRectF getIntersectonWith(Player *p);
+        void checkCollisionsWithWalls();
     };
+
+//    class MonsterFactory {
+//    public:
+//        static Monster* buildMonster(MonsterType mtype, MonsterChase *w, QPointF pos);
+//    };
 
 } //namescpace Monster
 

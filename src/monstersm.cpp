@@ -20,36 +20,25 @@
 */
 
 #include "monstersm.h"
+#include <math.h>       /* cos */
+
+#define PI 3.14159265
 
 namespace Monster{
 
-void MonsterPatrol::tick(){
-    move();
+MonsterPatrol::MonsterPatrol(MonsterModel *model)
+    :_model(model)
+{
+    //;
+    mstates[MonsterSubStates::route] = new MonsterPatrolDecide(_model);
+    mstates[MonsterSubStates::move] = new MonsterPatrolMove(_model);
+    mstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(_model);
+
+    _model->sub_state = MonsterSubStates::route;
 }
 
-void MonsterPatrol::move(){
-    if (xsteps < 100 and ysteps == 0){
-        _model->pos_x+=_speed;
-        xsteps++;
-    }
-    else if(xsteps == 100 and ysteps < 100){
-        _model->pos_y+=_speed;
-        ysteps++;
-    }
-    else if(xsteps > 0 and ysteps == 100){
-        _model->pos_x-=_speed;
-        xsteps--;
-    }
-    else if(xsteps == 0 and ysteps > 0){
-        _model->pos_y-=_speed;
-        ysteps--;
-    }
-
-    if(_model->direction<=360)
-        _model->direction++;
-    else
-        _model->direction=0;
-    return;
+void MonsterPatrol::tick(){
+    mstates[_model->sub_state]->tick();
 }
 
 void MonsterAttack::tick(){
@@ -70,13 +59,68 @@ void MonsterFlee::move(){
     return;
 }
 
-void MonsterFreeze::tick(){
-    if(_freeze_time>0)
+void MonsterPatrolFreeze::tick(){
+    if( (_freeze_time > 0) ){
+//        if(_model->target_direction > _model->direction) {
+//            _model->direction = _model->direction >= 360 ? 0 : _model->direction+10;
+//        }
+//        else if(_model->target_direction < _model->direction) {
+//                _model->direction = _model->direction-10;
+//        }
         _freeze_time--;
+    }
     else{
         _freeze_time=10;
-        _model->state=patrol;
+        _model->sub_state=MonsterSubStates::route;
     }
+}
+
+MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model)
+    :_model(model)
+{
+    switch(_model->type){
+    case Blinky:
+        selector = new RandomDirection(_model);
+        break;
+    case Pinky:
+    case Inky:
+    case Clyde:
+        selector = new PerpendicularDirection(_model);
+        break;
+    default:
+        exit(5);
+        break;
+    }
+}
+
+void MonsterPatrolDecide::tick()
+{
+    selector->exec(); //_model->direction updated by selector
+
+    _model->sub_state = MonsterSubStates::move;
+    return;
+}
+
+void MonsterPatrolMove::tick(){
+
+    if (_steps < 100){
+        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
+        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
+        _model->pos_x += dx;
+        _model->pos_y += dy;
+        _steps++;
+    }
+    else {
+        _steps = 0;
+        _model->sub_state = MonsterSubStates::route;
+    }
+
+
+//    if( _model->target_direction > _model->direction ) {
+//        _model->direction += 2;
+//    }
+//    else
+//        _model->direction -= 2;
 }
 
 }

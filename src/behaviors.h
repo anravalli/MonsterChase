@@ -19,23 +19,44 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "monsterchase.h"
-#include <QApplication>
 
-//#include <QRandomGenerator>
-//#include <stdlib.h>     /* srand, rand */
-//#include <time.h>       /* time */
-//#include <unistd.h>
+#ifndef BEHAVIORS_H
+#define BEHAVIORS_H
 
+#include "monster.h"
 
-int main(int argc, char *argv[])
+#include <random>
+#include <functional>
+
+class BasicBehavior
 {
-    QApplication a(argc, argv);
-    MonsterChase game;
-    game.show();
+public:
+    BasicBehavior(Monster::MonsterModel* m): _model(m) {}
+    virtual void exec() = 0;
 
-    //initialize random number generator for the whole game
-    //srand( time(VOID)+getpid() );
+protected:
+    Monster::MonsterModel* _model;
+};
 
-    return a.exec();
-}
+class RandomDirection: public BasicBehavior
+{
+public:
+    RandomDirection(Monster::MonsterModel* m);
+    void exec() override;
+
+private:
+    std::function<int ()> _direction;
+};
+
+class PerpendicularDirection: public  BasicBehavior
+{
+public:
+    PerpendicularDirection(Monster::MonsterModel* m);
+    void exec() override;
+
+private:
+    std::function<int ()> _clockwise;
+};
+
+
+#endif // BEHAVIORS_H

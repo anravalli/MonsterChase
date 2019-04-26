@@ -107,7 +107,7 @@ MonsterChase::MonsterChase()
 
     arena = new Arena(":/resources/map.txt",scene);
     addPlayer();
-    addMonster();
+    addMonsters();
     //keep this as the last in order to have it on top of the Z-stack
     addPlayTime();
 
@@ -167,8 +167,20 @@ void MonsterChase::addPlayer(){
     player->hide();
 }
 
-void MonsterChase::addMonster(){
-    Monster::Monster* m = new Monster::Monster(this);
+void MonsterChase::addMonsters(){
+    //Adding Blinky at x=200 y=200
+    Monster::Monster* m = Monster::monsterFactory(
+                Monster::MonsterType::Blinky,
+                this,
+                QPointF(200,200));
+    m->hide();
+    monsters.push_back(m);
+
+    //Adding Pinky at x=600 y=200
+    m = Monster::monsterFactory(
+                Monster::MonsterType::Pinky,
+                this,
+                QPointF(600,200));
     m->hide();
     monsters.push_back(m);
 }
