@@ -38,7 +38,6 @@ private:
 
 class MonsterSm {
 public:
-    //friend MonsterSm* monsterStateFactory(MonsterStates state, MonsterType monster, MonsterModel* model);
     friend class MonsterStateFactory;
 
     virtual void tick() = 0;

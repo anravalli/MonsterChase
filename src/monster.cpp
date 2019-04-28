@@ -63,11 +63,11 @@ namespace Monster{
         }
 
         //init state machine
-        monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model)); //new MonsterPatrol(&(monster->model));
+        monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model));
         monster->mstates[attack] = new MonsterAttack(&(monster->model));
         monster->mstates[flee] = new MonsterFlee(&(monster->model));
 
-        //ading views to scene
+        //adding views to scene
         //the order we add the items to the scene affects the z-order
         monster->addViewComponent(monster->shape);
         monster->addViewComponent(monster->sight);
