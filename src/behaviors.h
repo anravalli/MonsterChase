@@ -28,11 +28,17 @@
 #include <random>
 #include <functional>
 
+enum BehaviorStatus {
+    fail,
+    success,
+    running
+};
+
 class BasicBehavior
 {
 public:
     BasicBehavior(Monster::MonsterModel* m): _model(m) {}
-    virtual void exec() = 0;
+    virtual BehaviorStatus exec() = 0;
 
 protected:
     Monster::MonsterModel* _model;
@@ -42,7 +48,7 @@ class RandomDirection: public BasicBehavior
 {
 public:
     RandomDirection(Monster::MonsterModel* m);
-    void exec() override;
+    BehaviorStatus exec() override;
 
 private:
     std::function<int ()> _direction;
@@ -52,11 +58,47 @@ class PerpendicularDirection: public  BasicBehavior
 {
 public:
     PerpendicularDirection(Monster::MonsterModel* m);
-    void exec() override;
+    BehaviorStatus exec() override;
 
 private:
     std::function<int ()> _clockwise;
 };
 
+class MoveToTarget: public  BasicBehavior
+{
+public:
+    MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> target):
+        BasicBehavior(m), _target(target){}
+    BehaviorStatus exec() override { abort(); }
+
+private:
+    std::pair<int,int> _target;
+};
+
+class MoveFixedSteps: public  BasicBehavior
+{
+public:
+    MoveFixedSteps(Monster::MonsterModel* m, int speed, int steps):
+        BasicBehavior(m), _steps(steps), _speed(speed){}
+    BehaviorStatus exec() override;
+
+private:
+    int _steps;
+    int _speed;
+    int _counter = 0;
+};
+
+class MoveRandomSteps: public  BasicBehavior
+{
+public:
+    MoveRandomSteps(Monster::MonsterModel* m):
+        BasicBehavior(m){}
+    BehaviorStatus exec() override { abort(); }
+
+private:
+    std::function<int ()> _steps_gen;
+    int _steps;
+    int _counter = 0;
+};
 
 #endif // BEHAVIORS_H

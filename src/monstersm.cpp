@@ -20,24 +20,65 @@
 */
 
 #include "monstersm.h"
-#include <math.h>       /* cos */
-
-#define PI 3.14159265
 
 namespace Monster{
+
+MonsterSm* MonsterStateFactory::stateFactory(MonsterStates state, MonsterType monster, MonsterModel* model)
+{
+    MonsterSm* new_state = nullptr;
+    switch(state){
+    case patrol:
+        new_state = patrolFactory(monster, model);
+        break;
+    case attack:
+    case flee:
+    default:
+        abort();
+        break;
+    }
+    return new_state;
+}
+
+MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel* model)
+{
+    BasicBehavior* selector = nullptr;
+    BasicBehavior* mover = nullptr;
+    BasicBehavior* rotator = nullptr;
+
+    MonsterSm* patrol_state = nullptr;
+
+    switch (monster){
+    case Blinky:
+        selector = new RandomDirection(model);
+        mover = new MoveFixedSteps(model, 2, 100);
+        rotator = new RandomDirection(model);
+        break;
+    case Pinky:
+    case Inky:
+    case Clyde:
+        selector = new PerpendicularDirection(model);
+        mover = new MoveFixedSteps(model, 4, 100);
+        break;
+    default:
+        abort();
+        break;
+    }
+    patrol_state = new MonsterPatrol(model);
+    patrol_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
+    patrol_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
+    patrol_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model);
+    return  patrol_state;
+
+}
 
 MonsterPatrol::MonsterPatrol(MonsterModel *model)
     :_model(model)
 {
-    mstates[MonsterSubStates::route] = new MonsterPatrolDecide(_model);
-    mstates[MonsterSubStates::move] = new MonsterPatrolMove(_model);
-    mstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(_model);
-
-    _model->sub_state = MonsterSubStates::route;
+     _model->sub_state = MonsterSubStates::route;
 }
 
 void MonsterPatrol::tick(){
-    mstates[_model->sub_state]->tick();
+    sstates[_model->sub_state]->tick();
 }
 
 void MonsterAttack::tick(){
@@ -53,8 +94,8 @@ void MonsterFlee::tick(){
 }
 
 void MonsterFlee::move(){
-    _model->pos_x=_model->pos_x-_speed;
-    _model->pos_x=_model->pos_x+_speed;
+//    _model->pos_x=_model->pos_x-_speed;
+//    _model->pos_x=_model->pos_x+_speed;
     return;
 }
 
@@ -74,27 +115,14 @@ void MonsterPatrolFreeze::tick(){
     }
 }
 
-MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model)
-    :_model(model)
+MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, BasicBehavior *selector)
+    :_model(model), _selector(selector)
 {
-    switch(_model->type){
-    case Blinky:
-        selector = new RandomDirection(_model);
-        break;
-    case Pinky:
-    case Inky:
-    case Clyde:
-        selector = new PerpendicularDirection(_model);
-        break;
-    default:
-        exit(5);
-        break;
-    }
 }
 
 void MonsterPatrolDecide::tick()
 {
-    selector->exec(); //_model->direction updated by selector
+    _selector->exec(); //_model->direction updated by selector
 
     _model->sub_state = MonsterSubStates::move;
     return;
@@ -102,17 +130,8 @@ void MonsterPatrolDecide::tick()
 
 void MonsterPatrolMove::tick(){
 
-    if (_steps < 100){
-        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
-        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
-        _model->pos_x += dx;
-        _model->pos_y += dy;
-        _steps++;
-    }
-    else {
-        _steps = 0;
+    if (BehaviorStatus::running != _move->exec())
         _model->sub_state = MonsterSubStates::route;
-    }
 
 
 //    if( _model->target_direction > _model->direction ) {

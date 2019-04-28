@@ -58,12 +58,12 @@ namespace Monster{
             monster->sight = new MonsterSight(&(monster->model));
             break;
         default:
-            exit(5);
+            abort();
             break;
         }
 
         //init state machine
-        monster->mstates[patrol] = new MonsterPatrol(&(monster->model));
+        monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model)); //new MonsterPatrol(&(monster->model));
         monster->mstates[attack] = new MonsterAttack(&(monster->model));
         monster->mstates[flee] = new MonsterFlee(&(monster->model));
 

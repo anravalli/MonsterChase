@@ -20,9 +20,9 @@
 */
 
 #include "behaviors.h"
-int addNumber(int a, int b){
-    return a + b;
-}
+#include <math.h>       /* cos */
+
+#define PI 3.14159265
 
 RandomDirection::RandomDirection(Monster::MonsterModel *m):
     BasicBehavior(m)
@@ -33,9 +33,10 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
     _direction = std::bind(distribution, engine);
 }
 
-void RandomDirection::exec() {
+BehaviorStatus RandomDirection::exec() {
     //_model->target_direction = _direction();
     _model->direction = _direction();
+    return success;
 }
 
 PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
@@ -47,7 +48,7 @@ PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
     _clockwise = std::bind(distribution, engine);
 }
 
-void PerpendicularDirection::exec() {
+BehaviorStatus PerpendicularDirection::exec() {
     int sign = 1;
     if (_clockwise())
         sign = -1;
@@ -67,4 +68,21 @@ void PerpendicularDirection::exec() {
         _model->direction = 0;
         _model->target_direction = 0;
     }
+    return success;
+}
+
+BehaviorStatus MoveFixedSteps::exec() {
+    BehaviorStatus status = success;
+    if (_counter < _steps){
+        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
+        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
+        _model->pos_x += dx;
+        _model->pos_y += dy;
+        _counter++;
+        status = running;
+    }
+    else
+        _counter = 0;
+
+    return status;
 }

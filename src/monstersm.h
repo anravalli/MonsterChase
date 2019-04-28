@@ -27,12 +27,24 @@
 
 namespace Monster{
 
+class MonsterSm;
+class MonsterStateFactory
+{
+public:
+    static MonsterSm* stateFactory(MonsterStates state, MonsterType monster, MonsterModel* model);
+private:
+    static MonsterSm* patrolFactory(MonsterType monster, MonsterModel* model);
+};
+
 class MonsterSm {
 public:
+    //friend MonsterSm* monsterStateFactory(MonsterStates state, MonsterType monster, MonsterModel* model);
+    friend class MonsterStateFactory;
+
     virtual void tick() = 0;
     virtual ~MonsterSm(){}
 protected:
-    MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+    MonsterSm* sstates[3]={nullptr,nullptr,nullptr};
 };
 
 class MonsterPatrol: public MonsterSm {
@@ -69,7 +81,7 @@ public:
     virtual ~MonsterFlee(){}
 private:
     MonsterModel* _model;
-    int _speed=10;
+    //int _speed=10;
 
     void move();
 };
@@ -88,27 +100,28 @@ private:
 
 class MonsterPatrolDecide: public MonsterSm {
 public:
-    MonsterPatrolDecide(MonsterModel* model);
+    MonsterPatrolDecide(MonsterModel* model, BasicBehavior* selector);
 
     virtual void tick();
     virtual ~MonsterPatrolDecide(){}
+protected:
 private:
     MonsterModel* _model;
-    BasicBehavior* selector;
+    BasicBehavior* _selector;
 
 };
 
 class MonsterPatrolMove: public MonsterSm {
 public:
-    MonsterPatrolMove(MonsterModel* model)
-        :_model(model){}
+    MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
+        :_model(model),_move(move),_rotate(rotate){}
 
     virtual void tick();
     virtual ~MonsterPatrolMove(){}
 private:
     MonsterModel* _model;
-    int _speed=2;
-    int _steps = 0;
+    BasicBehavior* _move;
+    BasicBehavior* _rotate;
 };
 
 
