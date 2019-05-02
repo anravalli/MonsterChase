@@ -87,13 +87,14 @@ private:
 
 class MonsterPatrolFreeze: public MonsterSm {
 public:
-    MonsterPatrolFreeze(MonsterModel* model)
-        :_model(model){}
+    MonsterPatrolFreeze(MonsterModel* model, BasicBehavior *rotate)
+        :_model(model), _rotate(rotate){}
 
     virtual void tick();
     virtual ~MonsterPatrolFreeze(){}
 private:
     MonsterModel* _model;
+    BasicBehavior* _rotate;
     int _freeze_time=10;
 };
 
@@ -121,6 +122,8 @@ private:
     MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
+
+    BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };
 
 

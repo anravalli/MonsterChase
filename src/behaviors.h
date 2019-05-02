@@ -44,6 +44,9 @@ protected:
     Monster::MonsterModel* _model;
 };
 
+/*
+ * Direction selection Behaviors
+ */
 class RandomDirection: public BasicBehavior
 {
 public:
@@ -64,6 +67,10 @@ private:
     std::function<int ()> _clockwise;
 };
 
+
+/*
+ * Move Behaviors
+ */
 class MoveToTarget: public  BasicBehavior
 {
 public:
@@ -99,6 +106,29 @@ private:
     std::function<int ()> _steps_gen;
     int _steps;
     int _counter = 0;
+};
+
+/*
+ * Rotation Behaviors
+ */
+class LinearRotation: public  BasicBehavior
+{
+public:
+    LinearRotation(Monster::MonsterModel* m, int speed):
+        BasicBehavior(m), _speed(speed){}
+    BehaviorStatus exec() override;
+
+private:
+    int _speed;
+    int _counter = 0;
+};
+
+class TronRotation: public  BasicBehavior
+{
+public:
+    TronRotation(Monster::MonsterModel* m):
+        BasicBehavior(m){}
+    BehaviorStatus exec() override;
 };
 
 #endif // BEHAVIORS_H

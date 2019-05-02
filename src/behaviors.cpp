@@ -24,6 +24,9 @@
 
 #define PI 3.14159265
 
+/*
+ * Direction selection Behaviors
+ */
 RandomDirection::RandomDirection(Monster::MonsterModel *m):
     BasicBehavior(m)
 {
@@ -34,8 +37,7 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
 }
 
 BehaviorStatus RandomDirection::exec() {
-    //_model->target_direction = _direction();
-    _model->direction = _direction();
+    _model->target_direction = _direction();
     return success;
 }
 
@@ -58,19 +60,15 @@ BehaviorStatus PerpendicularDirection::exec() {
     if (_model->target_direction < 0)
         _model->target_direction += 360;
 
-    if (_model->target_direction > 360)
-        abort();
+    if (_model->target_direction >= 360)
+        _model->target_direction -= 360;
 
-    _model->direction = _model->target_direction;
-
-    //error
-    if(_model->direction>=360){
-        _model->direction = 0;
-        _model->target_direction = 0;
-    }
     return success;
 }
 
+/*
+ * Move Behaviors
+ */
 BehaviorStatus MoveFixedSteps::exec() {
     BehaviorStatus status = success;
     if (_counter < _steps){
@@ -85,4 +83,37 @@ BehaviorStatus MoveFixedSteps::exec() {
         _counter = 0;
 
     return status;
+}
+
+/*
+ * Rotation Behaviors
+ */
+BehaviorStatus LinearRotation::exec() {
+    BehaviorStatus status = success;
+
+    if(_model->target_direction > _model->direction)
+        if ( (_model->target_direction - _model->direction) > 180) {
+            _model->direction -= _speed; // cw
+        }
+        else
+            _model->direction += _speed; // ccw
+    else
+        if ( (_model->direction - _model->target_direction) > 180) {
+            _model->direction += _speed; // ccw
+        }
+        else
+            _model->direction -= _speed; // cw
+
+    if (_model->direction < 0)
+        _model->direction += 360;
+
+    if (_model->direction > 360)
+        _model->direction -= 360;
+
+    return status;
+}
+
+BehaviorStatus TronRotation::exec() {
+    _model->direction = _model->direction;
+    return success;
 }

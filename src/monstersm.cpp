@@ -44,6 +44,7 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
     BasicBehavior* selector = nullptr;
     BasicBehavior* mover = nullptr;
     BasicBehavior* rotator = nullptr;
+    BasicBehavior* freeze_rotator = nullptr;
 
     MonsterSm* patrol_state = nullptr;
 
@@ -51,13 +52,16 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
     case Blinky:
         selector = new RandomDirection(model);
         mover = new MoveFixedSteps(model, 2, 100);
-        rotator = new RandomDirection(model);
+        rotator = new LinearRotation(model, 2);
+        rotator = new TronRotation(model);
         break;
     case Pinky:
     case Inky:
     case Clyde:
         selector = new PerpendicularDirection(model);
         mover = new MoveFixedSteps(model, 4, 100);
+        rotator = new TronRotation(model);
+        freeze_rotator = rotator;
         break;
     default:
         abort();
@@ -66,7 +70,7 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
     patrol_state = new MonsterPatrol(model);
     patrol_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
     patrol_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
-    patrol_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model);
+    patrol_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
     return  patrol_state;
 
 }
@@ -94,19 +98,14 @@ void MonsterFlee::tick(){
 }
 
 void MonsterFlee::move(){
-//    _model->pos_x=_model->pos_x-_speed;
-//    _model->pos_x=_model->pos_x+_speed;
+//    if (BehaviorStatus::running != _rotation_status)
+//        _model->sub_state = MonsterSubStates::route;
+
     return;
 }
 
 void MonsterPatrolFreeze::tick(){
     if( (_freeze_time > 0) ){
-//        if(_model->target_direction > _model->direction) {
-//            _model->direction = _model->direction >= 360 ? 0 : _model->direction+10;
-//        }
-//        else if(_model->target_direction < _model->direction) {
-//                _model->direction = _model->direction-10;
-//        }
         _freeze_time--;
     }
     else{
@@ -133,12 +132,10 @@ void MonsterPatrolMove::tick(){
     if (BehaviorStatus::running != _move->exec())
         _model->sub_state = MonsterSubStates::route;
 
+    if (BehaviorStatus::success != _rotation_status)
+        _rotation_status = _rotate->exec();
 
-//    if( _model->target_direction > _model->direction ) {
-//        _model->direction += 2;
-//    }
-//    else
-//        _model->direction -= 2;
+    return;
 }
 
 }
