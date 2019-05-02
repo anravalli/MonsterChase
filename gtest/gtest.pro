@@ -12,13 +12,16 @@ QT += widgets
 CONFIG += qt
 
 HEADERS += \
-        tst_collisions.h \
         tst_arena.h \
-        ../src/arena.h
+        ../src/arena.h \
+    tst_linear_rotation.h \
+    tst_player_collisions.h \
+    tst_monsters_collisions.h
 
 SOURCES += \
         main.cpp \
         ../src/playersm.cc \
-        ../src/arena.cpp
+        ../src/arena.cpp \
+        ../src/behaviors.cpp
 
 INCLUDEPATH += ../src
