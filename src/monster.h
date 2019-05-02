@@ -65,10 +65,10 @@ class MonsterSm;
         MonsterType type;
         MonsterStates state;
         MonsterSubStates sub_state;
-        float pos_x;
-        float pos_y;
-        float direction;
-        float target_direction;
+        double pos_x;
+        double pos_y;
+        double direction;
+        double target_direction;
     } ;
 
     class Monster;
@@ -109,8 +109,8 @@ class MonsterSm;
             0, //direction
             0 //target direction
         };
-        MonsterShape* shape=0;
-        MonsterSight* sight=0;
+        MonsterShape* shape=nullptr;
+        MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         void checkCollisionsWithPlayer();
