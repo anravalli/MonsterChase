@@ -38,6 +38,8 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
 
 BehaviorStatus RandomDirection::exec() {
     _model->target_direction = _direction();
+    //test
+    _model->direction = _model->target_direction;
     return success;
 }
 
@@ -63,6 +65,8 @@ BehaviorStatus PerpendicularDirection::exec() {
     if (_model->target_direction >= 360)
         _model->target_direction -= 360;
 
+    //test
+    _model->direction = _model->target_direction;
     return success;
 }
 

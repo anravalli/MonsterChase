@@ -134,8 +134,8 @@ void MonsterPatrolMove::tick(){
         _rotation_status = BehaviorStatus::fail;
     }
 
-    if (BehaviorStatus::success != _rotation_status)
-        _rotation_status = _rotate->exec();
+//    if (BehaviorStatus::success != _rotation_status)
+//        _rotation_status = _rotate->exec();
 
     return;
 }
