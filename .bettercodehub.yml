@@ -1,0 +1,7 @@
+- name: c++
+  production:
+    include:
+      - /src/*
+  test:
+    include:
+      - /tests/*
