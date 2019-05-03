@@ -132,9 +132,9 @@ std::pair<int,int> Arena::posToIdx( QPointF pos ){
 }
 
 Brick* Arena::getBrick(std::pair<int,int> idx ){
-    Brick* b= nullptr;
-    if(!(idx.first<0 and idx.first<MAP_WIDTH) and
-            !(idx.second<0 and idx.second<MAP_HEIGHT))
+    Brick* b = nullptr;
+    if((!(idx.first<0) and idx.first<MAP_WIDTH) and
+            (!(idx.second<0) and idx.second<MAP_HEIGHT))
         b = map[idx.first][idx.second];
     else
         qDebug("map border reached idx[%d,%d] ", idx.first, idx.second);
