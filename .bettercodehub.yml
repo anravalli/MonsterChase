@@ -3,13 +3,17 @@ languages:
 - name: cpp
   production:
     include:
-      - .*/src/.*\..*
+      - .*/src/.*\.cpp
+      - .*/src/.*\.h
+      - .*/src/.*\.cc
     exclude:
       - .*/googletest/.*\.h
       - .*/googletest/.*\.cpp
       - .*/googletest/.*\.c
       - .*/googletest/.*\.cc
+      - .*/tests/.*\.h
+      - .*/tests/.*\.cpp
   test:
     include:
-      - /tests/.*\.h
-      - /tests/.*\.cpp
+      - .*/tests/.*\.h
+      - .*/tests/.*\.cpp
