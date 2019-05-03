@@ -1,4 +1,4 @@
-- name: c++
+- name: cpp
   production:
     include:
       - /src/*
