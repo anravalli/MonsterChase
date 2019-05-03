@@ -71,7 +71,7 @@ namespace Monster{
         return monster;
     }
 
-    Monster::Monster(MonsterChase* w):
+    Monster::Monster(GameWorld* w):
         world(w)
     {
         QApplication::instance()->installEventFilter(this);
@@ -184,10 +184,10 @@ namespace Monster{
         delete sight;
     }
     
-    MonsterModel *Monster::getModel()
-    {
-        return &model;
-    }
+//    MonsterModel *Monster::getModel()
+//    {
+//        return &model;
+//    }
     
     
     

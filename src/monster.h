@@ -25,6 +25,7 @@
 #include <qobject.h>
 
 class MonsterChase;
+class GameWorld;
 class Player;
 
 class QGraphicsItem;
@@ -88,7 +89,7 @@ class MonsterSm;
 
         void update();
 
-        MonsterModel* getModel();
+        //MonsterModel* getModel();
 
         friend Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
 
@@ -96,10 +97,11 @@ class MonsterSm;
 
     protected:
         void addViewComponent(QGraphicsItem* componet);
+        Monster(GameWorld* world);
 
-    private:
-        Monster(MonsterChase* world);
-        MonsterChase* world;
+        void checkCollisionsWithPlayer();
+        void checkCollisionsWithWalls();
+
         MonsterModel model = {
             MonsterType::Blinky, //type
             MonsterStates::patrol, //state
@@ -109,13 +111,14 @@ class MonsterSm;
             0, //direction
             0 //target direction
         };
+
+    private:
+        GameWorld* world;
         MonsterShape* shape=nullptr;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
-        void checkCollisionsWithPlayer();
         QRectF getIntersectonWith(Player *p);
-        void checkCollisionsWithWalls();
     };
 
 //    class MonsterFactory {

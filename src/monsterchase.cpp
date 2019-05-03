@@ -101,6 +101,8 @@ private:
     int frame_counter=25;
 };
 
+GameWorld::~GameWorld(){};
+
 MonsterChase::MonsterChase()
 {
     setUpView();

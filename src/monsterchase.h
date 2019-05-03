@@ -32,7 +32,17 @@ namespace Monster {
 class Monster;
 }
 
-class MonsterChase : public QObject
+class GameWorld {
+public:
+    virtual std::vector<Monster::Monster*> getMonsters() = 0;
+    virtual std::vector<Brick*> getWallsAround(QPointF tl, QPointF br) = 0;
+    virtual Player* getPlayer() = 0;
+    virtual QGraphicsScene* getScene() = 0;
+
+    virtual ~GameWorld();
+};
+
+class MonsterChase : public QObject, public GameWorld
 {
     Q_OBJECT
     friend class Player;
@@ -40,7 +50,7 @@ class MonsterChase : public QObject
 
 public:
     explicit MonsterChase();
-    ~MonsterChase();
+    ~MonsterChase() override;
 
     void show();
 
@@ -50,10 +60,10 @@ public slots:
     void start();
 
 protected:
-    std::vector<Monster::Monster*> getMonsters();
-    std::vector<Brick*> getWallsAround(QPointF tl, QPointF br);
-    Player* getPlayer();
-    QGraphicsScene* getScene();
+    std::vector<Monster::Monster*> getMonsters() override;
+    std::vector<Brick*> getWallsAround(QPointF tl, QPointF br) override;
+    Player* getPlayer() override;
+    QGraphicsScene* getScene() override;
 
 private:
     QGraphicsView* view;
