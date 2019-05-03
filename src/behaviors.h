@@ -39,6 +39,7 @@ class BasicBehavior
 public:
     BasicBehavior(Monster::MonsterModel* m): _model(m) {}
     virtual BehaviorStatus exec() = 0;
+    virtual ~BasicBehavior();
 
 protected:
     Monster::MonsterModel* _model;
@@ -76,7 +77,7 @@ class MoveToTarget: public  BasicBehavior
 public:
     MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> target):
         BasicBehavior(m), _target(target){}
-    BehaviorStatus exec() override { abort(); }
+    BehaviorStatus exec() override;
 
 private:
     std::pair<int,int> _target;
@@ -100,7 +101,7 @@ class MoveRandomSteps: public  BasicBehavior
 public:
     MoveRandomSteps(Monster::MonsterModel* m):
         BasicBehavior(m){}
-    BehaviorStatus exec() override { abort(); }
+    BehaviorStatus exec() override;
 
 private:
     std::function<int ()> _steps_gen;

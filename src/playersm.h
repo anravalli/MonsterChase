@@ -32,7 +32,7 @@ public:
     virtual void collisionWithMonster() = 0;
     //virtual void enter() = 0;
     //virtual void exit() = 0;
-    virtual ~PlayerSm(){}
+    virtual ~PlayerSm();
 protected:
     int _max_speed;
     double _max_speed_45;
@@ -52,7 +52,7 @@ public:
     virtual void collisionWithMonster() override ;
 
     virtual void toggleRage() override;
-    virtual ~PlayerNormal();
+    virtual ~PlayerNormal() override;
 
 };
 
@@ -91,7 +91,7 @@ public:
     virtual void toggleRage() override ;
     virtual void collisionWithMonster() override;
 
-    virtual ~PlayerOnRage(){}
+    virtual ~PlayerOnRage() override {}
 private:
 
 };
@@ -100,11 +100,11 @@ class PlayerDead: public PlayerSm {
 public:
     PlayerDead(PlayerModel* model);
 
-    virtual void move(){}
-    virtual void updateEnergy(){}
-    virtual void toggleRage(){}
+    virtual void move() override {}
+    virtual void updateEnergy() override {}
+    virtual void toggleRage() override {}
     virtual void collisionWithMonster() override { }
-    virtual ~PlayerDead(){}
+    virtual ~PlayerDead() override;
 private:
 };
 

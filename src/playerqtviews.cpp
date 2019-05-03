@@ -144,6 +144,6 @@ void PlayerEnergyGauge::paint(QPainter *painter, const QStyleOptionGraphicsItem 
         painter->setBrush(color);
     }
 
-    painter->drawRect(2,2,(int)model->energy,16);
+    painter->drawRect(2,2,static_cast<int>(model->energy),16);
 }
 

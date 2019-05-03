@@ -85,7 +85,7 @@ void Player::checkCollisionsWithMonsters(){
     for (auto m: monsters){
         QRectF i = getIntersectonWith(m);
         if (not i.isEmpty()){
-            int step = i.width();
+            double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
             cstate->moveBy(-step,-step);
@@ -106,7 +106,7 @@ void Player::checkCollisionsWithWalls(){
 //            continue;
         QRectF i = collisionBox().intersected(b->boundingRect());
         if (not i.isEmpty()){
-            int step = i.width();
+            double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
             cstate->moveBy(-step,-step);

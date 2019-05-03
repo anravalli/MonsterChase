@@ -184,11 +184,4 @@ namespace Monster{
         delete sight;
     }
     
-//    MonsterModel *Monster::getModel()
-//    {
-//        return &model;
-//    }
-    
-    
-    
 } //namescpace Monster

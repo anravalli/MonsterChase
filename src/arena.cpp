@@ -121,7 +121,7 @@ void Arena::showNextBrick(){
 }
 
 QPointF Arena::idxToPos(int ix, int iy){
-    return QPoint(map_cell_w*ix,map_cell_h*iy);
+    return QPointF(map_cell_w*ix,map_cell_h*iy);
 }
 
 std::pair<int,int> Arena::posToIdx( QPointF pos ){

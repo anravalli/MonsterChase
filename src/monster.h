@@ -89,8 +89,6 @@ class MonsterSm;
 
         void update();
 
-        //MonsterModel* getModel();
-
         friend Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
 
         ~Monster();
@@ -120,11 +118,6 @@ class MonsterSm;
 
         QRectF getIntersectonWith(Player *p);
     };
-
-//    class MonsterFactory {
-//    public:
-//        static Monster* buildMonster(MonsterType mtype, MonsterChase *w, QPointF pos);
-//    };
 
 } //namescpace Monster
 

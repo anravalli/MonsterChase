@@ -96,7 +96,6 @@ public:
 
 private:
     QColor color;
-    PlayerModel* _model;
     int time=0;
     int frame_counter=25;
 };

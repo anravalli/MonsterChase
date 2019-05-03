@@ -73,6 +73,11 @@ BehaviorStatus PerpendicularDirection::exec() {
 /*
  * Move Behaviors
  */
+
+BehaviorStatus MoveToTarget::exec() { abort(); }
+
+BehaviorStatus MoveRandomSteps::exec() { abort(); }
+
 BehaviorStatus MoveFixedSteps::exec() {
     BehaviorStatus status = success;
     if (_counter < _steps){

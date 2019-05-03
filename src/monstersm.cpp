@@ -23,6 +23,14 @@
 
 namespace Monster{
 
+MonsterSm::~MonsterSm()
+{
+
+}
+
+/*
+ * State Factory
+ */
 MonsterSm* MonsterStateFactory::stateFactory(MonsterStates state, MonsterType monster, MonsterModel* model)
 {
     MonsterSm* new_state = nullptr;
