@@ -57,24 +57,21 @@ namespace Monster{
             monster->shape = new MonsterTriangularShape(&(monster->model));
             monster->sight = new MonsterSight(&(monster->model));
             break;
-        default:
-            exit(5);
-            break;
         }
 
         //init state machine
-        monster->mstates[patrol] = new MonsterPatrol(&(monster->model));
+        monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model));
         monster->mstates[attack] = new MonsterAttack(&(monster->model));
         monster->mstates[flee] = new MonsterFlee(&(monster->model));
 
-        //ading views to scene
+        //adding views to scene
         //the order we add the items to the scene affects the z-order
         monster->addViewComponent(monster->shape);
         monster->addViewComponent(monster->sight);
         return monster;
     }
 
-    Monster::Monster(MonsterChase* w):
+    Monster::Monster(GameWorld* w):
         world(w)
     {
         QApplication::instance()->installEventFilter(this);
@@ -127,36 +124,33 @@ namespace Monster{
         for (auto b: walls){
             QRectF i = collisionBox().intersected(b->boundingRect());
             if (not i.isEmpty()){
-                if( 0 == model.direction ){
+                if( 0.0 == model.direction or 360.0 == model.direction){
                     model.pos_x -= i.width();
                 }
                 else if( 0 < model.direction and model.direction < 90 ){
                     model.pos_x -= i.width();
                     model.pos_y -= i.height();
                 }
-                else if( 90 == model.direction ){
+                else if( 90.0 == model.direction ){
                     model.pos_y -= i.height();
                 }
                 else if( 90 < model.direction and model.direction < 180 ){
                     model.pos_x += i.width();
                     model.pos_y -= i.height();
                 }
-                else if( model.direction == 180 ){
+                else if( model.direction == 180.0 ){
                     model.pos_x += i.width();
                 }
                 else if( 180 < model.direction and model.direction < 270 ){
                     model.pos_x += i.width();
                     model.pos_y += i.height();
                 }
-                else if( 270 == model.direction ){
+                else if( 270.0 == model.direction ){
                     model.pos_y += i.height();
                 }
                 else if( 270 < model.direction and model.direction < 360 ){
                     model.pos_x -= i.width();
                     model.pos_y += i.height();
-                }
-                else if( 360 == model.direction ){
-                    abort();
                 }
                 else if( 0 > model.direction ){
                     abort();
@@ -189,12 +183,5 @@ namespace Monster{
         delete shape;
         delete sight;
     }
-    
-    MonsterModel *Monster::getModel()
-    {
-        return &model;
-    }
-    
-    
     
 } //namescpace Monster

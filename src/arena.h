@@ -59,8 +59,8 @@ private:
 
     QGraphicsScene *_scene;
 
-    float map_cell_w;
-    float map_cell_h;
+    double map_cell_w;
+    double map_cell_h;
     Brick* addBrick(QGraphicsScene *s, std::pair<int,int> idx );
 
 };

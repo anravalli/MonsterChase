@@ -28,6 +28,8 @@
 #define HIT 10
 
 
+PlayerSm::~PlayerSm(){}
+
 void PlayerSm::moveBy(double step_x, double step_y){
     if(_model->direction[player_up])
         _model->pos_y=_model->pos_y-step_y;
@@ -125,3 +127,5 @@ void PlayerOnRage::collisionWithMonster() {
 PlayerDead::PlayerDead(PlayerModel* model) {
     _model=model;
 }
+
+PlayerDead::~PlayerDead() {}

@@ -20,10 +20,16 @@
 */
 
 #include "behaviors.h"
-int addNumber(int a, int b){
-    return a + b;
-}
+#include <math.h>       /* cos */
 
+#define PI 3.14159265
+
+
+BasicBehavior::~BasicBehavior() {}
+
+/*
+ * Direction selection Behaviors
+ */
 RandomDirection::RandomDirection(Monster::MonsterModel *m):
     BasicBehavior(m)
 {
@@ -33,9 +39,11 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
     _direction = std::bind(distribution, engine);
 }
 
-void RandomDirection::exec() {
-    //_model->target_direction = _direction();
-    _model->direction = _direction();
+BehaviorStatus RandomDirection::exec() {
+    _model->target_direction = _direction();
+    //test
+    _model->direction = _model->target_direction;
+    return success;
 }
 
 PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
@@ -47,7 +55,7 @@ PerpendicularDirection::PerpendicularDirection(Monster::MonsterModel *m):
     _clockwise = std::bind(distribution, engine);
 }
 
-void PerpendicularDirection::exec() {
+BehaviorStatus PerpendicularDirection::exec() {
     int sign = 1;
     if (_clockwise())
         sign = -1;
@@ -57,14 +65,72 @@ void PerpendicularDirection::exec() {
     if (_model->target_direction < 0)
         _model->target_direction += 360;
 
-    if (_model->target_direction > 360)
-        abort();
+    if (_model->target_direction >= 360)
+        _model->target_direction -= 360;
 
+    //test
     _model->direction = _model->target_direction;
-
-    //error
-    if(_model->direction>=360){
-        _model->direction = 0;
-        _model->target_direction = 0;
-    }
+    return success;
 }
+
+/*
+ * Move Behaviors
+ */
+
+BehaviorStatus MoveToTarget::exec() { abort(); }
+
+BehaviorStatus MoveRandomSteps::exec() { abort(); }
+
+BehaviorStatus MoveFixedSteps::exec() {
+    BehaviorStatus status = success;
+    if (_counter < _steps){
+        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
+        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
+        _model->pos_x += dx;
+        _model->pos_y += dy;
+        _counter++;
+        status = running;
+    }
+    else
+        _counter = 0;
+
+    return status;
+}
+
+/*
+ * Rotation Behaviors
+ */
+BehaviorStatus LinearRotation::exec() {
+    BehaviorStatus status = success;
+
+    if (_model->target_direction > _model->direction){
+        if ( (_model->target_direction - _model->direction) > 180) {
+            _model->direction -= _speed; // cw
+        }
+        else
+            _model->direction += _speed; // ccw
+        status = running;
+    }
+    else if (_model->target_direction < _model->direction){
+        if ( (_model->direction - _model->target_direction) > 180) {
+            _model->direction += _speed; // ccw
+        }
+        else
+            _model->direction -= _speed; // cw
+        status = running;
+    }
+
+    if (_model->direction < 0)
+        _model->direction += 360;
+
+    if (_model->direction > 360)
+        _model->direction -= 360;
+
+    return status;
+}
+
+BehaviorStatus TronRotation::exec() {
+    _model->direction = _model->target_direction;
+    return success;
+}
+

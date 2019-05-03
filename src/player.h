@@ -56,11 +56,11 @@ enum PlayerDirection {
 };
 
 typedef struct {
-    float energy;
+    double energy;
     PlayerStates state;
     PlayerSubStates sub_state;
-    float pos_x;
-    float pos_y;
+    double pos_x;
+    double pos_y;
     bool direction[4];
     int score;
 } PlayerModel;

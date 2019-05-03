@@ -8,4 +8,4 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     src \ 
-    gtest
+    tests

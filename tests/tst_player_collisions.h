@@ -9,11 +9,8 @@
 using namespace testing;
 using namespace std;
 
-class Collisoins: public testing::Test {
+class Collisions: public testing::Test {
 public:
-//    void SetUp(){
-
-//    }
 
     QRectF getIntersectonWith(QRectF r)
     {
@@ -30,7 +27,7 @@ public:
 
 };
 
-TEST_F(Collisoins, debouncing)
+TEST_F(Collisions, debouncing)
 {
     float start_x = 185;
     float start_y = 200;
@@ -68,7 +65,7 @@ TEST_F(Collisoins, debouncing)
     cout << "intersection height: " << i.height() << endl;
 
     if (not i.isEmpty()){
-        int step = i.width();
+        double step = i.width();
         if(i.height()<i.width())
             step = i.height();
         cstate->moveBy(-step,-step);
@@ -80,5 +77,4 @@ TEST_F(Collisoins, debouncing)
 
     EXPECT_EQ(model->pos_x, start_x);
     EXPECT_EQ(model->pos_y, start_y);
-    //ASSERT_THAT(0, Eq(0));
 }
