@@ -24,6 +24,9 @@
 
 #define PI 3.14159265
 
+
+BasicBehavior::~BasicBehavior() {}
+
 /*
  * Direction selection Behaviors
  */
@@ -130,3 +133,4 @@ BehaviorStatus TronRotation::exec() {
     _model->direction = _model->target_direction;
     return success;
 }
+
