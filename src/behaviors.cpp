@@ -91,18 +91,22 @@ BehaviorStatus MoveFixedSteps::exec() {
 BehaviorStatus LinearRotation::exec() {
     BehaviorStatus status = success;
 
-    if(_model->target_direction > _model->direction)
+    if (_model->target_direction > _model->direction){
         if ( (_model->target_direction - _model->direction) > 180) {
             _model->direction -= _speed; // cw
         }
         else
             _model->direction += _speed; // ccw
-    else
+        status = running;
+    }
+    else if (_model->target_direction < _model->direction){
         if ( (_model->direction - _model->target_direction) > 180) {
             _model->direction += _speed; // ccw
         }
         else
             _model->direction -= _speed; // cw
+        status = running;
+    }
 
     if (_model->direction < 0)
         _model->direction += 360;
@@ -114,6 +118,6 @@ BehaviorStatus LinearRotation::exec() {
 }
 
 BehaviorStatus TronRotation::exec() {
-    _model->direction = _model->direction;
+    _model->direction = _model->target_direction;
     return success;
 }

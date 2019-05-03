@@ -53,7 +53,7 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
         selector = new RandomDirection(model);
         mover = new MoveFixedSteps(model, 2, 100);
         rotator = new LinearRotation(model, 2);
-        rotator = new TronRotation(model);
+        freeze_rotator = new TronRotation(model);
         break;
     case Pinky:
     case Inky:
@@ -129,8 +129,10 @@ void MonsterPatrolDecide::tick()
 
 void MonsterPatrolMove::tick(){
 
-    if (BehaviorStatus::running != _move->exec())
+    if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
+        _rotation_status = BehaviorStatus::fail;
+    }
 
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
