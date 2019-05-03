@@ -34,6 +34,8 @@ public:
     static MonsterSm* stateFactory(MonsterStates state, MonsterType monster, MonsterModel* model);
 private:
     static MonsterSm* patrolFactory(MonsterType monster, MonsterModel* model);
+    static MonsterSm* attackFactory(MonsterType monster, MonsterModel* model);
+    static MonsterSm* fleeFactory(MonsterType monster, MonsterModel* model);
 };
 
 class MonsterSm {
@@ -118,6 +120,88 @@ public:
 
     virtual void tick();
     virtual ~MonsterPatrolMove(){}
+private:
+    MonsterModel* _model;
+    BasicBehavior* _move;
+    BasicBehavior* _rotate;
+
+    BehaviorStatus _rotation_status = BehaviorStatus::fail;
+};
+
+class MonsterAttackFreeze: public MonsterSm {
+public:
+    MonsterAttackFreeze(MonsterModel* model, BasicBehavior *rotate)
+        :_model(model), _rotate(rotate){}
+
+    virtual void tick();
+    virtual ~MonsterAttackFreeze(){}
+private:
+    MonsterModel* _model;
+    BasicBehavior* _rotate;
+    int _freeze_time=10;
+};
+
+class MonsterAttackDecide: public MonsterSm {
+public:
+    MonsterAttackDecide(MonsterModel* model, BasicBehavior* selector);
+
+    virtual void tick();
+    virtual ~MonsterAttackDecide(){}
+protected:
+private:
+    MonsterModel* _model;
+    BasicBehavior* _selector;
+
+};
+
+class MonsterAttackMove: public MonsterSm {
+public:
+    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
+        :_model(model),_move(move),_rotate(rotate){}
+
+    virtual void tick();
+    virtual ~MonsterAttackMove(){}
+private:
+    MonsterModel* _model;
+    BasicBehavior* _move;
+    BasicBehavior* _rotate;
+
+    BehaviorStatus _rotation_status = BehaviorStatus::fail;
+};
+
+class MonsterFleeFreeze: public MonsterSm {
+public:
+    MonsterFleeFreeze(MonsterModel* model, BasicBehavior *rotate)
+        :_model(model), _rotate(rotate){}
+
+    virtual void tick();
+    virtual ~MonsterFleeFreeze(){}
+private:
+    MonsterModel* _model;
+    BasicBehavior* _rotate;
+    int _freeze_time=10;
+};
+
+class MonsterFleeDecide: public MonsterSm {
+public:
+    MonsterFleeDecide(MonsterModel* model, BasicBehavior* selector);
+
+    virtual void tick();
+    virtual ~MonsterFleeDecide(){}
+protected:
+private:
+    MonsterModel* _model;
+    BasicBehavior* _selector;
+
+};
+
+class MonsterFleeMove: public MonsterSm {
+public:
+    MonsterFleeMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
+        :_model(model),_move(move),_rotate(rotate){}
+
+    virtual void tick();
+    virtual ~MonsterFleeMove(){}
 private:
     MonsterModel* _model;
     BasicBehavior* _move;

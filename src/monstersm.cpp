@@ -31,9 +31,10 @@ MonsterSm* MonsterStateFactory::stateFactory(MonsterStates state, MonsterType mo
         new_state = patrolFactory(monster, model);
         break;
     case attack:
+        new_state = attackFactory(monster, model);
+        break;
     case flee:
-    default:
-        abort();
+        new_state = fleeFactory(monster, model);
         break;
     }
     return new_state;
@@ -63,9 +64,6 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
         rotator = new TronRotation(model);
         freeze_rotator = rotator;
         break;
-    default:
-        abort();
-        break;
     }
     patrol_state = new MonsterPatrol(model);
     patrol_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
@@ -75,35 +73,81 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
 
 }
 
+MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel* model)
+{
+    BasicBehavior* selector = nullptr;
+    BasicBehavior* mover = nullptr;
+    BasicBehavior* rotator = nullptr;
+    BasicBehavior* freeze_rotator = nullptr;
+
+    MonsterSm* attack_state = nullptr;
+
+    switch (monster){
+    case Blinky:
+        selector = new RandomDirection(model);
+        mover = new MoveFixedSteps(model, 2, 100);
+        rotator = new LinearRotation(model, 2);
+        freeze_rotator = new TronRotation(model);
+        break;
+    case Pinky:
+    case Inky:
+    case Clyde:
+        selector = new PerpendicularDirection(model);
+        mover = new MoveFixedSteps(model, 4, 100);
+        rotator = new TronRotation(model);
+        freeze_rotator = rotator;
+        break;
+    }
+    attack_state = new MonsterPatrol(model);
+    attack_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
+    attack_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
+    attack_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
+    return  attack_state;
+
+}
+
+MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* model)
+{
+    BasicBehavior* selector = nullptr;
+    BasicBehavior* mover = nullptr;
+    BasicBehavior* rotator = nullptr;
+    BasicBehavior* freeze_rotator = nullptr;
+
+    MonsterSm* flee_state = nullptr;
+
+    switch (monster){
+    case Blinky:
+    case Pinky:
+    case Inky:
+    case Clyde:
+        break;
+    }
+    flee_state = new MonsterPatrol(model);
+    flee_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
+    flee_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
+    flee_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
+    return  flee_state;
+
+}
+
+/*
+ * Monster Patrol State
+ */
 MonsterPatrol::MonsterPatrol(MonsterModel *model)
     :_model(model)
 {
      _model->sub_state = MonsterSubStates::route;
+     return;
 }
 
 void MonsterPatrol::tick(){
     sstates[_model->sub_state]->tick();
-}
-
-void MonsterAttack::tick(){
-    move();
-}
-
-void MonsterAttack::move(){
     return;
 }
 
-void MonsterFlee::tick(){
-    move();
-}
-
-void MonsterFlee::move(){
-//    if (BehaviorStatus::running != _rotation_status)
-//        _model->sub_state = MonsterSubStates::route;
-
-    return;
-}
-
+/*
+ * Monster Patrol Sub State
+ */
 void MonsterPatrolFreeze::tick(){
     if( (_freeze_time > 0) ){
         _freeze_time--;
@@ -137,6 +181,52 @@ void MonsterPatrolMove::tick(){
 //    if (BehaviorStatus::success != _rotation_status)
 //        _rotation_status = _rotate->exec();
 
+    return;
+}
+
+/*
+ * Monster Attack State
+ */
+void MonsterAttack::tick(){
+    sstates[_model->sub_state]->tick();
+    return;
+}
+
+/*
+ * Monster Attack Sub State
+ */
+void MonsterAttackMove::tick(){
+    return;
+}
+
+void MonsterAttackDecide::tick(){
+    return;
+}
+
+void MonsterAttackFreeze::tick(){
+    return;
+}
+
+/*
+ * Monster Flee State
+ */
+void MonsterFlee::tick(){
+    sstates[_model->sub_state]->tick();
+    return;
+}
+
+/*
+ * Monster Flee Sub State
+ */
+void MonsterFleeMove::tick(){
+    return;
+}
+
+void MonsterFleeDecide::tick(){
+    return;
+}
+
+void MonsterFleeFreeze::tick(){
     return;
 }
 
