@@ -5,8 +5,6 @@ exclude:
       - .*/googletest/.*\.cpp
       - .*/googletest/.*\.c
       - .*/googletest/.*\.cc
-      - .*/tests/.*\.h
-      - .*/tests/.*\.cpp
 - name: cpp
   production:
     include:
@@ -14,10 +12,6 @@ exclude:
       - .*/src/.*\.h
       - .*/src/.*\.cc
     exclude:
-      - .*/googletest/.*\.h
-      - .*/googletest/.*\.cpp
-      - .*/googletest/.*\.c
-      - .*/googletest/.*\.cc
       - .*/tests/.*\.h
       - .*/tests/.*\.cpp
   test:
