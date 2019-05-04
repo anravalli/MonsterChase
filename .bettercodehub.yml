@@ -1,10 +1,5 @@
+component_depth: 1
 languages:
-- cpp
-exclude:
-      - .*/googletest/.*\.h
-      - .*/googletest/.*\.cpp
-      - .*/googletest/.*\.c
-      - .*/googletest/.*\.cc
 - name: cpp
   production:
     include:
@@ -18,3 +13,5 @@ exclude:
     include:
       - .*/tests/.*\.h
       - .*/tests/.*\.cpp
+exclude:
+- .*/googletest/.*
