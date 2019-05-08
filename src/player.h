@@ -35,18 +35,18 @@ namespace Monster {
 class Monster;
 }
 
-typedef enum {
+enum PlayerStates {
     normal,
     rage_available,
     on_rage,
     on_damage,
     dead
-} PlayerStates;
+} ;
 
-typedef enum {
+enum PlayerSubStates {
     idle,
     moving
-} PlayerSubStates;
+} ;
 
 enum PlayerDirection {
     player_up,
@@ -55,7 +55,7 @@ enum PlayerDirection {
     player_right
 };
 
-typedef struct {
+struct PlayerModel{
     double energy;
     PlayerStates state;
     PlayerSubStates sub_state;
@@ -63,7 +63,7 @@ typedef struct {
     double pos_y;
     bool direction[4];
     int score;
-} PlayerModel;
+} ;
 
 class PlayerScore;
 class PlayerEnergyGauge;

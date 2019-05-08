@@ -8,7 +8,7 @@
 #define MAP_WIDTH 100
 #define MAP_HEIGHT 100
 
-typedef enum {
+enum BrickType {
     none,
     standard,
     cap_up,
@@ -16,7 +16,7 @@ typedef enum {
     cap_lx,
     cap_rx,
     throwable
-} BrickType;
+};
 
 class Brick: public QGraphicsRectItem
 {
