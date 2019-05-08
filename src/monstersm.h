@@ -43,6 +43,9 @@ public:
     friend class MonsterStateFactory;
 
     virtual void tick() = 0;
+    virtual void enter(){}
+    virtual void exit(){}
+
     virtual ~MonsterSm();
 protected:
     MonsterSm* sstates[3]={nullptr,nullptr,nullptr};
