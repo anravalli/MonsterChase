@@ -78,7 +78,7 @@ class Player : public QObject
 public:
     Player();
     void update();
-    ~Player();
+    ~Player() override;
 
     void show();
 
