@@ -102,6 +102,11 @@ private:
 
 GameWorld::~GameWorld(){};
 
+MonsterChase& MonsterChase::instance(){
+    static MonsterChase instance;
+    return instance;
+}
+
 MonsterChase::MonsterChase()
 {
     setUpView();
@@ -158,7 +163,7 @@ void MonsterChase::addPlayTime(){
 }
 
 void MonsterChase::addPlayer(){
-    player = new Player(this);
+    player = new Player();
     player->setEnergyGaugePos(PLAYGROUND_WIDTH/2, PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
     player->setScorePos(PLAYGROUND_WIDTH-35,-PLAYGROUND_BORDER_HEIGHT*0.6);
     player->hide();
@@ -168,7 +173,6 @@ void MonsterChase::addMonsters(){
     //Adding Blinky at x=200 y=200
     Monster::Monster* m = Monster::monsterFactory(
                 Monster::MonsterType::Blinky,
-                this,
                 QPointF(200,200));
     m->hide();
     monsters.push_back(m);
@@ -176,7 +180,6 @@ void MonsterChase::addMonsters(){
     //Adding Pinky at x=600 y=200
     m = Monster::monsterFactory(
                 Monster::MonsterType::Pinky,
-                this,
                 QPointF(600,200));
     m->hide();
     monsters.push_back(m);

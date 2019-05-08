@@ -49,7 +49,12 @@ class MonsterChase : public QObject, public GameWorld
     friend class Monster::Monster;
 
 public:
-    explicit MonsterChase();
+    static MonsterChase& instance();
+
+    //avoid copy
+    MonsterChase(MonsterChase const&) = delete;
+    void operator=(MonsterChase const&)  = delete;
+
     ~MonsterChase() override;
 
     void show();
@@ -66,6 +71,7 @@ protected:
     QGraphicsScene* getScene() override;
 
 private:
+    explicit MonsterChase();
     QGraphicsView* view;
     QGraphicsScene* scene;
     QTimer* timer;

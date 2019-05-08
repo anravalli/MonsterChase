@@ -76,7 +76,7 @@ class Player : public QObject
     Q_OBJECT
 
 public:
-    Player(MonsterChase* w);
+    Player();
     void update();
     ~Player();
 
@@ -96,7 +96,6 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    MonsterChase* world;
     PlayerModel model = {
         DEF_ENERGY, //energy
         normal, //state

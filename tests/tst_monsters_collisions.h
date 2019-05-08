@@ -17,6 +17,11 @@ namespace Monster {
 
 class FakeWorld: public GameWorld {
 public:
+    static FakeWorld& instance(){
+        static FakeWorld instance;
+        return instance;
+    }
+
     FakeWorld(){
         scene = new QGraphicsScene();
     }
@@ -59,8 +64,8 @@ private:
 
 class DummyMonster: public Monster {
 public:
-    DummyMonster(GameWorld* world):
-        Monster(world)
+    DummyMonster():
+        Monster()
     {
     }
 
@@ -105,7 +110,7 @@ public:
 TEST_F(MonsterCollisions_Test, four_block_horizontal)
 {
 
-    DummyMonster monster(fw);
+    DummyMonster monster;
 
     //build a four block wall
     for (int i=0; i<4 ; i++){
@@ -230,7 +235,7 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
 TEST_F(MonsterCollisions_Test, four_block_vertical)
 {
 
-    DummyMonster monster(fw);
+    DummyMonster monster;
 
     //build a four block wall
     for (int i=0; i<4 ; i++){

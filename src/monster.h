@@ -73,7 +73,7 @@ class MonsterSm;
     } ;
 
     class Monster;
-    Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
+    Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
     class Monster : public QObject
     {
@@ -89,13 +89,13 @@ class MonsterSm;
 
         void update();
 
-        friend Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
+        friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
         ~Monster();
 
     protected:
         void addViewComponent(QGraphicsItem* componet);
-        Monster(GameWorld* world);
+        Monster();
 
         void checkCollisionsWithPlayer();
         void checkCollisionsWithWalls();
@@ -111,7 +111,6 @@ class MonsterSm;
         };
 
     private:
-        GameWorld* world;
         MonsterShape* shape=nullptr;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};

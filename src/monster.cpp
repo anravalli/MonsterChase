@@ -26,10 +26,12 @@
 #include "player.h"
 #include "arena.h"
 
+#include <assert.h>
+
 namespace Monster{
 
-    Monster *monsterFactory(MonsterType type, MonsterChase *w, QPointF pos){
-        Monster* monster = new Monster(w);
+    Monster *monsterFactory(MonsterType type, QPointF pos){
+        Monster* monster = new Monster();
         //set position & type
         monster->model.pos_x = pos.x();
         monster->model.pos_y = pos.y();
@@ -61,8 +63,8 @@ namespace Monster{
 
         //init state machine
         monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model));
-        monster->mstates[attack] = new MonsterAttack(&(monster->model));
-        monster->mstates[flee] = new MonsterFlee(&(monster->model));
+        monster->mstates[attack] =  MonsterStateFactory::stateFactory(attack,type,&(monster->model));
+        monster->mstates[flee] =  MonsterStateFactory::stateFactory(flee,type,&(monster->model));
 
         //adding views to scene
         //the order we add the items to the scene affects the z-order
@@ -71,15 +73,14 @@ namespace Monster{
         return monster;
     }
 
-    Monster::Monster(GameWorld* w):
-        world(w)
+    Monster::Monster()
     {
         QApplication::instance()->installEventFilter(this);
     }
 
     void Monster::addViewComponent(QGraphicsItem* component)
     {
-        world->getScene()->addItem(component);
+        MonsterChase::instance().getScene()->addItem(component);
         return;
     }
 
@@ -95,10 +96,10 @@ namespace Monster{
 
     void Monster::update(){
         mstates[model.state]->tick();
-
-        checkCollisionsWithPlayer();
-        checkCollisionsWithWalls();
-
+        if(model.sub_state==move){
+            checkCollisionsWithPlayer();
+            checkCollisionsWithWalls();
+        }
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
         sight->setPos(model.pos_x,model.pos_y);
@@ -108,7 +109,7 @@ namespace Monster{
     }
 
     void Monster::checkCollisionsWithPlayer(){
-        Player* p = world->getPlayer();
+        Player* p = MonsterChase::instance().getPlayer();
 
         QRectF i = getIntersectonWith(p);
         if (not i.isEmpty()){
@@ -119,44 +120,46 @@ namespace Monster{
     void Monster::checkCollisionsWithWalls(){
         //model.pos is the center of the collision box
         //getWallsAround needs the top-left and bottom-right corners
-        std::vector<Brick*> walls = world->getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
+        std::vector<Brick*> walls = MonsterChase::instance().getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
                                                           QPointF(model.pos_x+15,model.pos_y+15));
         for (auto b: walls){
+            //test: increase displacement due to collisions
             QRectF i = collisionBox().intersected(b->boundingRect());
             if (not i.isEmpty()){
                 if( 0.0 == model.direction or 360.0 == model.direction){
-                    model.pos_x -= i.width();
+                    model.pos_x -= (i.width()+2);
                 }
                 else if( 0 < model.direction and model.direction < 90 ){
-                    model.pos_x -= i.width();
-                    model.pos_y -= i.height();
+                    model.pos_x -= (i.width()+2);
+                    model.pos_y -= (i.height()+2);
                 }
                 else if( 90.0 == model.direction ){
-                    model.pos_y -= i.height();
+                    model.pos_y -= (i.height()+2);
                 }
                 else if( 90 < model.direction and model.direction < 180 ){
-                    model.pos_x += i.width();
-                    model.pos_y -= i.height();
+                    model.pos_x += (i.width()+2);
+                    model.pos_y -= (i.height()+2);
                 }
                 else if( model.direction == 180.0 ){
-                    model.pos_x += i.width();
+                    model.pos_x += (i.width()+2);
                 }
                 else if( 180 < model.direction and model.direction < 270 ){
-                    model.pos_x += i.width();
-                    model.pos_y += i.height();
+                    model.pos_x += (i.width()+2);
+                    model.pos_y += (i.height()+2);
                 }
                 else if( 270.0 == model.direction ){
-                    model.pos_y += i.height();
+                    model.pos_y += (i.height()+2);
                 }
                 else if( 270 < model.direction and model.direction < 360 ){
-                    model.pos_x -= i.width();
-                    model.pos_y += i.height();
+                    model.pos_x -= (i.width()+2);
+                    model.pos_y += (i.height()+2);
                 }
                 else if( 0 > model.direction ){
                     abort();
                 }
                 model.sub_state=freeze;
             }
+            assert(collisionBox().intersected(b->boundingRect()).isEmpty());
         }
 
     }

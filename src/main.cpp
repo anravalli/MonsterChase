@@ -25,8 +25,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MonsterChase game;
-    game.show();
+
+    MonsterChase::instance().show();
 
     return a.exec();
 }
