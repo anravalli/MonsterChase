@@ -22,6 +22,10 @@
 #include "behaviors.h"
 #include <math.h>       /* cos */
 
+#include "monsterchase.h"
+#include "arena.h"
+#include "player.h"
+
 #define PI 3.14159265
 
 
@@ -134,3 +138,73 @@ BehaviorStatus TronRotation::exec() {
     return success;
 }
 
+/*
+ * Checking Behaviors
+ */
+BehaviorStatus WallsCollisionChecker::exec()
+{
+    //model.pos is the center of the collision box
+    //getWallsAround needs the top-left and bottom-right corners
+    std::vector<Brick*> walls = MonsterChase::instance().getWallsAround(QPointF(_model->pos_x-(_entity_size/2),
+                                                                                _model->pos_y-(_entity_size/2)),
+                                                                        QPointF(_model->pos_x+(_entity_size/2),
+                                                                                _model->pos_y+(_entity_size/2)));
+    BehaviorStatus status = fail;
+    for (auto b: walls){
+        //test: increase displacement due to collisions glitch
+        QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
+                              _entity_size, _entity_size);
+        QRectF i = collisionBox.intersected(b->boundingRect());
+        if (not i.isEmpty()){
+            if( 0.0 == _model->direction or 360.0 == _model->direction){
+                _model->pos_x -= (i.width()+2);
+            }
+            else if( 0 < _model->direction and _model->direction < 90 ){
+                _model->pos_x -= (i.width()+2);
+                _model->pos_y -= (i.height()+2);
+            }
+            else if( 90.0 == _model->direction ){
+                _model->pos_y -= (i.height()+2);
+            }
+            else if( 90 < _model->direction and _model->direction < 180 ){
+                _model->pos_x += (i.width()+2);
+                _model->pos_y -= (i.height()+2);
+            }
+            else if( _model->direction == 180.0 ){
+                _model->pos_x += (i.width()+2);
+            }
+            else if( 180 < _model->direction and _model->direction < 270 ){
+                _model->pos_x += (i.width()+2);
+                _model->pos_y += (i.height()+2);
+            }
+            else if( 270.0 == _model->direction ){
+                _model->pos_y += (i.height()+2);
+            }
+            else if( 270 < _model->direction and _model->direction < 360 ){
+                _model->pos_x -= (i.width()+2);
+                _model->pos_y += (i.height()+2);
+            }
+            else if( 0 > _model->direction ){
+                abort();
+            }
+            //_model->sub_state=freeze;
+            status = success;
+        }
+        //assert(collisionBox.intersected(b->boundingRect()).isEmpty());
+    }
+    return status;
+}
+
+BehaviorStatus PlayerCollisionChecker::exec()
+{
+    BehaviorStatus status = fail;
+    QRectF pbox = MonsterChase::instance().getPlayer()->collisionBox();
+    QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
+                          _entity_size, _entity_size);
+
+    QRectF i = collisionBox.intersected(pbox);
+    if (not i.isEmpty()){
+        status = success;
+    }
+    return status;
+}

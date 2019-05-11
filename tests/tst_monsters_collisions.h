@@ -8,6 +8,7 @@
 #include "../src/monster.h"
 #include "../src/monsterchase.h"
 #include "../src/arena.h"
+#include "../src/behaviors.h"
 
 #include <iostream>
 using namespace testing;
@@ -67,6 +68,7 @@ public:
     DummyMonster():
         Monster()
     {
+        _checker = new WallsCollisionChecker(&model,30);
     }
 
     void setDir(double d){
@@ -85,8 +87,10 @@ public:
     }
 
     void checkCollisions(){
-        checkCollisionsWithWalls();
+        _checker->exec();
     }
+private:
+    WallsCollisionChecker* _checker;
 };
 
 class MonsterCollisions_Test: public testing::Test {
@@ -111,6 +115,7 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
 {
 
     DummyMonster monster;
+
 
     //build a four block wall
     for (int i=0; i<4 ; i++){

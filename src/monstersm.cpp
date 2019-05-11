@@ -179,12 +179,26 @@ void MonsterPatrolDecide::tick()
     return;
 }
 
+MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+    :_model(model),_move(move),_rotate(rotate)
+{
+    int monster_size = 30; //temporary harcoded
+    _walls_checker = new WallsCollisionChecker(model, monster_size);
+    _player_checker = new PlayerCollisionChecker(model, monster_size);
+}
+
 void MonsterPatrolMove::tick(){
 
     if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
         _rotation_status = BehaviorStatus::fail;
     }
+
+    if (BehaviorStatus::success == _walls_checker->exec())
+        _model->sub_state=freeze;
+
+    if (BehaviorStatus::success == _player_checker->exec())
+        _model->sub_state=freeze;
 
 //    if (BehaviorStatus::success != _rotation_status)
 //        _rotation_status = _rotate->exec();

@@ -118,14 +118,15 @@ private:
 
 class MonsterPatrolMove: public MonsterSm {
 public:
-    MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
-        :_model(model),_move(move),_rotate(rotate){}
+    MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
     virtual void tick();
     virtual ~MonsterPatrolMove(){}
 private:
     MonsterModel* _model;
     BasicBehavior* _move;
+    BasicBehavior* _walls_checker;
+    BasicBehavior* _player_checker;
     BasicBehavior* _rotate;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;

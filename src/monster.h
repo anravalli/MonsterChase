@@ -97,9 +97,6 @@ class MonsterSm;
         void addViewComponent(QGraphicsItem* componet);
         Monster();
 
-        void checkCollisionsWithPlayer();
-        void checkCollisionsWithWalls();
-
         MonsterModel model = {
             MonsterType::Blinky, //type
             MonsterStates::patrol, //state
@@ -115,7 +112,6 @@ class MonsterSm;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
-        QRectF getIntersectonWith(Player *p);
     };
 
 } //namescpace Monster

@@ -96,78 +96,13 @@ namespace Monster{
 
     void Monster::update(){
         mstates[model.state]->tick();
-        if(model.sub_state==move){
-            checkCollisionsWithPlayer();
-            checkCollisionsWithWalls();
-        }
+
         shape->setPos(model.pos_x,model.pos_y);
         shape->setRotation(model.direction);
         sight->setPos(model.pos_x,model.pos_y);
         sight->setRotation(model.direction+90);
         shape->update();
         sight->update();
-    }
-
-    void Monster::checkCollisionsWithPlayer(){
-        Player* p = MonsterChase::instance().getPlayer();
-
-        QRectF i = getIntersectonWith(p);
-        if (not i.isEmpty()){
-            model.sub_state=freeze;
-        }
-    }
-
-    void Monster::checkCollisionsWithWalls(){
-        //model.pos is the center of the collision box
-        //getWallsAround needs the top-left and bottom-right corners
-        std::vector<Brick*> walls = MonsterChase::instance().getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
-                                                          QPointF(model.pos_x+15,model.pos_y+15));
-        for (auto b: walls){
-            //test: increase displacement due to collisions
-            QRectF i = collisionBox().intersected(b->boundingRect());
-            if (not i.isEmpty()){
-                if( 0.0 == model.direction or 360.0 == model.direction){
-                    model.pos_x -= (i.width()+2);
-                }
-                else if( 0 < model.direction and model.direction < 90 ){
-                    model.pos_x -= (i.width()+2);
-                    model.pos_y -= (i.height()+2);
-                }
-                else if( 90.0 == model.direction ){
-                    model.pos_y -= (i.height()+2);
-                }
-                else if( 90 < model.direction and model.direction < 180 ){
-                    model.pos_x += (i.width()+2);
-                    model.pos_y -= (i.height()+2);
-                }
-                else if( model.direction == 180.0 ){
-                    model.pos_x += (i.width()+2);
-                }
-                else if( 180 < model.direction and model.direction < 270 ){
-                    model.pos_x += (i.width()+2);
-                    model.pos_y += (i.height()+2);
-                }
-                else if( 270.0 == model.direction ){
-                    model.pos_y += (i.height()+2);
-                }
-                else if( 270 < model.direction and model.direction < 360 ){
-                    model.pos_x -= (i.width()+2);
-                    model.pos_y += (i.height()+2);
-                }
-                else if( 0 > model.direction ){
-                    abort();
-                }
-                model.sub_state=freeze;
-            }
-            assert(collisionBox().intersected(b->boundingRect()).isEmpty());
-        }
-
-    }
-
-    QRectF Monster::getIntersectonWith(Player* p)
-    {
-        QRectF mb = p->collisionBox();
-        return collisionBox().intersected(mb);
     }
 
     QRectF Monster::collisionBox() const
@@ -186,5 +121,5 @@ namespace Monster{
         delete shape;
         delete sight;
     }
-    
+
 } //namescpace Monster

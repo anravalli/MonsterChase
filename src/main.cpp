@@ -26,6 +26,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    //As of now there is only one level and we init right in the main
+    MonsterChase::instance().initLevel(":/resources/map.txt");
+
     MonsterChase::instance().show();
 
     return a.exec();

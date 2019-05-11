@@ -100,7 +100,7 @@ private:
     int frame_counter=25;
 };
 
-GameWorld::~GameWorld(){};
+GameWorld::~GameWorld(){}
 
 MonsterChase& MonsterChase::instance(){
     static MonsterChase instance;
@@ -110,29 +110,34 @@ MonsterChase& MonsterChase::instance(){
 MonsterChase::MonsterChase()
 {
     setUpView();
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
-    arena = new Arena(":/resources/map.txt",scene);
+}
+
+void MonsterChase::show(){
+    view->show();
+}
+
+void MonsterChase::initLevel(QString map)
+{
+    arena = new Arena(map, scene);
     addPlayer();
     addMonsters();
     //keep this as the last in order to have it on top of the Z-stack
     addPlayTime();
 
     connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
-
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
     arena->startShowMap();
 }
 
-void MonsterChase::show(){
-    view->show();
-}
 void MonsterChase::start(){
     player->show();
     for (auto m: monsters)
         m->show();
     timer->start(FRAMERATE);
 }
+
 void MonsterChase::pause(){
     timer->stop();
 }
