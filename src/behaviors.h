@@ -132,4 +132,28 @@ public:
     BehaviorStatus exec() override;
 };
 
+/*
+ * Checking Behaviors
+ */
+class WallsCollisionChecker: public  BasicBehavior
+{
+public:
+    WallsCollisionChecker(Monster::MonsterModel* m, int size):
+        BasicBehavior(m), _entity_size(size){}
+    BehaviorStatus exec() override;
+private:
+    int _entity_size;
+};
+
+class PlayerCollisionChecker: public  BasicBehavior
+{
+public:
+    PlayerCollisionChecker(Monster::MonsterModel* m, int size):
+        BasicBehavior(m), _entity_size(size){}
+    BehaviorStatus exec() override;
+private:
+    int _entity_size;
+};
+
+
 #endif // BEHAVIORS_H

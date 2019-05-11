@@ -45,14 +45,25 @@ public:
 class MonsterChase : public QObject, public GameWorld
 {
     Q_OBJECT
-    friend class Player;
-    friend class Monster::Monster;
+    //friend class Player;
+    //friend class Monster::Monster;
 
 public:
-    explicit MonsterChase();
+    static MonsterChase& instance();
+    void initLevel(QString map);
+
+    //avoid copy
+    MonsterChase(MonsterChase const&) = delete;
+    void operator=(MonsterChase const&)  = delete;
+
     ~MonsterChase() override;
 
     void show();
+
+    std::vector<Monster::Monster*> getMonsters() override;
+    std::vector<Brick*> getWallsAround(QPointF tl, QPointF br) override;
+    Player* getPlayer() override;
+    QGraphicsScene* getScene() override;
 
 public slots:
     void gameStep() ;
@@ -60,12 +71,9 @@ public slots:
     void start();
 
 protected:
-    std::vector<Monster::Monster*> getMonsters() override;
-    std::vector<Brick*> getWallsAround(QPointF tl, QPointF br) override;
-    Player* getPlayer() override;
-    QGraphicsScene* getScene() override;
 
 private:
+    explicit MonsterChase();
     QGraphicsView* view;
     QGraphicsScene* scene;
     QTimer* timer;

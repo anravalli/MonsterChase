@@ -73,7 +73,7 @@ class MonsterSm;
     } ;
 
     class Monster;
-    Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
+    Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
     class Monster : public QObject
     {
@@ -89,16 +89,13 @@ class MonsterSm;
 
         void update();
 
-        friend Monster* monsterFactory(MonsterType mtype, MonsterChase *w, QPointF pos);
+        friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
         ~Monster();
 
     protected:
         void addViewComponent(QGraphicsItem* componet);
-        Monster(GameWorld* world);
-
-        void checkCollisionsWithPlayer();
-        void checkCollisionsWithWalls();
+        Monster();
 
         MonsterModel model = {
             MonsterType::Blinky, //type
@@ -111,12 +108,10 @@ class MonsterSm;
         };
 
     private:
-        GameWorld* world;
         MonsterShape* shape=nullptr;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
-        QRectF getIntersectonWith(Player *p);
     };
 
 } //namescpace Monster
