@@ -6,7 +6,7 @@
 
 #include <QtWidgets>
 #include "../src/monster.h"
-#include "../src/monsterchase.h"
+#include "../src/gameworld.h"
 #include "../src/arena.h"
 #include "../src/behaviors.h"
 
@@ -16,16 +16,16 @@ using namespace std;
 
 namespace Monster {
 
-class FakeWorld: public GameWorld {
+class FakeArena: public Arena {
 public:
-    static FakeWorld& instance(){
-        static FakeWorld instance;
-        return instance;
-    }
+//    static FakeWorld& instance(){
+//        static FakeWorld instance;
+//        return instance;
+//    }
 
-    FakeWorld(){
-        scene = new QGraphicsScene();
-    }
+//    FakeWorld(){
+//        scene = new QGraphicsScene();
+//    }
 
     virtual ~FakeWorld() override {}
 
@@ -40,10 +40,6 @@ public:
     Player* getPlayer() override
     {
         return nullptr;
-    }
-    QGraphicsScene* getScene() override
-    {
-        return scene;
     }
 
     void setMonsters(Monster* m)

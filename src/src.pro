@@ -33,7 +33,10 @@ SOURCES += main.cpp\
     playerqtviews.cpp \
     monstersm.cpp \
     monsterviews.cpp \
-    behaviors.cpp
+    behaviors.cpp \
+    gameworld.cpp \
+    gameviews.cpp \
+    gameconfig.cpp
 
 HEADERS  += monsterchase.h \
     player.h \
@@ -43,7 +46,10 @@ HEADERS  += monsterchase.h \
     playerqtviews.h \
     monstersm.h \
     monsterviews.h \
-    behaviors.h
+    behaviors.h \
+    gameworld.h \
+    gameviews.h \
+    gameconfig.h
 
 RESOURCES += \
     ../monsterchase.qrc 

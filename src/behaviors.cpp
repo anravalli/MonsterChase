@@ -22,7 +22,7 @@
 #include "behaviors.h"
 #include <math.h>       /* cos */
 
-#include "monsterchase.h"
+#include "gameworld.h"
 #include "arena.h"
 #include "player.h"
 
@@ -145,7 +145,7 @@ BehaviorStatus WallsCollisionChecker::exec()
 {
     //model.pos is the center of the collision box
     //getWallsAround needs the top-left and bottom-right corners
-    std::vector<Brick*> walls = MonsterChase::instance().getWallsAround(QPointF(_model->pos_x-(_entity_size/2),
+    std::vector<Brick*> walls = GameWorld::instance().getWallsAround(QPointF(_model->pos_x-(_entity_size/2),
                                                                                 _model->pos_y-(_entity_size/2)),
                                                                         QPointF(_model->pos_x+(_entity_size/2),
                                                                                 _model->pos_y+(_entity_size/2)));
@@ -198,7 +198,7 @@ BehaviorStatus WallsCollisionChecker::exec()
 BehaviorStatus PlayerCollisionChecker::exec()
 {
     BehaviorStatus status = fail;
-    QRectF pbox = MonsterChase::instance().getPlayer()->collisionBox();
+    QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
     QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
                           _entity_size, _entity_size);
 

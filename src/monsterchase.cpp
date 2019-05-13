@@ -20,121 +20,37 @@
 */
 
 #include "monsterchase.h"
-//#include "ui_monsterchase.h"
-#include "player.h"
-#include "monster.h"
+#include "gameworld.h"
+#include "gameconfig.h"
 #include "arena.h"
 
-#define PLAYGROUND_WIDTH 800
-#define PLAYGROUND_HEIGHT 800
-#define PLAYGROUND_BORDER_WIDTH 50
-#define PLAYGROUND_BORDER_HEIGHT 50
-#define PLAYGROUND_VIEW_EXTRA_WIDTH 100
-#define PLAYGROUND_VIEW_EXTRA_HEIGHT 100
-#define PLAYGROUND_VIEW_WIDTH PLAYGROUND_WIDTH + PLAYGROUND_VIEW_EXTRA_WIDTH
-#define PLAYGROUND_VIEW_HEIGHT PLAYGROUND_HEIGHT + PLAYGROUND_VIEW_EXTRA_HEIGHT
-
 #define FRAMERATE 1000/50
-
-class GameView : public QGraphicsView
-{
-public:
-    GameView(QGraphicsScene *scene) : QGraphicsView(scene)
-    {
-        setFocusPolicy(Qt::StrongFocus);
-        setDragMode(NoDrag);
-        setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-        setVerticalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
-        setFixedSize(QSize(PLAYGROUND_VIEW_WIDTH,PLAYGROUND_VIEW_HEIGHT));
-        inner_border = new QRect(PLAYGROUND_BORDER_WIDTH,
-                                 PLAYGROUND_BORDER_HEIGHT,
-                                 PLAYGROUND_WIDTH-PLAYGROUND_BORDER_WIDTH,
-                                 PLAYGROUND_HEIGHT-PLAYGROUND_BORDER_HEIGHT);
-    }
-
-    QRect const * innerBorder(){
-        return inner_border;
-    }
-
-protected:
-    virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE {
-#ifdef  DEBUG
-        qDebug("Event received by GameView %d (%s)",event->key(), event->text().toStdString().c_str());
-#endif
-        QGraphicsView::keyPressEvent(event);
-        return;
-    }
-    virtual void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE
-    {
-    }
-private:
-    QRect* inner_border;
-
-};
-
-class PlayTime : public QGraphicsSimpleTextItem
-{
-public:
-    PlayTime()
-        :color(255,127,127)
-    {
-        QFont font("Helvetica",14,QFont::Bold);
-        this->setFont(font);
-        this->setPen(QPen(color));
-    }
-
-    void increase(){
-        if(!frame_counter){
-            frame_counter=25;
-            time++;
-        }
-        else
-            frame_counter--;
-        this->setText(QString::asprintf("%04d", time));
-        return;
-    }
-
-private:
-    QColor color;
-    int time=0;
-    int frame_counter=25;
-};
-
-GameWorld::~GameWorld(){}
-
-MonsterChase& MonsterChase::instance(){
-    static MonsterChase instance;
-    return instance;
-}
 
 MonsterChase::MonsterChase()
 {
     setUpView();
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
+    /*
+     * As of now there is only one level and we init right in
+     * MonsterChase constructor
+     */
+    QString map = ":/resources/map.txt";
+    Arena* arena = new Arena(map, scene);
+    connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
+    GameWorld::instance().initLevel(arena);
 }
 
 void MonsterChase::show(){
     view->show();
 }
 
-void MonsterChase::initLevel(QString map)
-{
-    arena = new Arena(map, scene);
-    addPlayer();
-    addMonsters();
-    //keep this as the last in order to have it on top of the Z-stack
-    addPlayTime();
-
-    connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
-    arena->startShowMap();
-}
-
 void MonsterChase::start(){
-    player->show();
-    for (auto m: monsters)
-        m->show();
+    addPlayTime(); //test
+
+    GameWorld::instance().start();
     timer->start(FRAMERATE);
 }
 
@@ -144,7 +60,7 @@ void MonsterChase::pause(){
 
 void MonsterChase::setUpView(){
     scene = new QGraphicsScene();
-    scene->setSceneRect(0, 0, PLAYGROUND_WIDTH, PLAYGROUND_WIDTH);
+    scene->setSceneRect(0, 0, GameConfig::playground_width, GameConfig::playground_width);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     view = new GameView(scene);
@@ -153,6 +69,9 @@ void MonsterChase::setUpView(){
     view->setCacheMode(QGraphicsView::CacheBackground);
     view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
+
+    //TO BE REVIEWED
+    GameWorld::instance().setScene(scene);
 }
 
 MonsterChase::~MonsterChase()
@@ -163,31 +82,9 @@ MonsterChase::~MonsterChase()
 
 void MonsterChase::addPlayTime(){
     ptime = new PlayTime();
-    ptime->setPos(-PLAYGROUND_BORDER_WIDTH/2,-PLAYGROUND_BORDER_HEIGHT*0.6);
+    ptime->setPos(-GameConfig::playground_border_width/2,
+                  -GameConfig::playground_border_height*0.6);
     scene->addItem(ptime);
-}
-
-void MonsterChase::addPlayer(){
-    player = new Player();
-    player->setEnergyGaugePos(PLAYGROUND_WIDTH/2, PLAYGROUND_HEIGHT+PLAYGROUND_BORDER_HEIGHT*0.3);
-    player->setScorePos(PLAYGROUND_WIDTH-35,-PLAYGROUND_BORDER_HEIGHT*0.6);
-    player->hide();
-}
-
-void MonsterChase::addMonsters(){
-    //Adding Blinky at x=200 y=200
-    Monster::Monster* m = Monster::monsterFactory(
-                Monster::MonsterType::Blinky,
-                QPointF(200,200));
-    m->hide();
-    monsters.push_back(m);
-
-    //Adding Pinky at x=600 y=200
-    m = Monster::monsterFactory(
-                Monster::MonsterType::Pinky,
-                QPointF(600,200));
-    m->hide();
-    monsters.push_back(m);
 }
 
 void MonsterChase::gameStep(){
@@ -197,38 +94,6 @@ void MonsterChase::gameStep(){
     qDebug("-> elapsed %d", e.elapsed());
 #endif
     ptime->increase();
-    player->update();
-    for (auto m: monsters)
-        m->update();
-}
-
-std::vector<Monster::Monster*> MonsterChase::getMonsters(){
-    return monsters;
-}
-
-std::vector<Brick*> MonsterChase::getWallsAround(QPointF tl, QPointF br){
-    std::pair<int,int> tl_idx = arena->posToIdx(tl);
-    std::pair<int,int> br_idx = arena->posToIdx(br);
-    std::pair<int,int> idx;
-    std::vector<Brick*> wall;
-    for(int x=tl_idx.first-1; x<br_idx.first+1; x++){
-        for (int y=tl_idx.second-1; y<br_idx.second+1; y++){
-            //TODO
-            idx.first = y;
-            idx.second = x;
-            Brick* b = arena->getBrick(idx);
-            if (!(b==nullptr))
-                wall.push_back(b);
-        }
-    }
-    return wall;
-}
-
-Player* MonsterChase::getPlayer(){
-    return player;
-}
-
-QGraphicsScene* MonsterChase::getScene(){
-    return scene;
+    GameWorld::instance().nextFrame();
 }
 

@@ -17,6 +17,7 @@ HEADERS += \
     ../src/monster.h \
     ../src/player.h \
     ../src/monsterchase.h \
+    ../src/gameworld.h \
     tst_linear_rotation.h \
     tst_player_collisions.h \
     tst_monsters_collisions.h
@@ -31,6 +32,10 @@ SOURCES += \
         ../src/monster.cpp \
         ../src/monsterchase.cpp \
         ../src/monsterviews.cpp \
-        ../src/monstersm.cpp
+        ../src/monstersm.cpp \
+        ../src/gameworld.cpp \
+        ../src/gameconfig.cpp \
+        ../src/gameviews.cpp
+
 
 INCLUDEPATH += ../src

@@ -23,7 +23,7 @@
 #include "playersm.h"
 #include "playerqtviews.h"
 
-#include "monsterchase.h"
+#include "gameworld.h"
 #include "monster.h"
 #include "arena.h"
 
@@ -41,9 +41,9 @@ Player::Player()
     pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
     //the order we add the items to the scene affects the z-order
-    MonsterChase::instance().getScene()->addItem(shape);
-    MonsterChase::instance().getScene()->addItem(score);
-    MonsterChase::instance().getScene()->addItem(energy_gauge);
+    GameWorld::instance().addToScene(shape);
+    GameWorld::instance().addToScene(score);
+    GameWorld::instance().addToScene(energy_gauge);
     QApplication::instance()->installEventFilter(this);
 }
 
@@ -80,7 +80,7 @@ void Player::computeState(){
 
 void Player::checkCollisionsWithMonsters(){
     PlayerSm* cstate = pstates[model.state];
-    std::vector<Monster::Monster*> monsters = MonsterChase::instance().getMonsters();
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
     for (auto m: monsters){
         QRectF i = getIntersectonWith(m);
         if (not i.isEmpty()){
@@ -98,7 +98,7 @@ void Player::checkCollisionsWithWalls(){
     PlayerSm* cstate = pstates[model.state];
     //model.pos is the center of the collision box
     //getWallsAround needs the top-left and bottom-right corners
-    std::vector<Brick*> walls = MonsterChase::instance().getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
+    std::vector<Brick*> walls = GameWorld::instance().getWallsAround(QPointF(model.pos_x-15,model.pos_y-15),
                                                       QPointF(model.pos_x+15,model.pos_y+15));
     for (auto b: walls){
         QRectF i = collisionBox().intersected(b->boundingRect());

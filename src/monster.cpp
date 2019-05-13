@@ -22,7 +22,7 @@
 #include "monster.h"
 #include "monstersm.h"
 #include "monsterviews.h"
-#include "monsterchase.h"
+#include "gameworld.h"
 #include "player.h"
 #include "arena.h"
 
@@ -80,7 +80,7 @@ namespace Monster{
 
     void Monster::addViewComponent(QGraphicsItem* component)
     {
-        MonsterChase::instance().getScene()->addItem(component);
+        GameWorld::instance().addToScene(component);
         return;
     }
 
