@@ -22,9 +22,15 @@ void Brick::setIndex(std::pair<int,int> idx){
 }
 
 
+Arena::Arena()
+{
+    memset(bin_map,0,MAP_WIDTH*MAP_HEIGHT);
+    memset(map,0,MAP_WIDTH*MAP_HEIGHT);
+}
+
 Arena::Arena(QString fname, QGraphicsScene *scene){
-    memset(bin_map,0,100*100);
-    memset(map,0,100*100);
+    memset(bin_map,0,MAP_WIDTH*MAP_HEIGHT);
+    memset(map,0,MAP_WIDTH*MAP_HEIGHT);
 
     map_cell_w = scene->sceneRect().width()/MAP_WIDTH;
     map_cell_h = scene->sceneRect().height()/MAP_HEIGHT;

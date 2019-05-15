@@ -18,45 +18,37 @@ namespace Monster {
 
 class FakeArena: public Arena {
 public:
-//    static FakeWorld& instance(){
-//        static FakeWorld instance;
-//        return instance;
-//    }
 
-//    FakeWorld(){
-//        scene = new QGraphicsScene();
-//    }
+    virtual ~FakeArena() override {}
 
-    virtual ~FakeWorld() override {}
-
-    std::vector<Monster*> getMonsters() override
+    Brick* getBrick (std::pair<int, int> /*idx*/)
     {
-        return monsters;
-    }
-    std::vector<Brick*> getWallsAround(QPointF /*tl*/, QPointF /*br*/) override
-    {
-        return bricks;
-    }
-    Player* getPlayer() override
-    {
-        return nullptr;
+        Brick* b = nullptr;
+        if (next_brick<bricks.size()){
+            b = bricks[next_brick];
+        }
+        next_brick++;
+        return b;
     }
 
-    void setMonsters(Monster* m)
-    {
-        monsters.push_back(m);
-        return;
-    }
     void addBrick(Brick* b)
     {
         bricks.push_back(b);
         return;
     }
 
+    unsigned long getBrickNum(){
+        return next_brick;
+    }
+    void resetBrickNum(){
+        next_brick = 0;
+        return ;
+    }
+
 private:
+    unsigned long next_brick = 0;
     std::vector<Brick*> bricks;
-    std::vector<Monster*> monsters;
-    QGraphicsScene* scene;
+
 };
 
 class DummyMonster: public Monster {
@@ -93,14 +85,37 @@ class MonsterCollisions_Test: public testing::Test {
 public:
 
     void SetUp (){
-        fw = new FakeWorld();
+        fa = new FakeArena();
+
     }
 
     void TearDown(){
-        delete fw;
+
+        delete fa;
     }
 
-    GameWorld* fw;
+    void testCollision(DummyMonster * monster, double a,
+                       std::pair<double, double> pos,
+                       std::pair<double, double> exp_pos)
+    {
+        cout << "*****************************" << endl;
+        cout << "testing direction: " << a << endl;
+        cout << "*****************************" << endl;
+
+        monster->setDir(a);
+        monster->setPos(pos);
+        monster->checkCollisions();
+        auto new_pos = monster->getPos();
+        cout << "monster X delta: (old_x-new_x) " << pos.first << "-" << new_pos.first << "=" << pos.first-new_pos.first << endl;
+        cout << "monster Y delta: (old_y-new_y) " << pos.second << "-" << new_pos.second << "=" << pos.second-new_pos.second << endl;
+        EXPECT_EQ(new_pos.first, exp_pos.first);
+        EXPECT_EQ(new_pos.second, exp_pos.second);
+
+        cout << "requested bricks: " << fa->getBrickNum() << endl;
+        fa->resetBrickNum();
+    }
+
+    FakeArena* fa;
 
     virtual ~MonsterCollisions_Test(){}
 
@@ -111,6 +126,9 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
 {
 
     DummyMonster monster;
+    std::vector< std::tuple< double,
+            std::pair<double, double>,
+            std::pair<double, double> > > test_cases;
 
 
     //build a four block wall
@@ -123,35 +141,22 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
         cout << "brick rect pos=" << b->rect().x() << "," << b->rect().y()
              << " size=" << b->rect().width() << "," << b->rect().height()
              << endl;
-        static_cast<FakeWorld*>(fw)->addBrick(b);
+        static_cast<FakeArena*>(fa)->addBrick(b);
     }
-
+    try{
+        GameWorld::instance().initLevel(fa);
+    }
+    catch(...){
+        cout << "*****************************" << endl;
+        cout << "Exception!!! " << endl;
+        cout << "*****************************" << endl;
+    }
     //build a direction vector ranging between 0 and 180 degrees
-
-    cout << "*****************************" << endl;
-    cout << "direction range  0-89" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 0 << endl;
-    monster.setDir(0);
-    monster.setPos(make_pair(76,100));
-    monster.checkCollisions();
-    auto new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 74.5);
-    EXPECT_EQ(new_pos.second, 100);
+    // 0
+    test_cases.push_back( std::make_tuple(0,make_pair(76,100),make_pair(74.5,100)) );
 
     for (double j=1; j<90; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(76,69.0));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 69-" << new_pos.second << "=" << 69-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 74.5);
-        EXPECT_EQ(new_pos.second, 65.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(76,69.0),make_pair(74.5,65.5)) );
     }
 
     cout << "*****************************" << endl;
@@ -161,7 +166,7 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
     monster.setDir(90);
     monster.setPos(make_pair(76,69.0));
     monster.checkCollisions();
-    new_pos = monster.getPos();
+    auto new_pos = monster.getPos();
     cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
     cout << "monster Y delta: (old_y-new_y) 69-" << new_pos.second << "=" << 69-new_pos.second << endl;
     EXPECT_EQ(new_pos.first, 76);
@@ -192,6 +197,7 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
     cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
     EXPECT_EQ(new_pos.first, 137.5);
     EXPECT_EQ(new_pos.second, 100);
+
 
     for (double j=181; j<270; j++) {
         cout << "*****************************" << endl;
@@ -248,7 +254,7 @@ TEST_F(MonsterCollisions_Test, four_block_vertical)
         cout << "brick rect pos=" << b->rect().x() << "," << b->rect().y()
              << " size=" << b->rect().width() << "," << b->rect().height()
              << endl;
-        static_cast<FakeWorld*>(fw)->addBrick(b);
+        static_cast<FakeArena*>(fa)->addBrick(b);
     }
 
     //build a direction vector ranging between 0 and 180 degrees
