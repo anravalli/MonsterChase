@@ -18,45 +18,41 @@ namespace Monster {
 
 class FakeArena: public Arena {
 public:
-//    static FakeWorld& instance(){
-//        static FakeWorld instance;
-//        return instance;
-//    }
 
-//    FakeWorld(){
-//        scene = new QGraphicsScene();
-//    }
+    FakeArena(QGraphicsScene* scene, double brick_width):
+        Arena(scene,brick_width)
+    {}
 
-    virtual ~FakeWorld() override {}
+    virtual ~FakeArena() override {}
 
-    std::vector<Monster*> getMonsters() override
+    Brick* getBrick (std::pair<int, int> /*idx*/) override
     {
-        return monsters;
-    }
-    std::vector<Brick*> getWallsAround(QPointF /*tl*/, QPointF /*br*/) override
-    {
-        return bricks;
-    }
-    Player* getPlayer() override
-    {
-        return nullptr;
+        Brick* b = nullptr;
+        if (next_brick<bricks.size()){
+            b = bricks[next_brick];
+        }
+        next_brick++;
+        return b;
     }
 
-    void setMonsters(Monster* m)
-    {
-        monsters.push_back(m);
-        return;
-    }
     void addBrick(Brick* b)
     {
         bricks.push_back(b);
         return;
     }
 
+    unsigned long getBrickNum(){
+        return next_brick;
+    }
+    void resetBrickNum(){
+        next_brick = 0;
+        return ;
+    }
+
 private:
+    unsigned long next_brick = 0;
     std::vector<Brick*> bricks;
-    std::vector<Monster*> monsters;
-    QGraphicsScene* scene;
+
 };
 
 class DummyMonster: public Monster {
@@ -93,15 +89,38 @@ class MonsterCollisions_Test: public testing::Test {
 public:
 
     void SetUp (){
-        fw = new FakeWorld();
+        scene = new QGraphicsScene();
+        fa = new FakeArena(scene,8);
     }
 
     void TearDown(){
-        delete fw;
+
+        delete fa;
     }
 
-    GameWorld* fw;
+    void testCollision(DummyMonster * monster, double a,
+                       std::pair<double, double> pos,
+                       std::pair<double, double> exp_pos)
+    {
+        cout << "*****************************" << endl;
+        cout << "testing direction: " << a << endl;
+        cout << "*****************************" << endl;
 
+        monster->setDir(a);
+        monster->setPos(pos);
+        monster->checkCollisions();
+        auto new_pos = monster->getPos();
+        cout << "monster X delta: (old_x-new_x) " << pos.first << "-" << new_pos.first << "=" << pos.first-new_pos.first << endl;
+        cout << "monster Y delta: (old_y-new_y) " << pos.second << "-" << new_pos.second << "=" << pos.second-new_pos.second << endl;
+        EXPECT_EQ(new_pos.first, exp_pos.first);
+        EXPECT_EQ(new_pos.second, exp_pos.second);
+
+        cout << "requested bricks: " << fa->getBrickNum() << endl;
+        fa->resetBrickNum();
+    }
+
+    FakeArena* fa;
+    QGraphicsScene* scene;
     virtual ~MonsterCollisions_Test(){}
 
 };
@@ -111,6 +130,10 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
 {
 
     DummyMonster monster;
+    std::vector< std::tuple< double, //direction
+            std::pair<double, double>, //current position
+            std::pair<double, double> > //expected new position
+             > test_cases;
 
 
     //build a four block wall
@@ -123,120 +146,58 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
         cout << "brick rect pos=" << b->rect().x() << "," << b->rect().y()
              << " size=" << b->rect().width() << "," << b->rect().height()
              << endl;
-        static_cast<FakeWorld*>(fw)->addBrick(b);
+        static_cast<FakeArena*>(fa)->addBrick(b);
     }
 
-    //build a direction vector ranging between 0 and 180 degrees
+    //init arena
+    try{
+        GameWorld::instance().initLevel(fa);
+    }
+    catch(...){
+        cout << "Exception!!! " << endl;
+        FAIL();
+    }
 
-    cout << "*****************************" << endl;
-    cout << "direction range  0-89" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 0 << endl;
-    monster.setDir(0);
-    monster.setPos(make_pair(76,100));
-    monster.checkCollisions();
-    auto new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 74.5);
-    EXPECT_EQ(new_pos.second, 100);
-
+    //build test vector
+    // direction 0 degree
+    test_cases.push_back( std::make_tuple(0,make_pair(76,100),make_pair(74.5,100)) );
+    // direction 1-89 degrees
     for (double j=1; j<90; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(76,69.0));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 69-" << new_pos.second << "=" << 69-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 74.5);
-        EXPECT_EQ(new_pos.second, 65.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(76,69.0),make_pair(74.5,65.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 90-179" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" <<90 << endl;
-    monster.setDir(90);
-    monster.setPos(make_pair(76,69.0));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 76-" << new_pos.first << "=" << 76-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 69-" << new_pos.second << "=" << 69-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 76);
-    EXPECT_EQ(new_pos.second, 65.5);
-
+    // direction 90 degree
+    test_cases.push_back( std::make_tuple(90,make_pair(76,69.0),make_pair(76,65.5)) );
+    // direction 91-189 degrees
     for (double j=91; j<180; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(135,69.0));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 135-" << new_pos.first << "=" << 135-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 69-" << new_pos.second << "=" << 69-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 137.5);
-        EXPECT_EQ(new_pos.second, 65.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(135,69.0),make_pair(137.5,65.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 180-269" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 180 << endl;
-    monster.setDir(180);
-    monster.setPos(make_pair(135,100));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 135-" << new_pos.first << "=" << 135-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 137.5);
-    EXPECT_EQ(new_pos.second, 100);
-
-    for (double j=181; j<270; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(135,100));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 135-" << new_pos.first << "=" << 135-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 137.5);
-        EXPECT_EQ(new_pos.second, 104.5);
+    // direction 180 degree
+    test_cases.push_back( std::make_tuple(180,make_pair(135,100),make_pair(137.5,100)) );
+    // direction 181-269 degrees
+    for (double j=181; j<269; j++) {
+        test_cases.push_back( std::make_tuple(j,make_pair(135,100),make_pair(137.5,104.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 270-359" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 270 << endl;
-    monster.setDir(270);
-    monster.setPos(make_pair(100,100));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 100-" << new_pos.first << "=" << 100-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 100);
-    EXPECT_EQ(new_pos.second, 104.5);
-
+    // direction 270 degree
+    test_cases.push_back( std::make_tuple(270,make_pair(100,100),make_pair(100,104.5)) );
+    // direction 270-359 degrees
     for (double j=271; j<360; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(76,100));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 100-" << new_pos.first << "=" << 100-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 100-" << new_pos.second << "=" << 100-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 74.5);
-        EXPECT_EQ(new_pos.second, 104.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(76,100),make_pair(74.5,104.5)) );
     }
+
+    for (auto test_case: test_cases){
+        testCollision(&monster, std::get<0>(test_case), std::get<1>(test_case),std::get<2>(test_case));
+    }
+
 };
 
 TEST_F(MonsterCollisions_Test, four_block_vertical)
 {
 
     DummyMonster monster;
+    std::vector< std::tuple< double, //direction
+            std::pair<double, double>, //current position
+            std::pair<double, double> > //expected new position
+             > test_cases;
 
     //build a four block wall
     for (int i=0; i<4 ; i++){
@@ -248,113 +209,37 @@ TEST_F(MonsterCollisions_Test, four_block_vertical)
         cout << "brick rect pos=" << b->rect().x() << "," << b->rect().y()
              << " size=" << b->rect().width() << "," << b->rect().height()
              << endl;
-        static_cast<FakeWorld*>(fw)->addBrick(b);
+        static_cast<FakeArena*>(fa)->addBrick(b);
     }
 
-    //build a direction vector ranging between 0 and 180 degrees
-
-    cout << "*****************************" << endl;
-    cout << "direction range  0-89" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 0 << endl;
-    monster.setDir(0);
-    monster.setPos(make_pair(58,58));
-    monster.checkCollisions();
-    auto new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 58-" << new_pos.first << "=" << 58-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 58-" << new_pos.second << "=" << 58-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 54.5);
-    EXPECT_EQ(new_pos.second, 58);
-
+    //build test vector
+    // direction 0 degree
+    test_cases.push_back( std::make_tuple(0,make_pair(58,58),make_pair(54.5,58)) );
+    // direction 1-89 degrees
     for (double j=1; j<90; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(58,86));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 58-" << new_pos.first << "=" << 58-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 86-" << new_pos.second << "=" << 86-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 54.5);
-        EXPECT_EQ(new_pos.second, 78.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(58,86.0),make_pair(54.5,78.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 90-179" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" <<90 << endl;
-    monster.setDir(90);
-    monster.setPos(make_pair(90.0,58.0));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 90-" << new_pos.first << "=" << 90-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 58-" << new_pos.second << "=" << 58-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 90.0);
-    EXPECT_EQ(new_pos.second, 54.5);
-
+    // direction 90 degree
+    test_cases.push_back( std::make_tuple(90,make_pair(90,58.0),make_pair(90,54.5)) );
+    // direction 91-189 degrees
     for (double j=91; j<180; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(90,86));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 90-" << new_pos.first << "=" << 90-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 86-" << new_pos.second << "=" << 86-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 93.5);
-        EXPECT_EQ(new_pos.second, 78.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(90,86.0),make_pair(93.5,78.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 180-269" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 180 << endl;
-    monster.setDir(180);
-    monster.setPos(make_pair(90,86));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 135-" << new_pos.first << "=" << 90-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 86-" << new_pos.second << "=" << 86-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 93.5);
-    EXPECT_EQ(new_pos.second, 86);
-
-    for (double j=181; j<270; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(90,86));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 90-" << new_pos.first << "=" << 90-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 86-" << new_pos.second << "=" << 86-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 93.5);
-        EXPECT_EQ(new_pos.second, 93.5);
+    // direction 180 degree
+    test_cases.push_back( std::make_tuple(180,make_pair(90,86),make_pair(93.5,86)) );
+    // direction 181-269 degrees
+    for (double j=181; j<269; j++) {
+        test_cases.push_back( std::make_tuple(j,make_pair(90,86),make_pair(93.5,93.5)) );
     }
-
-    cout << "*****************************" << endl;
-    cout << "direction range 270-359" << endl;
-    cout << "*****************************" << endl;
-    cout << "direction=" << 270 << endl;
-    monster.setDir(270);
-    monster.setPos(make_pair(58,113.5));
-    monster.checkCollisions();
-    new_pos = monster.getPos();
-    cout << "monster X delta: (old_x-new_x) 58-" << new_pos.first << "=" << 58-new_pos.first << endl;
-    cout << "monster Y delta: (old_y-new_y) 113.5-" << new_pos.second << "=" << 113.5-new_pos.second << endl;
-    EXPECT_EQ(new_pos.first, 58);
-    EXPECT_EQ(new_pos.second, 117.5);
-
+    // direction 270 degree
+    test_cases.push_back( std::make_tuple(270,make_pair(58,113.5),make_pair(58,117.5)) );
+    // direction 270-359 degrees
     for (double j=271; j<360; j++) {
-        cout << "*****************************" << endl;
-        cout << "direction=" << j << endl;
-        monster.setDir(j);
-        monster.setPos(make_pair(58,86));
-        monster.checkCollisions();
-        auto new_pos = monster.getPos();
-        cout << "monster X delta: (old_x-new_x) 58-" << new_pos.first << "=" << 58-new_pos.first << endl;
-        cout << "monster Y delta: (old_y-new_y) 86-" << new_pos.second << "=" << 86-new_pos.second << endl;
-        EXPECT_EQ(new_pos.first, 54.5);
-        EXPECT_EQ(new_pos.second, 93.5);
+        test_cases.push_back( std::make_tuple(j,make_pair(58,86),make_pair(54.5,93.5)) );
+    }
+
+    for (auto test_case: test_cases){
+        testCollision(&monster, std::get<0>(test_case), std::get<1>(test_case),std::get<2>(test_case));
     }
 };
 

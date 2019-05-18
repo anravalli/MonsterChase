@@ -28,15 +28,11 @@ public:
     //virtual QGraphicsScene* getScene();
     void addToScene(QGraphicsItem* item);
 
-    void addPlayer();
-    void addMonsters();
-    void buildArena();
-
     //avoid copy
     GameWorld(GameWorld const&) = delete;
     void operator=(GameWorld const&)  = delete;
 
-    //TODO: this part has to be refactored introducing ViewFacade
+    //TODO: this part has to be refactored when introducing ViewFacade
     void setScene(QGraphicsScene* s);
 
     virtual ~GameWorld();
@@ -47,6 +43,10 @@ public slots:
 private:
     GameWorld();
 
+    void addPlayer();
+    void addMonsters();
+
+protected:
     Arena* arena;
     Player* player;
     std::vector<Monster::Monster*> monsters;

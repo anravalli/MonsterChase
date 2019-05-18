@@ -1,4 +1,4 @@
-#ifndef ARENA_H
+﻿#ifndef ARENA_H
 #define ARENA_H
 
 #include <QGraphicsItem>
@@ -36,12 +36,13 @@ signals:
     void build_complete();
 
 public:
+    Arena(QGraphicsScene* scene, double brick_width);
     Arena(QString fname, QGraphicsScene *scene);
 
     bool mapComplete();
     void startShowMap();
 
-    Brick *getBrick(std::pair<int, int> idx);
+    virtual Brick *getBrick(std::pair<int, int> idx);
 
     QPointF idxToPos(int ix, int iy);
     std::pair<int, int> posToIdx(QPointF pos);
@@ -55,12 +56,13 @@ private:
 
     int brick_count = 0;
     bool completion_status = false;
-    QTimer* timer;
+    QTimer* timer = nullptr;
 
-    QGraphicsScene *_scene;
+    QGraphicsScene *_scene = nullptr;
 
-    double map_cell_w;
-    double map_cell_h;
+    double map_cell_w = 0;
+    double map_cell_h = 0
+            ;
     Brick* addBrick(QGraphicsScene *s, std::pair<int,int> idx );
 
 };
