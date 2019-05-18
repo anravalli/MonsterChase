@@ -28,7 +28,6 @@ public:
     //virtual QGraphicsScene* getScene();
     void addToScene(QGraphicsItem* item);
 
-
     //avoid copy
     GameWorld(GameWorld const&) = delete;
     void operator=(GameWorld const&)  = delete;

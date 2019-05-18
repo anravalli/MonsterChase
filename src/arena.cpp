@@ -21,11 +21,16 @@ void Brick::setIndex(std::pair<int,int> idx){
     _idx = idx;
 }
 
-
-Arena::Arena()
+/*
+ * Beware that this constructor is not meant to create a fully-functional object
+ * It's purpose is mainly unit testing and any other usage is deprecated.
+ */
+Arena::Arena(QGraphicsScene* scene, double brick_width):
+     _scene(scene), map_cell_w(brick_width), map_cell_h(brick_width)
 {
     memset(bin_map,0,MAP_WIDTH*MAP_HEIGHT);
     memset(map,0,MAP_WIDTH*MAP_HEIGHT);
+    timer = new QTimer(this);
 }
 
 Arena::Arena(QString fname, QGraphicsScene *scene){

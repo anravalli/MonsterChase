@@ -36,13 +36,13 @@ signals:
     void build_complete();
 
 public:
-    Arena();
+    Arena(QGraphicsScene* scene, double brick_width);
     Arena(QString fname, QGraphicsScene *scene);
 
     bool mapComplete();
     void startShowMap();
 
-    Brick *getBrick(std::pair<int, int> idx);
+    virtual Brick *getBrick(std::pair<int, int> idx);
 
     QPointF idxToPos(int ix, int iy);
     std::pair<int, int> posToIdx(QPointF pos);

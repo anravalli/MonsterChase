@@ -150,6 +150,7 @@ BehaviorStatus WallsCollisionChecker::exec()
                                                                         QPointF(_model->pos_x+(_entity_size/2),
                                                                                 _model->pos_y+(_entity_size/2)));
     BehaviorStatus status = fail;
+    int offset = 0;
     for (auto b: walls){
         //test: increase displacement due to collisions glitch
         QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
@@ -157,32 +158,32 @@ BehaviorStatus WallsCollisionChecker::exec()
         QRectF i = collisionBox.intersected(b->boundingRect());
         if (not i.isEmpty()){
             if( 0.0 == _model->direction or 360.0 == _model->direction){
-                _model->pos_x -= (i.width()+2);
+                _model->pos_x -= (i.width()+offset);
             }
             else if( 0 < _model->direction and _model->direction < 90 ){
-                _model->pos_x -= (i.width()+2);
-                _model->pos_y -= (i.height()+2);
+                _model->pos_x -= (i.width()+offset);
+                _model->pos_y -= (i.height()+offset);
             }
             else if( 90.0 == _model->direction ){
-                _model->pos_y -= (i.height()+2);
+                _model->pos_y -= (i.height()+offset);
             }
             else if( 90 < _model->direction and _model->direction < 180 ){
-                _model->pos_x += (i.width()+2);
-                _model->pos_y -= (i.height()+2);
+                _model->pos_x += (i.width()+offset);
+                _model->pos_y -= (i.height()+offset);
             }
             else if( _model->direction == 180.0 ){
-                _model->pos_x += (i.width()+2);
+                _model->pos_x += (i.width()+offset);
             }
             else if( 180 < _model->direction and _model->direction < 270 ){
-                _model->pos_x += (i.width()+2);
-                _model->pos_y += (i.height()+2);
+                _model->pos_x += (i.width()+offset);
+                _model->pos_y += (i.height()+offset);
             }
             else if( 270.0 == _model->direction ){
-                _model->pos_y += (i.height()+2);
+                _model->pos_y += (i.height()+offset);
             }
             else if( 270 < _model->direction and _model->direction < 360 ){
-                _model->pos_x -= (i.width()+2);
-                _model->pos_y += (i.height()+2);
+                _model->pos_x -= (i.width()+offset);
+                _model->pos_y += (i.height()+offset);
             }
             else if( 0 > _model->direction ){
                 abort();
