@@ -61,8 +61,8 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
     case Blinky:
         selector = new RandomDirection(model);
         mover = new MoveFixedSteps(model, 2, 100);
-        rotator = new LinearRotation(model, 2);
-        freeze_rotator = new TronRotation(model);
+        rotator = new LinearRotation(model, 3);
+        freeze_rotator = new LinearRotation(model, 5);
         break;
     case Pinky:
     case Inky:
@@ -157,13 +157,22 @@ void MonsterPatrol::tick(){
  * Monster Patrol Sub State
  */
 void MonsterPatrolFreeze::tick(){
-    if( (_freeze_time > 0) ){
-        _freeze_time--;
-    }
-    else{
-        _freeze_time=10;
+
+    _in_position = (BehaviorStatus::running != _rotate->exec());
+
+    if( (_freeze_time <= 0 and _in_position) ){
+        _freeze_time=25;
         _model->sub_state=MonsterSubStates::route;
+        exit();
     }
+    else if(_freeze_time > 0)
+        _freeze_time--;
+
+    return;
+}
+
+void MonsterPatrolFreeze::exit() {
+    _in_position = false;
 }
 
 MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, BasicBehavior *selector)
@@ -191,19 +200,26 @@ void MonsterPatrolMove::tick(){
 
     if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
-        _rotation_status = BehaviorStatus::fail;
+        exit();
     }
 
-    if (BehaviorStatus::success == _walls_checker->exec())
+    if (BehaviorStatus::success == _walls_checker->exec()){
         _model->sub_state=freeze;
-
-    if (BehaviorStatus::success == _player_checker->exec())
+        exit();
+    }
+    if (BehaviorStatus::success == _player_checker->exec()){
         _model->sub_state=freeze;
+        exit();
+    }
 
-//    if (BehaviorStatus::success != _rotation_status)
-//        _rotation_status = _rotate->exec();
+    if (BehaviorStatus::success != _rotation_status)
+        _rotation_status = _rotate->exec();
 
     return;
+}
+
+void MonsterPatrolMove::exit() {
+    _rotation_status = BehaviorStatus::fail;
 }
 
 /*

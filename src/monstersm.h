@@ -85,7 +85,6 @@ public:
     virtual ~MonsterFlee(){}
 private:
     MonsterModel* _model;
-    //int _speed=10;
 
     void move();
 };
@@ -95,12 +94,15 @@ public:
     MonsterPatrolFreeze(MonsterModel* model, BasicBehavior *rotate)
         :_model(model), _rotate(rotate){}
 
-    virtual void tick();
-    virtual ~MonsterPatrolFreeze(){}
+    virtual void tick() override;
+    virtual ~MonsterPatrolFreeze() override {}
+    void exit() override;
+
 private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
-    int _freeze_time=10;
+    int _freeze_time=25;
+    bool _in_position = false;
 };
 
 class MonsterPatrolDecide: public MonsterSm {
@@ -120,8 +122,10 @@ class MonsterPatrolMove: public MonsterSm {
 public:
     MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
-    virtual void tick();
-    virtual ~MonsterPatrolMove(){}
+    virtual void tick() override;
+    virtual ~MonsterPatrolMove() override {}
+    void exit() override;
+
 private:
     MonsterModel* _model;
     BasicBehavior* _move;

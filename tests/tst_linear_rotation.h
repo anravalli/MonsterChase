@@ -56,8 +56,9 @@ TEST_F(LinearRotation_Tests, ccw_or_cw){
 TEST_F(LinearRotation_Tests, corners){
     //destination, target, expected
     vector<tuple<int,int,int>> tests;
-    tests.push_back( make_tuple(0,360,0) );
-    tests.push_back( make_tuple(360,0,360) );
+/*
+ *  test cases not admited: 0,360,0; 360,0,360;
+*/
     tests.push_back( make_tuple(0,0,0) );
     tests.push_back( make_tuple(90,90,90) );
     tests.push_back( make_tuple(90,180,95) );

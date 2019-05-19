@@ -45,8 +45,7 @@ RandomDirection::RandomDirection(Monster::MonsterModel *m):
 
 BehaviorStatus RandomDirection::exec() {
     _model->target_direction = _direction();
-    //test
-    _model->direction = _model->target_direction;
+
     return success;
 }
 
@@ -72,8 +71,6 @@ BehaviorStatus PerpendicularDirection::exec() {
     if (_model->target_direction >= 360)
         _model->target_direction -= 360;
 
-    //test
-    _model->direction = _model->target_direction;
     return success;
 }
 
@@ -106,21 +103,25 @@ BehaviorStatus MoveFixedSteps::exec() {
  */
 BehaviorStatus LinearRotation::exec() {
     BehaviorStatus status = success;
+    double actual_speed = _speed;
+
+    if (abs(_model->target_direction - _model->direction)<_speed)
+        actual_speed = abs(_model->target_direction - _model->direction);
 
     if (_model->target_direction > _model->direction){
         if ( (_model->target_direction - _model->direction) > 180) {
-            _model->direction -= _speed; // cw
+            _model->direction -= actual_speed; // cw
         }
         else
-            _model->direction += _speed; // ccw
+            _model->direction += actual_speed; // ccw
         status = running;
     }
     else if (_model->target_direction < _model->direction){
         if ( (_model->direction - _model->target_direction) > 180) {
-            _model->direction += _speed; // ccw
+            _model->direction += actual_speed; // ccw
         }
         else
-            _model->direction -= _speed; // cw
+            _model->direction -= actual_speed; // cw
         status = running;
     }
 
@@ -188,10 +189,8 @@ BehaviorStatus WallsCollisionChecker::exec()
             else if( 0 > _model->direction ){
                 abort();
             }
-            //_model->sub_state=freeze;
             status = success;
         }
-        //assert(collisionBox.intersected(b->boundingRect()).isEmpty());
     }
     return status;
 }
