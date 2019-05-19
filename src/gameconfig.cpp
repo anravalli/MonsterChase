@@ -9,10 +9,6 @@
 #define PLAYGROUND_VIEW_WIDTH PLAYGROUND_WIDTH + PLAYGROUND_VIEW_EXTRA_WIDTH
 #define PLAYGROUND_VIEW_HEIGHT PLAYGROUND_HEIGHT + PLAYGROUND_VIEW_EXTRA_HEIGHT
 
-//GameConfig::GameConfig()
-//{
-
-//}
 
 double GameConfig::playground_width = PLAYGROUND_WIDTH;
 double GameConfig::playground_height = PLAYGROUND_HEIGHT;

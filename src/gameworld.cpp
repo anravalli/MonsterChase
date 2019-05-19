@@ -36,8 +36,6 @@ void GameWorld::initLevel(Arena* a)
     arena = a;
     addPlayer();
     addMonsters();
-    //keep this as the last in order to have it on top of the Z-stack
-    //addPlayTime();
     arena->startShowMap();
 }
 
@@ -104,8 +102,5 @@ void GameWorld::addToScene(QGraphicsItem *item){
     return;
 }
 
-//QGraphicsScene* MonsterChase::getScene(){
-//    return scene;
-//}
 
 
