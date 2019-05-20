@@ -145,10 +145,10 @@ private:
     int _entity_size;
 };
 
-class PlayerCollisionChecker: public  BasicBehavior
+class EntitiesCollisionChecker: public  BasicBehavior
 {
 public:
-    PlayerCollisionChecker(Monster::MonsterModel* m, int size):
+    EntitiesCollisionChecker(Monster::MonsterModel* m, int size):
         BasicBehavior(m), _entity_size(size){}
     BehaviorStatus exec() override;
 private:

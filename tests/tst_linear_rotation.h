@@ -23,6 +23,7 @@ public:
 protected:
     LinearRotation* rotate = nullptr;
     Monster::MonsterModel model = {
+        0,
         Monster::MonsterType::Clyde,
         Monster::MonsterStates::patrol,
         Monster::MonsterSubStates::move,

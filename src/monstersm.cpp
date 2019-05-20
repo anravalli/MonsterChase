@@ -193,7 +193,7 @@ MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, B
 {
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
-    _player_checker = new PlayerCollisionChecker(model, monster_size);
+    _player_checker = new EntitiesCollisionChecker(model, monster_size);
 }
 
 void MonsterPatrolMove::tick(){
@@ -211,7 +211,6 @@ void MonsterPatrolMove::tick(){
         _model->sub_state=freeze;
         exit();
     }
-
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
 

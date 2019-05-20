@@ -63,6 +63,7 @@ class MonsterSm;
     };
 
     struct MonsterModel{
+        int id;
         MonsterType type;
         MonsterStates state;
         MonsterSubStates sub_state;
@@ -91,6 +92,8 @@ class MonsterSm;
 
         friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
+        int id();
+
         ~Monster();
 
     protected:
@@ -98,6 +101,7 @@ class MonsterSm;
         Monster();
 
         MonsterModel model = {
+            0,
             MonsterType::Blinky, //type
             MonsterStates::patrol, //state
             MonsterSubStates::move, //sub_state

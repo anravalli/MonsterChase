@@ -195,7 +195,7 @@ BehaviorStatus WallsCollisionChecker::exec()
     return status;
 }
 
-BehaviorStatus PlayerCollisionChecker::exec()
+BehaviorStatus EntitiesCollisionChecker::exec()
 {
     BehaviorStatus status = fail;
     QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
@@ -205,6 +205,15 @@ BehaviorStatus PlayerCollisionChecker::exec()
     QRectF i = collisionBox.intersected(pbox);
     if (not i.isEmpty()){
         status = success;
+    }
+
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) continue;
+        QRectF i = collisionBox.intersected(m->collisionBox());
+        if (not i.isEmpty()){
+            status = success;
+        }
     }
     return status;
 }

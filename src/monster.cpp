@@ -31,7 +31,12 @@
 namespace Monster{
 
     Monster *monsterFactory(MonsterType type, QPointF pos){
+        static int next_id = 0;
+
         Monster* monster = new Monster();
+        //set moster id
+        monster->model.id = next_id;
+        next_id++;
         //set position & type
         monster->model.pos_x = pos.x();
         monster->model.pos_y = pos.y();
@@ -103,6 +108,10 @@ namespace Monster{
         sight->setRotation(model.direction+90);
         shape->update();
         sight->update();
+    }
+
+    int Monster::id(){
+        return model.id;
     }
 
     QRectF Monster::collisionBox() const
