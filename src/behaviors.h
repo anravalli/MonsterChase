@@ -75,12 +75,12 @@ private:
 class MoveToTarget: public  BasicBehavior
 {
 public:
-    MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> target):
+    MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> &target):
         BasicBehavior(m), _target(target){}
     BehaviorStatus exec() override;
 
 private:
-    std::pair<int,int> _target;
+    std::pair<int,int> &_target;
 };
 
 class MoveFixedSteps: public  BasicBehavior
@@ -149,6 +149,16 @@ class EntitiesCollisionChecker: public  BasicBehavior
 {
 public:
     EntitiesCollisionChecker(Monster::MonsterModel* m, int size):
+        BasicBehavior(m), _entity_size(size){}
+    BehaviorStatus exec() override;
+private:
+    int _entity_size;
+};
+
+class PlayerInSightChecker: public  BasicBehavior
+{
+public:
+    PlayerInSightChecker(Monster::MonsterModel* m, int size):
         BasicBehavior(m), _entity_size(size){}
     BehaviorStatus exec() override;
 private:

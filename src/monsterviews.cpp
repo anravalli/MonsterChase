@@ -78,7 +78,7 @@ void MonsterTriangularShape::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 QRectF MonsterSight::boundingRect() const {
-    return QRectF(-100,-165,200,300);
+    return QRectF(-65, -165, 130, 150);
 }
 
 void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -87,6 +87,16 @@ void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     painter->setBrush(QBrush(QColor(0,255,50,50)));
     painter->drawPie(-100,-165,200,300,50*16,80*16);
+
+#define DEBUG
+#ifdef DEBUG
+    //player detection box
+    painter->setBrush(QBrush(QColor(255,0,0,50)));
+    painter->drawRect(-65,-165,130,150);
+    //allarm box
+    painter->setBrush(QBrush(QColor(250,255,0,50)));
+    painter->drawRect(-100,-165,200,300);
+#endif
 }
 
 }

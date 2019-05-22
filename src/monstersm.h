@@ -131,6 +131,7 @@ private:
     BasicBehavior* _move;
     BasicBehavior* _walls_checker;
     BasicBehavior* _player_checker;
+    BasicBehavior* _player_scanner;
     BasicBehavior* _rotate;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
@@ -164,8 +165,7 @@ private:
 
 class MonsterAttackMove: public MonsterSm {
 public:
-    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
-        :_model(model),_move(move),_rotate(rotate){}
+    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
     virtual void tick();
     virtual ~MonsterAttackMove(){}
@@ -173,6 +173,10 @@ private:
     MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
+
+    BasicBehavior* _walls_checker;
+    BasicBehavior* _player_checker;
+    BasicBehavior* _player_scanner;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };

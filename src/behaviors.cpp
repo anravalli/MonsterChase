@@ -217,3 +217,22 @@ BehaviorStatus EntitiesCollisionChecker::exec()
     }
     return status;
 }
+
+BehaviorStatus PlayerInSightChecker::exec()
+{
+    BehaviorStatus status = fail;
+    QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
+
+    Monster::Monster* this_monster = nullptr;
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) this_monster = m;
+    }
+
+    QRectF i = this_monster->sightBox().intersected(pbox);
+    if (not i.isEmpty()){
+        status = success;
+    }
+
+    return status;
+}

@@ -94,7 +94,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
     case Blinky:
         selector = new RandomDirection(model);
         mover = new MoveFixedSteps(model, 2, 100);
-        rotator = new LinearRotation(model, 2);
+        rotator = new LinearRotation(model, 5);
         freeze_rotator = new TronRotation(model);
         break;
     case Pinky:
@@ -108,7 +108,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
     }
     attack_state = new MonsterPatrol(model);
     attack_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
-    attack_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
+    attack_state->sstates[MonsterSubStates::move] = new MonsterAttackMove(model,mover,rotator);
     attack_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
     return  attack_state;
 
@@ -194,14 +194,15 @@ MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, B
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
+    _player_scanner = new PlayerInSightChecker(model, monster_size);
 }
 
 void MonsterPatrolMove::tick(){
 
-    if (BehaviorStatus::running != _move->exec()){
-        _model->sub_state = MonsterSubStates::route;
-        exit();
-    }
+//    if (BehaviorStatus::running != _move->exec()){
+//        _model->sub_state = MonsterSubStates::route;
+//        exit();
+//    }
 
     if (BehaviorStatus::success == _walls_checker->exec()){
         _model->sub_state=freeze;
@@ -211,8 +212,13 @@ void MonsterPatrolMove::tick(){
         _model->sub_state=freeze;
         exit();
     }
-    if (BehaviorStatus::success != _rotation_status)
-        _rotation_status = _rotate->exec();
+    if (BehaviorStatus::success == _player_scanner->exec()){
+        _model->state=attack;
+        exit();
+    }
+
+//    if (BehaviorStatus::success != _rotation_status)
+//        _rotation_status = _rotate->exec();
 
     return;
 }
@@ -232,7 +238,37 @@ void MonsterAttack::tick(){
 /*
  * Monster Attack Sub State
  */
+MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+    :_model(model),_move(move),_rotate(rotate)
+{
+    int monster_size = 30; //temporary harcoded
+    _walls_checker = new WallsCollisionChecker(model, monster_size);
+    _player_checker = new EntitiesCollisionChecker(model, monster_size);
+    _player_scanner = new PlayerInSightChecker(model, monster_size);
+}
+
 void MonsterAttackMove::tick(){
+
+//    if (BehaviorStatus::running != _move->exec()){
+//        _model->sub_state = MonsterSubStates::route;
+//        exit();
+//    }
+
+    if (BehaviorStatus::success == _walls_checker->exec()){
+        _model->sub_state=freeze;
+        exit();
+    }
+    if (BehaviorStatus::success == _player_checker->exec()){
+        _model->sub_state=freeze;
+        exit();
+    }
+    if (BehaviorStatus::success != _player_scanner->exec()){
+        _model->state=patrol;
+        exit();
+    }
+
+//    if (BehaviorStatus::success != _rotation_status)
+//        _rotation_status = _rotate->exec();
     return;
 }
 

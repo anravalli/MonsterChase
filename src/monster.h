@@ -87,6 +87,7 @@ class MonsterSm;
         void hide();
 
         QRectF collisionBox() const;
+        QRectF& sightBox() const;
 
         void update();
 
@@ -115,6 +116,8 @@ class MonsterSm;
         MonsterShape* shape=nullptr;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+
+        QRectF* _sight_box;
 
     };
 
