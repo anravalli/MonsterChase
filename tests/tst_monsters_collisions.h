@@ -61,6 +61,7 @@ public:
         Monster()
     {
         _checker = new WallsCollisionChecker(&model,30);
+        _player_scanner = new PlayerInSightChecker(&model, 30);
     }
 
     void setDir(double d){
@@ -83,6 +84,7 @@ public:
     }
 private:
     WallsCollisionChecker* _checker;
+    PlayerInSightChecker *_player_scanner;
 };
 
 class MonsterCollisions_Test: public testing::Test {

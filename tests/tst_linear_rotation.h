@@ -7,7 +7,6 @@
 
 #include <QtWidgets>
 #include "../src/behaviors.h"
-#include "../src/behaviors.h"
 
 #include <iostream>
 #include <vector>

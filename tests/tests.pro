@@ -20,7 +20,8 @@ HEADERS += \
     ../src/gameworld.h \
     tst_linear_rotation.h \
     tst_player_collisions.h \
-    tst_monsters_collisions.h
+    tst_monsters_collisions.h \
+    tst_monster_player_detection.h
 
 SOURCES += \
         main.cpp \

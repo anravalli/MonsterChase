@@ -87,7 +87,7 @@ class MonsterSm;
         void hide();
 
         QRectF collisionBox() const;
-        QRectF& sightBox() const;
+        QRectF sightBox() const;
 
         void update();
 
