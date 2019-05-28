@@ -155,14 +155,15 @@ private:
     int _entity_size;
 };
 
-class PlayerInSightChecker: public  BasicBehavior
+class PlayerAtSightChecker: public  BasicBehavior
 {
 public:
-    PlayerInSightChecker(Monster::MonsterModel* m, int size):
+    PlayerAtSightChecker(Monster::MonsterModel* m, int size):
         BasicBehavior(m), _entity_size(size){}
     BehaviorStatus exec() override;
 private:
     int _entity_size;
+    BehaviorStatus inRange(QPointF pc);
 };
 
 

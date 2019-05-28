@@ -218,7 +218,7 @@ BehaviorStatus EntitiesCollisionChecker::exec()
     return status;
 }
 
-BehaviorStatus PlayerInSightChecker::exec()
+BehaviorStatus PlayerAtSightChecker::exec()
 {
     BehaviorStatus status = fail;
     QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
@@ -231,8 +231,22 @@ BehaviorStatus PlayerInSightChecker::exec()
 
     QRectF i = this_monster->sightBox().intersected(pbox);
     if (not i.isEmpty()){
+        //status = inRange(pbox.center());
         status = success;
     }
 
     return status;
+}
+
+BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
+{
+    BehaviorStatus ret = fail;
+    double d = sqrt(
+                pow(_model->pos_x-pc.x(), 2) +
+                pow(_model->pos_y-pc.y(), 2)
+                );
+    if (d < 200){
+        ret = success;
+    }
+    return ret;
 }

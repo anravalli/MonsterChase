@@ -125,13 +125,11 @@ namespace Monster{
 
     QRectF Monster::sightBox() const
     {
-        //int size = 30;
-        //-65,-165,130,150
-        QTransform t = QTransform().rotate(model.direction+90);
-        _sight_box->moveTo(model.pos_x-65, model.pos_y-165);
-        //t.mapToPolygon(_sight_box->toRect());
-        return t.mapRect(QRectF(_sight_box->toRect()));
-        //return *_sight_box;
+        //QRectF box(-65,-165,130,150);
+        QTransform t = QTransform().translate(model.pos_x, model.pos_y).rotate(model.direction+90);
+        QRectF t_box = t.mapRect(*_sight_box);
+
+        return t_box;
     }
 
     Monster::~Monster(){

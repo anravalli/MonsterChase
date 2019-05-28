@@ -194,15 +194,15 @@ MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, B
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
-    _player_scanner = new PlayerInSightChecker(model, monster_size);
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
 }
 
 void MonsterPatrolMove::tick(){
 
-//    if (BehaviorStatus::running != _move->exec()){
-//        _model->sub_state = MonsterSubStates::route;
-//        exit();
-//    }
+    if (BehaviorStatus::running != _move->exec()){
+        _model->sub_state = MonsterSubStates::route;
+        exit();
+    }
 
     if (BehaviorStatus::success == _walls_checker->exec()){
         _model->sub_state=freeze;
@@ -217,8 +217,8 @@ void MonsterPatrolMove::tick(){
         exit();
     }
 
-//    if (BehaviorStatus::success != _rotation_status)
-//        _rotation_status = _rotate->exec();
+    if (BehaviorStatus::success != _rotation_status)
+        _rotation_status = _rotate->exec();
 
     return;
 }
@@ -244,15 +244,15 @@ MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, B
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
-    _player_scanner = new PlayerInSightChecker(model, monster_size);
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
 }
 
 void MonsterAttackMove::tick(){
 
-//    if (BehaviorStatus::running != _move->exec()){
-//        _model->sub_state = MonsterSubStates::route;
-//        exit();
-//    }
+    if (BehaviorStatus::running != _move->exec()){
+        _model->sub_state = MonsterSubStates::route;
+        exit();
+    }
 
     if (BehaviorStatus::success == _walls_checker->exec()){
         _model->sub_state=freeze;
@@ -267,8 +267,8 @@ void MonsterAttackMove::tick(){
         exit();
     }
 
-//    if (BehaviorStatus::success != _rotation_status)
-//        _rotation_status = _rotate->exec();
+    if (BehaviorStatus::success != _rotation_status)
+        _rotation_status = _rotate->exec();
     return;
 }
 
