@@ -109,7 +109,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
     attack_state = new MonsterPatrol(model);
     attack_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
     attack_state->sstates[MonsterSubStates::move] = new MonsterAttackMove(model,mover,rotator);
-    attack_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
+    attack_state->sstates[MonsterSubStates::freeze] = new MonsterAttackFreeze(model,freeze_rotator);
     return  attack_state;
 
 }
@@ -156,9 +156,20 @@ void MonsterPatrol::tick(){
 /*
  * Monster Patrol Sub State
  */
+MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, BasicBehavior *rotate)
+    :_model(model), _rotate(rotate){
+    int monster_size = 30;
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
+}
+
 void MonsterPatrolFreeze::tick(){
 
     _in_position = (BehaviorStatus::running != _rotate->exec());
+
+    if (BehaviorStatus::success == _player_scanner->exec()){
+        _model->state=attack;
+        exit();
+    }
 
     if( (_freeze_time <= 0 and _in_position) ){
         _freeze_time=25;
@@ -175,6 +186,11 @@ void MonsterPatrolFreeze::exit() {
     _in_position = false;
 }
 
+MonsterPatrolFreeze::~MonsterPatrolFreeze() {
+    delete _player_scanner;
+    delete _rotate;
+}
+
 MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, BasicBehavior *selector)
     :_model(model), _selector(selector)
 {
@@ -186,6 +202,10 @@ void MonsterPatrolDecide::tick()
 
     _model->sub_state = MonsterSubStates::move;
     return;
+}
+
+MonsterPatrolDecide::~MonsterPatrolDecide(){
+    delete _selector;
 }
 
 MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
@@ -223,6 +243,14 @@ void MonsterPatrolMove::tick(){
     return;
 }
 
+MonsterPatrolMove::~MonsterPatrolMove() {
+    delete _move;
+    delete _walls_checker;
+    delete _player_checker;
+    delete _player_scanner;
+    delete _rotate;
+}
+
 void MonsterPatrolMove::exit() {
     _rotation_status = BehaviorStatus::fail;
 }
@@ -255,15 +283,15 @@ void MonsterAttackMove::tick(){
     }
 
     if (BehaviorStatus::success == _walls_checker->exec()){
-        _model->sub_state=freeze;
+        _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
     if (BehaviorStatus::success == _player_checker->exec()){
-        _model->sub_state=freeze;
+        _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
     if (BehaviorStatus::success != _player_scanner->exec()){
-        _model->state=patrol;
+        _model->state=MonsterStates::patrol;
         exit();
     }
 
@@ -272,12 +300,51 @@ void MonsterAttackMove::tick(){
     return;
 }
 
+MonsterAttackMove::~MonsterAttackMove(){
+    delete _move;
+    delete _walls_checker;
+    delete _player_checker;
+    delete _player_scanner;
+    delete _rotate;
+}
+
 void MonsterAttackDecide::tick(){
     return;
 }
 
+MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, BasicBehavior *rotate)
+    :_model(model), _rotate(rotate){
+    int monster_size = 30;
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
+}
+
 void MonsterAttackFreeze::tick(){
+
+    _in_position = (BehaviorStatus::running != _rotate->exec());
+
+    if (BehaviorStatus::success != _player_scanner->exec()){
+        _model->state=MonsterStates::patrol;
+        exit();
+    }
+
+    if( (_freeze_time <= 0 and _in_position) ){
+        _freeze_time=25;
+        _model->sub_state=MonsterSubStates::route;
+        exit();
+    }
+    else if(_freeze_time > 0)
+        _freeze_time--;
+
     return;
+}
+
+void MonsterAttackFreeze::exit() {
+    _in_position = false;
+}
+
+MonsterAttackFreeze::~MonsterAttackFreeze(){
+    delete _player_scanner;
+    delete _rotate;
 }
 
 /*
