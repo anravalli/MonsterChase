@@ -231,21 +231,38 @@ BehaviorStatus PlayerAtSightChecker::exec()
 
     QRectF i = this_monster->sightBox().intersected(pbox);
     if (not i.isEmpty()){
-        //status = inRange(pbox.center());
-        status = success;
+        status = inRange(pbox.center());
     }
 
     return status;
 }
 
+#define TORAD(x) x*PI/180
+#define TODEG(x) x*180/PI
+
 BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
 {
     BehaviorStatus ret = fail;
-    double d = sqrt(
-                pow(_model->pos_x-pc.x(), 2) +
-                pow(_model->pos_y-pc.y(), 2)
-                );
-    if (d < 200){
+
+    //range checked starting from shapes center: sight range will result
+    //a little bit wider than the drawn one
+    double dx = pc.x() - _model->pos_x;
+    double dy = pc.y() - _model->pos_y;
+
+    double p_dist = sqrt(dx*dx + dy*dy);
+    double p_dir = atan2(dy, dx);
+    //qudrant adjutment
+    if (p_dir<0)
+        p_dir = 2*PI+p_dir;
+
+#if DEBUG
+    double p_dir_deg = TODEG(p_dir);
+#endif
+
+    double sight_up = TORAD((_model->direction+40));
+    double sight_down = TORAD((_model->direction-40));
+
+    if (p_dir < sight_up and p_dir > sight_down and p_dist <= 180){
         ret = success;
     }
     return ret;
