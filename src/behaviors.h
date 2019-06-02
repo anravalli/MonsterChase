@@ -75,12 +75,11 @@ private:
 class MoveToTarget: public  BasicBehavior
 {
 public:
-    MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> &target):
-        BasicBehavior(m), _target(target){}
+    MoveToTarget(Monster::MonsterModel* m);
     BehaviorStatus exec() override;
 
 private:
-    std::pair<int,int> &_target;
+    std::tuple<int,int,double> _target;
 };
 
 class MoveFixedSteps: public  BasicBehavior
@@ -158,11 +157,11 @@ private:
 class PlayerAtSightChecker: public  BasicBehavior
 {
 public:
-    PlayerAtSightChecker(Monster::MonsterModel* m, int size):
-        BasicBehavior(m), _entity_size(size){}
+    PlayerAtSightChecker(Monster::MonsterModel* m, int size);
     BehaviorStatus exec() override;
 private:
     int _entity_size;
+    std::tuple<int,int,double> _target;
     BehaviorStatus inRange(QPointF pc);
 };
 

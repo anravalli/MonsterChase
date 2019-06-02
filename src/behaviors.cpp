@@ -78,7 +78,26 @@ BehaviorStatus PerpendicularDirection::exec() {
  * Move Behaviors
  */
 
-BehaviorStatus MoveToTarget::exec() { abort(); }
+MoveToTarget::MoveToTarget(Monster::MonsterModel *m):
+    BasicBehavior(m)
+{
+    Monster::Monster* this_monster = nullptr;
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) this_monster = m;
+    }
+    _target = this_monster->getTarget();
+}
+
+BehaviorStatus MoveToTarget::exec() {
+    BehaviorStatus status = success;
+
+    _model->target_direction = std::get<0>(_target);
+    _model->pos_x = std::get<1>(_target);
+    _model->pos_y = std::get<2>(_target);
+
+    return status;
+}
 
 BehaviorStatus MoveRandomSteps::exec() { abort(); }
 
@@ -218,6 +237,16 @@ BehaviorStatus EntitiesCollisionChecker::exec()
     return status;
 }
 
+PlayerAtSightChecker::PlayerAtSightChecker(Monster::MonsterModel *m, int size):
+    BasicBehavior(m), _entity_size(size){
+    Monster::Monster* this_monster = nullptr;
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) this_monster = m;
+    }
+    _target = this_monster->getTarget();
+}
+
 BehaviorStatus PlayerAtSightChecker::exec()
 {
     BehaviorStatus status = fail;
@@ -263,6 +292,7 @@ BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
     double sight_down = TORAD((_model->direction-40));
 
     if (p_dir < sight_up and p_dir > sight_down and p_dist <= 180){
+        _target = std::make_tuple((int)pc.x(), (int)pc.y(), p_dir);
         ret = success;
     }
     return ret;

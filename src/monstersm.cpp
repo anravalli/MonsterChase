@@ -93,7 +93,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
     switch (monster){
     case Blinky:
         selector = new RandomDirection(model);
-        mover = new MoveFixedSteps(model, 2, 100);
+        mover = new MoveToTarget(model);
         rotator = new LinearRotation(model, 5);
         freeze_rotator = new TronRotation(model);
         break;

@@ -94,6 +94,7 @@ class MonsterSm;
         friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
         int id();
+        std::tuple<int,int,double> &getTarget();
 
         ~Monster();
 
@@ -118,6 +119,7 @@ class MonsterSm;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         QRectF* _sight_box;
+        std::tuple<int,int,double> _target;
 
     };
 

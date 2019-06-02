@@ -116,6 +116,10 @@ namespace Monster{
         return model.id;
     }
 
+    std::tuple<int,int,double> &Monster::getTarget(){
+        return _target;
+    }
+
     QRectF Monster::collisionBox() const
     {
         int size = 30;
