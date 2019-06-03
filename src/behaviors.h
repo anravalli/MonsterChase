@@ -75,11 +75,11 @@ private:
 class MoveToTarget: public  BasicBehavior
 {
 public:
-    MoveToTarget(Monster::MonsterModel* m);
+    MoveToTarget(Monster::MonsterModel* m, int speed);
     BehaviorStatus exec() override;
 
 private:
-    std::tuple<int,int,double> _target;
+    int _speed;
 };
 
 class MoveFixedSteps: public  BasicBehavior
@@ -161,7 +161,6 @@ public:
     BehaviorStatus exec() override;
 private:
     int _entity_size;
-    std::tuple<int,int,double> _target;
     BehaviorStatus inRange(QPointF pc);
 };
 

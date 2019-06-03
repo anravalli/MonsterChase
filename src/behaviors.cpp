@@ -28,6 +28,9 @@
 
 #define PI 3.14159265
 
+#define TORAD(x) x*PI/180
+#define TODEG(x) x*180/PI
+
 
 BasicBehavior::~BasicBehavior() {}
 
@@ -78,23 +81,31 @@ BehaviorStatus PerpendicularDirection::exec() {
  * Move Behaviors
  */
 
-MoveToTarget::MoveToTarget(Monster::MonsterModel *m):
-    BasicBehavior(m)
+MoveToTarget::MoveToTarget(Monster::MonsterModel *m, int speed):
+    BasicBehavior(m), _speed(speed)
 {
-    Monster::Monster* this_monster = nullptr;
-    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
-    for (auto m: monsters){
-        if (m->id() == _model->id) this_monster = m;
-    }
-    _target = this_monster->getTarget();
 }
 
 BehaviorStatus MoveToTarget::exec() {
     BehaviorStatus status = success;
+    double actual_speed = _speed;
 
-    _model->target_direction = std::get<0>(_target);
-    _model->pos_x = std::get<1>(_target);
-    _model->pos_y = std::get<2>(_target);
+    int dist_x = (_model->target_x - _model->pos_x) ;
+    int dist_y = (_model->target_y - _model->pos_y) ;
+
+    double t_dist = sqrt((dist_x*dist_x)+(dist_y*dist_y));
+
+    if (t_dist > 0){
+        if (t_dist < _speed)
+            actual_speed = t_dist;
+
+        double dy = sin( TORAD(_model->direction) ) * actual_speed;
+        double dx = cos ( TORAD(_model->direction) ) * actual_speed;
+        _model->pos_x += dx;
+        _model->pos_y += dy;
+
+        status = running;
+    }
 
     return status;
 }
@@ -104,8 +115,8 @@ BehaviorStatus MoveRandomSteps::exec() { abort(); }
 BehaviorStatus MoveFixedSteps::exec() {
     BehaviorStatus status = success;
     if (_counter < _steps){
-        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
-        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
+        double dx = cos ( TORAD(_model->direction) ) * _speed;
+        double dy = sin( TORAD(_model->direction) ) * _speed;
         _model->pos_x += dx;
         _model->pos_y += dy;
         _counter++;
@@ -238,13 +249,8 @@ BehaviorStatus EntitiesCollisionChecker::exec()
 }
 
 PlayerAtSightChecker::PlayerAtSightChecker(Monster::MonsterModel *m, int size):
-    BasicBehavior(m), _entity_size(size){
-    Monster::Monster* this_monster = nullptr;
-    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
-    for (auto m: monsters){
-        if (m->id() == _model->id) this_monster = m;
-    }
-    _target = this_monster->getTarget();
+    BasicBehavior(m), _entity_size(size)
+{
 }
 
 BehaviorStatus PlayerAtSightChecker::exec()
@@ -265,9 +271,6 @@ BehaviorStatus PlayerAtSightChecker::exec()
 
     return status;
 }
-
-#define TORAD(x) x*PI/180
-#define TODEG(x) x*180/PI
 
 BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
 {
@@ -292,7 +295,9 @@ BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
     double sight_down = TORAD((_model->direction-40));
 
     if (p_dir < sight_up and p_dir > sight_down and p_dist <= 180){
-        _target = std::make_tuple((int)pc.x(), (int)pc.y(), p_dir);
+        _model->target_direction = TODEG(p_dir);
+        _model->target_x = pc.x();
+        _model->target_y = pc.y();
         ret = success;
     }
     return ret;
