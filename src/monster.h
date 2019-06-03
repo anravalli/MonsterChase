@@ -70,6 +70,8 @@ class MonsterSm;
         double pos_x;
         double pos_y;
         double direction;
+        double target_x;
+        double target_y;
         double target_direction;
     } ;
 
@@ -94,7 +96,6 @@ class MonsterSm;
         friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
         int id();
-        std::tuple<int,int,double> &getTarget();
 
         ~Monster();
 
@@ -103,13 +104,15 @@ class MonsterSm;
         Monster();
 
         MonsterModel model = {
-            0,
+            0, //id
             MonsterType::Blinky, //type
             MonsterStates::patrol, //state
             MonsterSubStates::move, //sub_state
             200, //pos_x
             200, //pos_y
             0, //direction
+            0, //target_x
+            0, //target_y
             0 //target direction
         };
 
@@ -119,7 +122,6 @@ class MonsterSm;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         QRectF* _sight_box;
-        std::tuple<int,int,double> _target;
 
     };
 

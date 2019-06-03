@@ -116,10 +116,6 @@ namespace Monster{
         return model.id;
     }
 
-    std::tuple<int,int,double> &Monster::getTarget(){
-        return _target;
-    }
-
     QRectF Monster::collisionBox() const
     {
         int size = 30;
@@ -129,7 +125,6 @@ namespace Monster{
 
     QRectF Monster::sightBox() const
     {
-        //QRectF box(-65,-165,130,150);
         QTransform t = QTransform().translate(model.pos_x, model.pos_y).rotate(model.direction+90);
         QRectF t_box = t.mapRect(*_sight_box);
 
