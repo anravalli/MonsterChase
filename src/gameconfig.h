@@ -4,7 +4,6 @@
 class GameConfig
 {
 public:
-    //GameConfig();
     static double playground_width;
     static double playground_height;
     static double playground_border_width;

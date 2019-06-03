@@ -30,8 +30,8 @@ public:
     virtual void updateEnergy() = 0;
     virtual void toggleRage() = 0;
     virtual void collisionWithMonster() = 0;
-    //virtual void enter() = 0;
-    //virtual void exit() = 0;
+    virtual void enter() {}
+    virtual void exit() {}
     virtual ~PlayerSm();
 protected:
     int _max_speed;
