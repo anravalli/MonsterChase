@@ -91,16 +91,17 @@ private:
 
 class MonsterPatrolFreeze: public MonsterSm {
 public:
-    MonsterPatrolFreeze(MonsterModel* model, BasicBehavior *rotate)
-        :_model(model), _rotate(rotate){}
+    MonsterPatrolFreeze(MonsterModel* model, BasicBehavior *rotate);
 
     virtual void tick() override;
-    virtual ~MonsterPatrolFreeze() override {}
     void exit() override;
+
+    virtual ~MonsterPatrolFreeze() override;
 
 private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
+    BasicBehavior* _player_scanner;
     int _freeze_time=25;
     bool _in_position = false;
 };
@@ -110,7 +111,7 @@ public:
     MonsterPatrolDecide(MonsterModel* model, BasicBehavior* selector);
 
     virtual void tick();
-    virtual ~MonsterPatrolDecide(){}
+    virtual ~MonsterPatrolDecide();
 protected:
 private:
     MonsterModel* _model;
@@ -123,7 +124,7 @@ public:
     MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
     virtual void tick() override;
-    virtual ~MonsterPatrolMove() override {}
+    virtual ~MonsterPatrolMove() override;
     void exit() override;
 
 private:
@@ -131,6 +132,7 @@ private:
     BasicBehavior* _move;
     BasicBehavior* _walls_checker;
     BasicBehavior* _player_checker;
+    BasicBehavior* _player_scanner;
     BasicBehavior* _rotate;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
@@ -138,15 +140,17 @@ private:
 
 class MonsterAttackFreeze: public MonsterSm {
 public:
-    MonsterAttackFreeze(MonsterModel* model, BasicBehavior *rotate)
-        :_model(model), _rotate(rotate){}
+    MonsterAttackFreeze(MonsterModel* model, BasicBehavior *rotate);
 
     virtual void tick();
-    virtual ~MonsterAttackFreeze(){}
+    void exit() override;
+    virtual ~MonsterAttackFreeze();
 private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
+    BasicBehavior* _player_scanner;
     int _freeze_time=10;
+    bool _in_position = false;
 };
 
 class MonsterAttackDecide: public MonsterSm {
@@ -164,15 +168,18 @@ private:
 
 class MonsterAttackMove: public MonsterSm {
 public:
-    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
-        :_model(model),_move(move),_rotate(rotate){}
+    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
     virtual void tick();
-    virtual ~MonsterAttackMove(){}
+    virtual ~MonsterAttackMove();
 private:
     MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
+
+    BasicBehavior* _walls_checker;
+    BasicBehavior* _player_checker;
+    BasicBehavior* _player_scanner;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };

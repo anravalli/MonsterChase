@@ -25,7 +25,7 @@ public:
     virtual std::vector<Monster::Monster*> getMonsters();
     virtual std::vector<Brick*> getWallsAround(QPointF tl, QPointF br);
     virtual Player* getPlayer();
-    //virtual QGraphicsScene* getScene();
+
     void addToScene(QGraphicsItem* item);
 
     //avoid copy

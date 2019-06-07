@@ -70,6 +70,8 @@ class MonsterSm;
         double pos_x;
         double pos_y;
         double direction;
+        double target_x;
+        double target_y;
         double target_direction;
     } ;
 
@@ -87,6 +89,7 @@ class MonsterSm;
         void hide();
 
         QRectF collisionBox() const;
+        QRectF sightBox() const;
 
         void update();
 
@@ -101,13 +104,15 @@ class MonsterSm;
         Monster();
 
         MonsterModel model = {
-            0,
+            0, //id
             MonsterType::Blinky, //type
             MonsterStates::patrol, //state
             MonsterSubStates::move, //sub_state
             200, //pos_x
             200, //pos_y
             0, //direction
+            0, //target_x
+            0, //target_y
             0 //target direction
         };
 
@@ -115,6 +120,8 @@ class MonsterSm;
         MonsterShape* shape=nullptr;
         MonsterSight* sight=nullptr;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+
+        QRectF* _sight_box;
 
     };
 

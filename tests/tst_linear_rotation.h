@@ -7,7 +7,6 @@
 
 #include <QtWidgets>
 #include "../src/behaviors.h"
-#include "../src/behaviors.h"
 
 #include <iostream>
 #include <vector>
@@ -27,6 +26,8 @@ protected:
         Monster::MonsterType::Clyde,
         Monster::MonsterStates::patrol,
         Monster::MonsterSubStates::move,
+        0.0,
+        0.0,
         0.0,
         0.0,
         0.0,

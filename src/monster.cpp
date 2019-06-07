@@ -81,6 +81,8 @@ namespace Monster{
     Monster::Monster()
     {
         QApplication::instance()->installEventFilter(this);
+
+        _sight_box = new QRectF(-65, -165, 130, 150);
     }
 
     void Monster::addViewComponent(QGraphicsItem* component)
@@ -121,10 +123,20 @@ namespace Monster{
                       size,size);
     }
 
+    QRectF Monster::sightBox() const
+    {
+        QTransform t = QTransform().translate(model.pos_x, model.pos_y).rotate(model.direction+90);
+        QRectF t_box = t.mapRect(*_sight_box);
+
+        return t_box;
+    }
+
     Monster::~Monster(){
         delete mstates[patrol];
         delete mstates[attack];
         delete mstates[flee];
+
+        delete _sight_box;
         //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
         // they belongs to
         delete shape;

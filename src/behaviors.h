@@ -45,6 +45,24 @@ protected:
     Monster::MonsterModel* _model;
 };
 
+class Sequence: BasicBehavior{
+public:
+    Sequence(Monster::MonsterModel* m);
+    BehaviorStatus exec() override{
+        BehaviorStatus status = success;
+        for (auto c: childs){
+            status = c->exec();
+            if (fail == status)
+                break;
+        };
+        return status;
+    }
+protected:
+    void addChild(BasicBehavior*);
+private:
+    std::vector<BasicBehavior*> childs;
+};
+
 /*
  * Direction selection Behaviors
  */
@@ -75,12 +93,11 @@ private:
 class MoveToTarget: public  BasicBehavior
 {
 public:
-    MoveToTarget(Monster::MonsterModel* m, std::pair<int,int> target):
-        BasicBehavior(m), _target(target){}
+    MoveToTarget(Monster::MonsterModel* m, int speed);
     BehaviorStatus exec() override;
 
 private:
-    std::pair<int,int> _target;
+    int _speed;
 };
 
 class MoveFixedSteps: public  BasicBehavior
@@ -153,6 +170,16 @@ public:
     BehaviorStatus exec() override;
 private:
     int _entity_size;
+};
+
+class PlayerAtSightChecker: public  BasicBehavior
+{
+public:
+    PlayerAtSightChecker(Monster::MonsterModel* m, int size);
+    BehaviorStatus exec() override;
+private:
+    int _entity_size;
+    BehaviorStatus inRange(QPointF pc);
 };
 
 

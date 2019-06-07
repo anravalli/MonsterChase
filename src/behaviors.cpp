@@ -28,6 +28,9 @@
 
 #define PI 3.14159265
 
+#define TORAD(x) x*PI/180
+#define TODEG(x) x*180/PI
+
 
 BasicBehavior::~BasicBehavior() {}
 
@@ -62,7 +65,13 @@ BehaviorStatus PerpendicularDirection::exec() {
     int sign = 1;
     if (_clockwise())
         sign = -1;
-    _model->target_direction += sign*90;
+    double rem = std::fmod(_model->target_direction, 90.0);
+    if ( std::round(rem) == 0 )
+        _model->target_direction = static_cast<int>(_model->target_direction + sign*90);
+    else if (rem > 45)
+        _model->target_direction = (static_cast<int>(_model->target_direction / 90)+1)*90;
+    else
+        _model->target_direction -= rem;
 
     //TODO: negative values workaraound - to be reviewed
     if (_model->target_direction < 0)
@@ -78,15 +87,42 @@ BehaviorStatus PerpendicularDirection::exec() {
  * Move Behaviors
  */
 
-BehaviorStatus MoveToTarget::exec() { abort(); }
+MoveToTarget::MoveToTarget(Monster::MonsterModel *m, int speed):
+    BasicBehavior(m), _speed(speed)
+{
+}
+
+BehaviorStatus MoveToTarget::exec() {
+    BehaviorStatus status = success;
+    double actual_speed = _speed;
+
+    int dist_x = (_model->target_x - _model->pos_x) ;
+    int dist_y = (_model->target_y - _model->pos_y) ;
+
+    double t_dist = sqrt((dist_x*dist_x)+(dist_y*dist_y));
+
+    if (t_dist > 0){
+        if (t_dist < _speed)
+            actual_speed = t_dist;
+
+        double dy = sin( TORAD(_model->direction) ) * actual_speed;
+        double dx = cos ( TORAD(_model->direction) ) * actual_speed;
+        _model->pos_x += dx;
+        _model->pos_y += dy;
+
+        status = running;
+    }
+
+    return status;
+}
 
 BehaviorStatus MoveRandomSteps::exec() { abort(); }
 
 BehaviorStatus MoveFixedSteps::exec() {
     BehaviorStatus status = success;
     if (_counter < _steps){
-        double dx = cos ( _model->direction * PI / 180.0 ) * _speed;
-        double dy = sin( _model->direction * PI / 180.0 ) * _speed;
+        double dx = cos ( TORAD(_model->direction) ) * _speed;
+        double dy = sin( TORAD(_model->direction) ) * _speed;
         _model->pos_x += dx;
         _model->pos_y += dy;
         _counter++;
@@ -216,4 +252,59 @@ BehaviorStatus EntitiesCollisionChecker::exec()
         }
     }
     return status;
+}
+
+PlayerAtSightChecker::PlayerAtSightChecker(Monster::MonsterModel *m, int size):
+    BasicBehavior(m), _entity_size(size)
+{
+}
+
+BehaviorStatus PlayerAtSightChecker::exec()
+{
+    BehaviorStatus status = fail;
+    QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
+
+    Monster::Monster* this_monster = nullptr;
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) this_monster = m;
+    }
+
+    QRectF i = this_monster->sightBox().intersected(pbox);
+    if (not i.isEmpty()){
+        status = inRange(pbox.center());
+    }
+
+    return status;
+}
+
+BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
+{
+    BehaviorStatus ret = fail;
+
+    //range checked starting from shapes center: sight range will result
+    //a little bit wider than the drawn one
+    double dx = pc.x() - _model->pos_x;
+    double dy = pc.y() - _model->pos_y;
+
+    double p_dist = sqrt(dx*dx + dy*dy);
+    double p_dir = atan2(dy, dx);
+    //qudrant adjutment
+    if (p_dir<0)
+        p_dir = 2*PI+p_dir;
+
+#if DEBUG
+    double p_dir_deg = TODEG(p_dir);
+#endif
+
+    double sight_up = TORAD((_model->direction+40));
+    double sight_down = TORAD((_model->direction-40));
+
+    if (p_dir < sight_up and p_dir > sight_down and p_dist <= 180){
+        _model->target_direction = TODEG(p_dir);
+        _model->target_x = pc.x();
+        _model->target_y = pc.y();
+        ret = success;
+    }
+    return ret;
 }

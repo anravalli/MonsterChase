@@ -21,6 +21,8 @@
 
 #include "monsterviews.h"
 
+#define VIEW_DEBUG 0
+
 namespace Monster{
 /*
  * MonsterShape methods implementation
@@ -78,7 +80,12 @@ void MonsterTriangularShape::paint(QPainter *painter, const QStyleOptionGraphics
 }
 
 QRectF MonsterSight::boundingRect() const {
+
+#if VIEW_DEBUG
     return QRectF(-100,-165,200,300);
+#else
+    return QRectF(-65, -165, 130, 150);
+#endif
 }
 
 void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -87,6 +94,15 @@ void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 
     painter->setBrush(QBrush(QColor(0,255,50,50)));
     painter->drawPie(-100,-165,200,300,50*16,80*16);
+
+#if VIEW_DEBUG
+    //player detection box
+    painter->setBrush(QBrush(QColor(255,0,0,50)));
+    painter->drawRect(-65,-165,130,150);
+    //allarm box
+    painter->setBrush(QBrush(QColor(250,255,0,50)));
+    painter->drawRect(-100,-165,200,300);
+#endif
 }
 
 }

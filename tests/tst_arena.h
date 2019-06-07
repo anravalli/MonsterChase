@@ -31,7 +31,7 @@ TEST_F(Arena_Test, get_brick_0){
 TEST_F(Arena_Test, get_out_of_map_bricks){
 
     vector< pair<int,int> > input_vector;
-    //vector<Brick*> expect_vect;
+
     input_vector.push_back(make_pair(-1,100));
     input_vector.push_back(make_pair(1,100));
     input_vector.push_back(make_pair(0,100));
