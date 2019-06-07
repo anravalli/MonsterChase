@@ -45,6 +45,24 @@ protected:
     Monster::MonsterModel* _model;
 };
 
+class Sequence: BasicBehavior{
+public:
+    Sequence(Monster::MonsterModel* m);
+    BehaviorStatus exec() override{
+        BehaviorStatus status = success;
+        for (auto c: childs){
+            status = c->exec();
+            if (fail == status)
+                break;
+        };
+        return status;
+    }
+protected:
+    void addChild(BasicBehavior*);
+private:
+    std::vector<BasicBehavior*> childs;
+};
+
 /*
  * Direction selection Behaviors
  */
