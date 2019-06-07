@@ -65,7 +65,13 @@ BehaviorStatus PerpendicularDirection::exec() {
     int sign = 1;
     if (_clockwise())
         sign = -1;
-    _model->target_direction += sign*90;
+    double rem = std::fmod(_model->target_direction, 90.0);
+    if ( static_cast<int>(rem) == 0 )
+        _model->target_direction += sign*90;
+    else if (rem > 45)
+        _model->target_direction += rem;
+    else
+        _model->target_direction -= rem;
 
     //TODO: negative values workaraound - to be reviewed
     if (_model->target_direction < 0)
