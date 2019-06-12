@@ -125,15 +125,24 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
 
     switch (monster){
     case Blinky:
+        selector = new RandomDirection(model);
+        mover = new MoveToTarget(model, 4);
+        rotator = new LinearRotation(model, 5);
+        freeze_rotator = new TronRotation(model);
+        break;
     case Pinky:
     case Inky:
     case Clyde:
+        selector = new PerpendicularDirection(model);
+        mover = new MoveToTarget(model, 6);
+        rotator = new TronRotation(model);
+        freeze_rotator = rotator;
         break;
     }
     flee_state = new MonsterPatrol(model);
     flee_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
-    flee_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
-    flee_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
+    flee_state->sstates[MonsterSubStates::move] = new MonsterFleeMove(model,mover,rotator);
+    flee_state->sstates[MonsterSubStates::freeze] = new MonsterFleeFreeze(model,freeze_rotator);
     return  flee_state;
 
 }
@@ -160,6 +169,7 @@ MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, BasicBehavior *rot
     :_model(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
 void MonsterPatrolFreeze::tick(){
@@ -168,6 +178,11 @@ void MonsterPatrolFreeze::tick(){
 
     if (BehaviorStatus::success == _player_scanner->exec()){
         _model->state=attack;
+        exit();
+    }
+
+    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+        _model->state=flee;
         exit();
     }
 
@@ -215,6 +230,7 @@ MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, B
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
 void MonsterPatrolMove::tick(){
@@ -237,6 +253,11 @@ void MonsterPatrolMove::tick(){
         exit();
     }
 
+    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+        _model->state=flee;
+        exit();
+    }
+
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
 
@@ -248,6 +269,7 @@ MonsterPatrolMove::~MonsterPatrolMove() {
     delete _walls_checker;
     delete _player_checker;
     delete _player_scanner;
+    delete _player_proximity_checker;
     delete _rotate;
 }
 
@@ -273,6 +295,7 @@ MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, B
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
 void MonsterAttackMove::tick(){
@@ -295,6 +318,11 @@ void MonsterAttackMove::tick(){
         exit();
     }
 
+    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+        _model->state=flee;
+        exit();
+    }
+
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
     return;
@@ -305,6 +333,7 @@ MonsterAttackMove::~MonsterAttackMove(){
     delete _walls_checker;
     delete _player_checker;
     delete _player_scanner;
+    delete _player_proximity_checker;
     delete _rotate;
 }
 
@@ -316,6 +345,7 @@ MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, BasicBehavior *rot
     :_model(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
 void MonsterAttackFreeze::tick(){
@@ -324,6 +354,11 @@ void MonsterAttackFreeze::tick(){
 
     if (BehaviorStatus::success != _player_scanner->exec()){
         _model->state=MonsterStates::patrol;
+        exit();
+    }
+
+    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+        _model->state=flee;
         exit();
     }
 
@@ -358,16 +393,106 @@ void MonsterFlee::tick(){
 /*
  * Monster Flee Sub State
  */
+MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+    :_model(model),_move(move),_rotate(rotate){
+    int monster_size = 30; //temporary harcoded
+    _walls_checker = new WallsCollisionChecker(model, monster_size);
+    _player_checker = new EntitiesCollisionChecker(model, monster_size);
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
+}
+
 void MonsterFleeMove::tick(){
+
+    if (BehaviorStatus::running != _move->exec()){
+        _model->sub_state = MonsterSubStates::route;
+        exit();
+    }
+
+    if (BehaviorStatus::success == _walls_checker->exec()){
+        _model->sub_state=MonsterSubStates::freeze;
+        exit();
+    }
+    if (BehaviorStatus::success == _player_checker->exec()){
+        _model->sub_state=MonsterSubStates::freeze;
+        exit();
+    }
+    if (BehaviorStatus::success != _player_scanner->exec()){
+        _model->state=MonsterStates::patrol;
+        exit();
+    }
+
+    if (BehaviorStatus::success != _player_proximity_checker->exec()){
+        _model->state=MonsterStates::patrol;
+        exit();
+    }
+
+    if (BehaviorStatus::success != _rotation_status)
+        _rotation_status = _rotate->exec();
     return;
+}
+
+MonsterFleeMove::~MonsterFleeMove() {
+    delete _move;
+    delete _walls_checker;
+    delete _player_checker;
+    delete _player_scanner;
+    delete _player_proximity_checker;
+    delete _rotate;
+}
+
+MonsterFleeDecide::MonsterFleeDecide(MonsterModel *model, BasicBehavior *selector)
+    :_model(model), _selector(selector)
+{
 }
 
 void MonsterFleeDecide::tick(){
     return;
 }
 
+MonsterFleeDecide::~MonsterFleeDecide() {
+    delete _selector;
+}
+
+MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
+    :_model(model), _rotate(rotate){
+    int monster_size = 30;
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
+    _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
+}
+
 void MonsterFleeFreeze::tick(){
+    _in_position = (BehaviorStatus::running != _rotate->exec());
+
+    if (BehaviorStatus::success != _player_scanner->exec()){
+        _model->state=MonsterStates::patrol;
+        exit();
+    }
+
+    if (BehaviorStatus::success != _player_proximity_checker->exec()){
+        _model->state=MonsterStates::patrol;;
+        exit();
+    }
+
+    if( (_freeze_time <= 0 and _in_position) ){
+        _freeze_time=25;
+        _model->sub_state=MonsterSubStates::route;
+        exit();
+    }
+    else if(_freeze_time > 0)
+        _freeze_time--;
+
     return;
+}
+
+void MonsterFleeFreeze::exit() {
+    _in_position = false;
+}
+
+MonsterFleeFreeze::~MonsterFleeFreeze() {
+    delete _player_scanner;
+    delete _player_proximity_checker;
+    delete _rotate;
 }
 
 }

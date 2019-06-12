@@ -102,6 +102,7 @@ private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
     BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
     int _freeze_time=25;
     bool _in_position = false;
 };
@@ -133,6 +134,7 @@ private:
     BasicBehavior* _walls_checker;
     BasicBehavior* _player_checker;
     BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
     BasicBehavior* _rotate;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
@@ -142,13 +144,14 @@ class MonsterAttackFreeze: public MonsterSm {
 public:
     MonsterAttackFreeze(MonsterModel* model, BasicBehavior *rotate);
 
-    virtual void tick();
+    virtual void tick() override;
     void exit() override;
-    virtual ~MonsterAttackFreeze();
+    virtual ~MonsterAttackFreeze() override;
 private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
     BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
     int _freeze_time=10;
     bool _in_position = false;
 };
@@ -157,8 +160,8 @@ class MonsterAttackDecide: public MonsterSm {
 public:
     MonsterAttackDecide(MonsterModel* model, BasicBehavior* selector);
 
-    virtual void tick();
-    virtual ~MonsterAttackDecide(){}
+    virtual void tick() override;
+    virtual ~MonsterAttackDecide() override {}
 protected:
 private:
     MonsterModel* _model;
@@ -180,29 +183,33 @@ private:
     BasicBehavior* _walls_checker;
     BasicBehavior* _player_checker;
     BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };
 
 class MonsterFleeFreeze: public MonsterSm {
 public:
-    MonsterFleeFreeze(MonsterModel* model, BasicBehavior *rotate)
-        :_model(model), _rotate(rotate){}
+    MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate);
 
-    virtual void tick();
-    virtual ~MonsterFleeFreeze(){}
+    virtual void tick() override;
+    void exit() override;
+    virtual ~MonsterFleeFreeze() override;
 private:
     MonsterModel* _model;
     BasicBehavior* _rotate;
+    BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
     int _freeze_time=10;
+    bool _in_position = false;
 };
 
 class MonsterFleeDecide: public MonsterSm {
 public:
     MonsterFleeDecide(MonsterModel* model, BasicBehavior* selector);
 
-    virtual void tick();
-    virtual ~MonsterFleeDecide(){}
+    virtual void tick() override;
+    virtual ~MonsterFleeDecide() override;
 protected:
 private:
     MonsterModel* _model;
@@ -212,15 +219,19 @@ private:
 
 class MonsterFleeMove: public MonsterSm {
 public:
-    MonsterFleeMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate)
-        :_model(model),_move(move),_rotate(rotate){}
+    MonsterFleeMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
 
-    virtual void tick();
-    virtual ~MonsterFleeMove(){}
+    virtual void tick() override;
+    virtual ~MonsterFleeMove() override;
 private:
     MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
+
+    BasicBehavior* _walls_checker;
+    BasicBehavior* _player_checker;
+    BasicBehavior* _player_scanner;
+    BasicBehavior* _player_proximity_checker;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };

@@ -84,7 +84,7 @@ QRectF MonsterSight::boundingRect() const {
 #if VIEW_DEBUG
     return QRectF(-100,-165,200,300);
 #else
-    return QRectF(-65, -165, 130, 150);
+    return QRectF(-100, -165, 200, 265);
 #endif
 }
 
@@ -99,10 +99,12 @@ void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     //player detection box
     painter->setBrush(QBrush(QColor(255,0,0,50)));
     painter->drawRect(-65,-165,130,150);
-    //allarm box
-    painter->setBrush(QBrush(QColor(250,255,0,50)));
-    painter->drawRect(-100,-165,200,300);
+    //warning box
+#else
+    painter->setPen(Qt::NoPen);
 #endif
+    painter->setBrush(QBrush(QColor(250,255,0,50)));
+    painter->drawEllipse(-100,-100,200,200);
 }
 
 }

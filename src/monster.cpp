@@ -83,6 +83,7 @@ namespace Monster{
         QApplication::instance()->installEventFilter(this);
 
         _sight_box = new QRectF(-65, -165, 130, 150);
+        _warning_box = new QRectF(-100,-100,200,200);
     }
 
     void Monster::addViewComponent(QGraphicsItem* component)
@@ -127,6 +128,14 @@ namespace Monster{
     {
         QTransform t = QTransform().translate(model.pos_x, model.pos_y).rotate(model.direction+90);
         QRectF t_box = t.mapRect(*_sight_box);
+
+        return t_box;
+    }
+
+    QRectF Monster::warningBox() const
+    {
+        QTransform t = QTransform().translate(model.pos_x, model.pos_y);
+        QRectF t_box = t.mapRect(*_warning_box);
 
         return t_box;
     }

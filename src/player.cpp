@@ -187,6 +187,10 @@ PlayerEnergyGauge *Player::getEnergyGauge(){
     return energy_gauge;
 }
 
+PlayerStates Player::getRageStatus(){
+    return model.state;
+}
+
 Player::~Player(){
     delete pstates[normal];
     delete pstates[on_rage];
