@@ -246,27 +246,30 @@ void MonsterPatrolMove::tick(){
     }
 
     if (BehaviorStatus::success == _walls_checker->exec()){
-        _model->sub_state=freeze;
+        _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
     if (BehaviorStatus::success == _player_checker->exec()){
-        _model->sub_state=freeze;
+        _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
 
     //also player rage should be considered here to set correct status
     bool player_seen_on_rage = false;
     if (BehaviorStatus::success == _player_scanner->exec()){
-        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
-            _model->state=flee;
+        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+            _model->state=MonsterStates::flee;
+            _model->sub_state = MonsterSubStates::route;
+        }
         else
-            _model->state=attack;
+            _model->state=MonsterStates::attack;
         exit();
     }
 
     if (BehaviorStatus::success == _player_proximity_checker->exec()
             or player_seen_on_rage ){
-        _model->state=flee;
+        _model->state=MonsterStates::flee;
+        _model->sub_state = MonsterSubStates::route;
         exit();
     }
 
@@ -332,11 +335,13 @@ void MonsterAttackMove::tick(){
     }
     else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
         _model->state=MonsterStates::flee;
+        _model->sub_state = MonsterSubStates::route;
         exit();
     }
 
     if (BehaviorStatus::success == _player_proximity_checker->exec()){
-        _model->state=flee;
+        _model->state=MonsterStates::flee;
+        _model->sub_state = MonsterSubStates::route;
         exit();
     }
 
@@ -375,11 +380,13 @@ void MonsterAttackFreeze::tick(){
     }
     else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
         _model->state=MonsterStates::flee;
+        _model->sub_state = MonsterSubStates::route;
         exit();
     }
 
     if (BehaviorStatus::success == _player_proximity_checker->exec()){
-        _model->state=flee;
+        _model->state=MonsterStates::flee;
+        _model->sub_state = MonsterSubStates::route;
         exit();
     }
 
@@ -463,6 +470,8 @@ MonsterFleeDecide::MonsterFleeDecide(MonsterModel *model, BasicBehavior *selecto
 }
 
 void MonsterFleeDecide::tick(){
+
+    _model->sub_state = MonsterSubStates::move;
     return;
 }
 
@@ -486,8 +495,10 @@ void MonsterFleeFreeze::tick(){
     }
 
     if (BehaviorStatus::success == _player_scanner->exec()){
-        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
+        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
             _model->state=MonsterStates::flee;
+            _model->sub_state = MonsterSubStates::route;
+        }
         else
             _model->state=MonsterStates::attack;
         exit();
