@@ -473,6 +473,7 @@ MonsterFleeDecide::~MonsterFleeDecide() {
 MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
     :_model(model), _rotate(rotate){
     int monster_size = 30;
+    _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
@@ -481,6 +482,14 @@ void MonsterFleeFreeze::tick(){
 
     if (BehaviorStatus::success != _player_proximity_checker->exec()){
         _model->state=MonsterStates::patrol;;
+        exit();
+    }
+
+    if (BehaviorStatus::success == _player_scanner->exec()){
+        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
+            _model->state=MonsterStates::flee;
+        else
+            _model->state=MonsterStates::attack;
         exit();
     }
 
