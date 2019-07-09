@@ -20,6 +20,8 @@
 */
 
 #include "monstersm.h"
+#include "gameworld.h"
+#include "player.h"
 
 namespace Monster{
 
@@ -177,7 +179,10 @@ void MonsterPatrolFreeze::tick(){
     _in_position = (BehaviorStatus::running != _rotate->exec());
 
     if (BehaviorStatus::success == _player_scanner->exec()){
-        _model->state=attack;
+        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
+            _model->state=flee;
+        else
+            _model->state=attack;
         exit();
     }
 
@@ -248,12 +253,19 @@ void MonsterPatrolMove::tick(){
         _model->sub_state=freeze;
         exit();
     }
+
+    //also player rage should be considered here to set correct status
+    bool player_seen_on_rage = false;
     if (BehaviorStatus::success == _player_scanner->exec()){
-        _model->state=attack;
+        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
+            _model->state=flee;
+        else
+            _model->state=attack;
         exit();
     }
 
-    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+    if (BehaviorStatus::success == _player_proximity_checker->exec()
+            or player_seen_on_rage ){
         _model->state=flee;
         exit();
     }
@@ -313,8 +325,13 @@ void MonsterAttackMove::tick(){
         _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
+
     if (BehaviorStatus::success != _player_scanner->exec()){
         _model->state=MonsterStates::patrol;
+        exit();
+    }
+    else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
+        _model->state=MonsterStates::flee;
         exit();
     }
 
@@ -354,6 +371,10 @@ void MonsterAttackFreeze::tick(){
 
     if (BehaviorStatus::success != _player_scanner->exec()){
         _model->state=MonsterStates::patrol;
+        exit();
+    }
+    else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
+        _model->state=MonsterStates::flee;
         exit();
     }
 
@@ -398,7 +419,6 @@ MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, Basic
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
-    _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
@@ -409,21 +429,18 @@ void MonsterFleeMove::tick(){
         exit();
     }
 
+    //TODO: need to find a better way to set event priority
+    if(GameWorld::instance().getPlayer()->getRageStatus() != PlayerStates::on_rage) {
+        _model->state=MonsterStates::patrol;
+        exit();
+    }
+
     if (BehaviorStatus::success == _walls_checker->exec()){
         _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
     if (BehaviorStatus::success == _player_checker->exec()){
         _model->sub_state=MonsterSubStates::freeze;
-        exit();
-    }
-    if (BehaviorStatus::success != _player_scanner->exec()){
-        _model->state=MonsterStates::patrol;
-        exit();
-    }
-
-    if (BehaviorStatus::success != _player_proximity_checker->exec()){
-        _model->state=MonsterStates::patrol;
         exit();
     }
 
@@ -436,7 +453,6 @@ MonsterFleeMove::~MonsterFleeMove() {
     delete _move;
     delete _walls_checker;
     delete _player_checker;
-    delete _player_scanner;
     delete _player_proximity_checker;
     delete _rotate;
 }
@@ -457,17 +473,11 @@ MonsterFleeDecide::~MonsterFleeDecide() {
 MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
     :_model(model), _rotate(rotate){
     int monster_size = 30;
-    _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
 void MonsterFleeFreeze::tick(){
     _in_position = (BehaviorStatus::running != _rotate->exec());
-
-    if (BehaviorStatus::success != _player_scanner->exec()){
-        _model->state=MonsterStates::patrol;
-        exit();
-    }
 
     if (BehaviorStatus::success != _player_proximity_checker->exec()){
         _model->state=MonsterStates::patrol;;
@@ -490,7 +500,6 @@ void MonsterFleeFreeze::exit() {
 }
 
 MonsterFleeFreeze::~MonsterFleeFreeze() {
-    delete _player_scanner;
     delete _player_proximity_checker;
     delete _rotate;
 }
