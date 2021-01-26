@@ -308,3 +308,59 @@ BehaviorStatus PlayerAtSightChecker::inRange(QPointF pc)
     }
     return ret;
 }
+
+PlayerProximityChecker::PlayerProximityChecker(Monster::MonsterModel *m, int size):
+    BasicBehavior(m), _entity_size(size)
+{
+}
+
+BehaviorStatus PlayerProximityChecker::exec()
+{
+    BehaviorStatus status = fail;
+    Player* p = GameWorld::instance().getPlayer();
+    QRectF pbox = p->collisionBox();
+    PlayerStates prage = p->getRageStatus();
+
+    Monster::Monster* this_monster = nullptr;
+    std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
+    for (auto m: monsters){
+        if (m->id() == _model->id) this_monster = m;
+    }
+
+    QRectF i = this_monster->warningBox().intersected(pbox);
+    if (not i.isEmpty()){
+        status = shouldFlee(pbox.center(), prage);
+    }
+
+    return status;
+}
+
+BehaviorStatus PlayerProximityChecker::shouldFlee(QPointF pc, int ps)
+{
+    BehaviorStatus ret = fail;
+
+    //range checked starting from shapes center: sight range will result
+    //a little bit wider than the drawn one
+    double dx = pc.x() - _model->pos_x;
+    double dy = pc.y() - _model->pos_y;
+
+    double p_dist = sqrt(dx*dx + dy*dy);
+#if DEBUG
+    double p_dir = atan2(dy, dx);
+    //qudrant adjutment
+    if (p_dir<0)
+        p_dir = 2*PI+p_dir;
+
+    double p_dir_deg = TODEG(p_dir);
+
+    double sight_up = TORAD((_model->direction+40));
+    double sight_down = TORAD((_model->direction-40));
+
+#endif
+    if (p_dist <= 100 and ps == PlayerStates::on_rage){
+        _model->target_x = -pc.x();
+        _model->target_y = -pc.y();
+        ret = success;
+    }
+    return ret;
+}

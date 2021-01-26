@@ -90,6 +90,7 @@ class MonsterSm;
 
         QRectF collisionBox() const;
         QRectF sightBox() const;
+        QRectF warningBox() const;
 
         void update();
 
@@ -122,6 +123,7 @@ class MonsterSm;
         MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
         QRectF* _sight_box;
+        QRectF* _warning_box;
 
     };
 

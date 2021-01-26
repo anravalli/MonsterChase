@@ -34,6 +34,8 @@ enum BehaviorStatus {
     running
 };
 
+//enum PlayerStates;
+
 class BasicBehavior
 {
 public:
@@ -182,5 +184,14 @@ private:
     BehaviorStatus inRange(QPointF pc);
 };
 
+class PlayerProximityChecker: public  BasicBehavior
+{
+public:
+    PlayerProximityChecker(Monster::MonsterModel* m, int size);
+    BehaviorStatus exec() override;
+private:
+    int _entity_size;
+    BehaviorStatus shouldFlee(QPointF pc, int ps);
+};
 
 #endif // BEHAVIORS_H

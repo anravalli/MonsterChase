@@ -89,7 +89,7 @@ public:
     void setScorePos(int x, int y);
 
     PlayerEnergyGauge* getEnergyGauge();
-
+    PlayerStates getRageStatus();
 
     QRectF collisionBox() const;
 protected:
