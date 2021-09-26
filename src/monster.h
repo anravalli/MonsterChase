@@ -69,6 +69,8 @@ class MonsterSm;
         MonsterSubStates sub_state;
         double pos_x;
         double pos_y;
+        double prev_pos_x;
+        double prev_pos_y;
         double direction;
         double target_x;
         double target_y;

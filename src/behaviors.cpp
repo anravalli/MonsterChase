@@ -107,6 +107,10 @@ BehaviorStatus MoveToTarget::exec() {
 
         double dy = sin( TORAD(_model->direction) ) * actual_speed;
         double dx = cos ( TORAD(_model->direction) ) * actual_speed;
+        //save previoius position
+        _model->prev_pos_x = _model->pos_x;
+        _model->prev_pos_y = _model->pos_y;
+        //update the current position
         _model->pos_x += dx;
         _model->pos_y += dy;
 
@@ -123,6 +127,10 @@ BehaviorStatus MoveFixedSteps::exec() {
     if (_counter < _steps){
         double dx = cos ( TORAD(_model->direction) ) * _speed;
         double dy = sin( TORAD(_model->direction) ) * _speed;
+        //save previoius position
+        _model->prev_pos_x = _model->pos_x;
+        _model->prev_pos_y = _model->pos_y;
+        //update the current position
         _model->pos_x += dx;
         _model->pos_y += dy;
         _counter++;
@@ -175,6 +183,16 @@ BehaviorStatus TronRotation::exec() {
     return success;
 }
 
+typedef enum _side {
+    side_up,
+    side_up_right,
+    side_right,
+    side_down_right,
+    side_down,
+    side_down_left,
+    side_left,
+    side_up_left
+} side;
 /*
  * Checking Behaviors
  */
@@ -187,45 +205,173 @@ BehaviorStatus WallsCollisionChecker::exec()
                                                                         QPointF(_model->pos_x+(_entity_size/2),
                                                                                 _model->pos_y+(_entity_size/2)));
     BehaviorStatus status = fail;
-    int offset = 0;
+
+    /*
+     * line equations:
+     *   - explicit:  x = my + q
+     *   - implicit:  ax + by + c = 0
+     *
+     *  ==> a = (y2 - y1)
+     *  ==> b = (x1 - x2)
+     *  ==> c = -(ax1 + by1)
+     *
+     *  ==> m = -a/b
+     *  ==> q = -c/b = (ax1 + by1)/b
+     *
+     *  m = atan(dir)
+     *  q = x - my = x1 - atan(dir)*y1
+    */
+
+    QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
+                          _entity_size, _entity_size);
+
+    /*
+     * the move vector is the vector betwee the initial position and the final position of the entity.
+     */
+    QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
+
+    QPointF contact_point;
+    QPointF *intersection_point = nullptr;
+
     for (auto b: walls){
         //test: increase displacement due to collisions glitch
-        QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
-                              _entity_size, _entity_size);
         QRectF i = collisionBox.intersected(b->boundingRect());
+
+        bool check_x =false;
+        bool check_y =false;
+        double _wall_x = 0;
+        double _wall_y = 0;
+        QLineF wall_x;
+        QLineF wall_y;
+
+        /*
+         * the distance vector is projected from the entity center and the final position,
+         * hence shall be corrected by adding or subtracting the entity's bounding box radius.
+         *
+         * If move (colliding) vector is orinted to the west - the vector lays in 2nd and 3rd
+         * quadrants with an angle between 90 and 270 degrees (decreasing X value) - the
+         * bounding box radius is added to the intersection X value, vice-versa, if orinted
+         * to the east - 1rs and 4th quadrants an angle between 0 and 90 degrees and between
+         * 270 degrees and 360 degrees (increasing X value) - the radius is subtracted from
+         * the intersection X value.
+         *
+         * On the other hand, the radius shall be added to the intersection point Y value when the vector
+         * points to the north, laying on the 3rd and forth quadrants (angle between 180 and 360 with
+         * decreasing Y valus) and subtracted when oriented to the south, on 1rs and 2nd quadrant
+         * with an angle between 0 and 180 degrees (increasing Y values)
+         *
+         */
+        int sign_x = 1;
+        int sign_y = 1;
+
+        //side s = side_up;
+        QRectF brick = b->boundingRect();
+
         if (not i.isEmpty()){
+
+            //we have at least a collision so the behavior succeded
+            status = success;
+
+            //colliding faces selection and test setup
             if( 0.0 == _model->direction or 360.0 == _model->direction){
-                _model->pos_x -= (i.width()+offset);
+                // vector orinted to EAST
+                sign_x = -1;
+                sign_y = 0;
+                contact_point = collisionBox.topRight();
+                // selected oject side: left
+                _wall_x = brick.left();
+                check_x = true;
+                check_y = false;
             }
             else if( 0 < _model->direction and _model->direction < 90 ){
-                _model->pos_x -= (i.width()+offset);
-                _model->pos_y -= (i.height()+offset);
+                // vector orinted to SOUTH-EAST
+                sign_x = -1;
+                sign_y = -1;
+                contact_point = collisionBox.bottomRight();
+                // selected oject side: up and left;
+                _wall_x = brick.left();
+                _wall_y = brick.top();
+                check_x = true;
+                check_y = true;
             }
             else if( 90.0 == _model->direction ){
-                _model->pos_y -= (i.height()+offset);
+                // vector orinted to SOUTH
+                sign_x = 0;
+                sign_y = -1;
+                contact_point = collisionBox.bottomRight();
+                //side_up;
+                _wall_y = brick.top();
+                check_x = false;
+                check_y = true;
             }
             else if( 90 < _model->direction and _model->direction < 180 ){
-                _model->pos_x += (i.width()+offset);
-                _model->pos_y -= (i.height()+offset);
+                // vector orinted to SOUTH-WEST
+                sign_x = 1;
+                sign_y = -1;
+                //side_up_right;
+                _wall_x = brick.right();
+                _wall_y = brick.top();
+                check_x = true;
+                check_y = true;
+                contact_point = collisionBox.bottomLeft();
             }
             else if( _model->direction == 180.0 ){
-                _model->pos_x += (i.width()+offset);
+                // vector orinted to WEST
+                sign_x = 1;
+                sign_y = 0;
+                //side_right;
+                _wall_x = brick.right();
+                check_x = true;
+                check_y = false;
+                contact_point = collisionBox.bottomLeft();
             }
             else if( 180 < _model->direction and _model->direction < 270 ){
-                _model->pos_x += (i.width()+offset);
-                _model->pos_y += (i.height()+offset);
+                //side_down_right;
+                _wall_x = brick.right();
+                _wall_y = brick.bottom();
+                check_x = true;
+                check_y = true;
+                contact_point = collisionBox.topLeft();
             }
             else if( 270.0 == _model->direction ){
-                _model->pos_y += (i.height()+offset);
+                //side_down;
+                _wall_y = brick.bottom();
+                check_x = false;
+                check_y = true;
+                contact_point = collisionBox.topLeft();
             }
             else if( 270 < _model->direction and _model->direction < 360 ){
-                _model->pos_x -= (i.width()+offset);
-                _model->pos_y += (i.height()+offset);
+                //side_down_left;
+                _wall_x = brick.left();
+                _wall_y = brick.bottom();
+                check_x = true;
+                check_y = true;
+                contact_point = collisionBox.topRight();
             }
             else if( 0 > _model->direction ){
                 abort();
             }
-            status = success;
+
+            move_vector.setP1(contact_point);
+            if(check_x){
+                QLineF::IntersectType i = move_vector.intersect(wall_x, intersection_point);
+                if(i == QLineF::BoundedIntersection and intersection_point != nullptr){
+                    _model->pos_x = intersection_point->x() - (sign_x * _entity_size / 2);
+                    _model->pos_y = intersection_point->y() - (sign_y * _entity_size / 2);
+
+                    //if we found the intersection here there is no need to continue checking the other face
+                    continue;
+                }
+            }
+
+            if(check_y){
+                QLineF::IntersectType i = move_vector.intersect(wall_y, intersection_point);
+                if(i == QLineF::BoundedIntersection and intersection_point != nullptr){
+                    _model->pos_x = intersection_point->x() - (sign_x * _entity_size / 2);
+                    _model->pos_y = intersection_point->y() - (sign_y * _entity_size / 2);
+                }
+            }
+
         }
     }
     return status;
