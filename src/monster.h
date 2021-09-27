@@ -75,6 +75,7 @@ class MonsterSm;
         double target_x;
         double target_y;
         double target_direction;
+        int curent_speed;
     } ;
 
     class Monster;
@@ -108,15 +109,18 @@ class MonsterSm;
 
         MonsterModel model = {
             0, //id
-            MonsterType::Blinky, //type
+            MonsterType::Blinky,   //type
             MonsterStates::patrol, //state
-            MonsterSubStates::move, //sub_state
+            MonsterSubStates::move,//sub_state
             200, //pos_x
             200, //pos_y
+            200, //prevpos_x
+            200, //prev_pos_y
             0, //direction
             0, //target_x
             0, //target_y
-            0 //target direction
+            0, //target direction
+            0  //curent_speed
         };
 
     private:

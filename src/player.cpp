@@ -87,6 +87,7 @@ void Player::checkCollisionsWithMonsters(){
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
+            //FIXME: this will cause the collision glitch
             cstate->moveBy(-step,-step);
             cstate->collisionWithMonster();
         }
@@ -106,6 +107,7 @@ void Player::checkCollisionsWithWalls(){
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
+            //FIXME: this will cause the collision glitch
             cstate->moveBy(-step,-step);
         }
     }

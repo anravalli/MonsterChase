@@ -42,6 +42,8 @@ class MonsterSm {
 public:
     friend class MonsterStateFactory;
 
+    int move_speed = 0;
+
     virtual void tick() = 0;
     virtual void enter(){}
     virtual void exit(){}

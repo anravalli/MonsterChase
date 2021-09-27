@@ -71,6 +71,9 @@ namespace Monster{
         monster->mstates[attack] =  MonsterStateFactory::stateFactory(attack,type,&(monster->model));
         monster->mstates[flee] =  MonsterStateFactory::stateFactory(flee,type,&(monster->model));
 
+        //default state is "patrol" so let's init the "current_speed" accordingly
+        monster->model.curent_speed = monster->mstates[patrol]->move_speed;
+
         //adding views to scene
         //the order we add the items to the scene affects the z-order
         monster->addViewComponent(monster->shape);

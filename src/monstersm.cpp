@@ -57,7 +57,7 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
     BasicBehavior* rotator = nullptr;
     BasicBehavior* freeze_rotator = nullptr;
 
-    MonsterSm* patrol_state = nullptr;
+    MonsterSm* patrol_state = new MonsterPatrol(model);
 
     switch (monster){
     case Blinky:
@@ -65,6 +65,7 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
         mover = new MoveFixedSteps(model, 2, 100);
         rotator = new LinearRotation(model, 3);
         freeze_rotator = new LinearRotation(model, 5);
+        patrol_state->move_speed = 2;
         break;
     case Pinky:
     case Inky:
@@ -73,9 +74,9 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
         mover = new MoveFixedSteps(model, 4, 100);
         rotator = new TronRotation(model);
         freeze_rotator = rotator;
+        patrol_state->move_speed = 4;
         break;
     }
-    patrol_state = new MonsterPatrol(model);
     patrol_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
     patrol_state->sstates[MonsterSubStates::move] = new MonsterPatrolMove(model,mover,rotator);
     patrol_state->sstates[MonsterSubStates::freeze] = new MonsterPatrolFreeze(model,freeze_rotator);
@@ -90,7 +91,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
     BasicBehavior* rotator = nullptr;
     BasicBehavior* freeze_rotator = nullptr;
 
-    MonsterSm* attack_state = nullptr;
+    MonsterSm* attack_state = new MonsterPatrol(model);
 
     switch (monster){
     case Blinky:
@@ -98,6 +99,7 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
         mover = new MoveToTarget(model, 4);
         rotator = new LinearRotation(model, 5);
         freeze_rotator = new TronRotation(model);
+        attack_state->move_speed = 4;
         break;
     case Pinky:
     case Inky:
@@ -106,9 +108,9 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
         mover = new MoveToTarget(model, 6);
         rotator = new TronRotation(model);
         freeze_rotator = rotator;
+        attack_state->move_speed = 6;
         break;
     }
-    attack_state = new MonsterPatrol(model);
     attack_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
     attack_state->sstates[MonsterSubStates::move] = new MonsterAttackMove(model,mover,rotator);
     attack_state->sstates[MonsterSubStates::freeze] = new MonsterAttackFreeze(model,freeze_rotator);
@@ -123,7 +125,7 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
     BasicBehavior* rotator = nullptr;
     BasicBehavior* freeze_rotator = nullptr;
 
-    MonsterSm* flee_state = nullptr;
+    MonsterSm* flee_state = new MonsterPatrol(model);
 
     switch (monster){
     case Blinky:
@@ -131,6 +133,7 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
         mover = new MoveToTarget(model, 4);
         rotator = new LinearRotation(model, 5);
         freeze_rotator = new TronRotation(model);
+        flee_state->move_speed = 4;
         break;
     case Pinky:
     case Inky:
@@ -139,9 +142,9 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
         mover = new MoveToTarget(model, 6);
         rotator = new TronRotation(model);
         freeze_rotator = rotator;
+        flee_state->move_speed = 6;
         break;
     }
-    flee_state = new MonsterPatrol(model);
     flee_state->sstates[MonsterSubStates::route] = new MonsterPatrolDecide(model, selector);
     flee_state->sstates[MonsterSubStates::move] = new MonsterFleeMove(model,mover,rotator);
     flee_state->sstates[MonsterSubStates::freeze] = new MonsterFleeFreeze(model,freeze_rotator);
