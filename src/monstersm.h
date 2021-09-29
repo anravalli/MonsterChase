@@ -45,12 +45,15 @@ public:
     int move_speed = 0;
 
     virtual void tick() = 0;
-    virtual void enter(){}
+    virtual void enter();
     virtual void exit(){}
 
     virtual ~MonsterSm();
 protected:
+    MonsterSm(MonsterModel* model)
+        :_model(model){}
     MonsterSm* sstates[3]={nullptr,nullptr,nullptr};
+    MonsterModel* _model;
 };
 
 class MonsterPatrol: public MonsterSm {
@@ -62,7 +65,6 @@ public:
 
 private:
 protected:
-    MonsterModel* _model;
 
     void move();
 };
@@ -70,10 +72,10 @@ protected:
 class MonsterAttack: public MonsterSm {
 public:
     MonsterAttack(MonsterModel* model)
-        :_model(model){}
+        :MonsterSm(model){}
     virtual void tick();
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
 
     void move();
 };
@@ -81,12 +83,12 @@ private:
 class MonsterFlee: public MonsterSm {
 public:
     MonsterFlee(MonsterModel* model)
-        :_model(model){}
+        :MonsterSm(model){}
 
     virtual void tick();
     virtual ~MonsterFlee(){}
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
 
     void move();
 };
@@ -101,7 +103,7 @@ public:
     virtual ~MonsterPatrolFreeze() override;
 
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _rotate;
     BasicBehavior* _player_scanner;
     BasicBehavior* _player_proximity_checker;
@@ -117,7 +119,7 @@ public:
     virtual ~MonsterPatrolDecide();
 protected:
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _selector;
 
 };
@@ -131,7 +133,7 @@ public:
     void exit() override;
 
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _walls_checker;
     BasicBehavior* _player_checker;
@@ -150,7 +152,7 @@ public:
     void exit() override;
     virtual ~MonsterAttackFreeze() override;
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _rotate;
     BasicBehavior* _player_scanner;
     BasicBehavior* _player_proximity_checker;
@@ -166,7 +168,7 @@ public:
     virtual ~MonsterAttackDecide() override {}
 protected:
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _selector;
 
 };
@@ -178,7 +180,7 @@ public:
     virtual void tick();
     virtual ~MonsterAttackMove();
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
 
@@ -198,7 +200,7 @@ public:
     void exit() override;
     virtual ~MonsterFleeFreeze() override;
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _rotate;
     BasicBehavior* _player_scanner;
     BasicBehavior* _player_proximity_checker;
@@ -214,7 +216,7 @@ public:
     virtual ~MonsterFleeDecide() override;
 protected:
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _selector;
 
 };
@@ -226,7 +228,7 @@ public:
     virtual void tick() override;
     virtual ~MonsterFleeMove() override;
 private:
-    MonsterModel* _model;
+//    MonsterModel* _model;
     BasicBehavior* _move;
     BasicBehavior* _rotate;
 

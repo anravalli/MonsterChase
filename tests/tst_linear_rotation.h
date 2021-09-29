@@ -26,12 +26,15 @@ protected:
         Monster::MonsterType::Clyde,
         Monster::MonsterStates::patrol,
         Monster::MonsterSubStates::move,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
+        0, //pos_x
+        0, //pos_y
+        0, //prevpos_x
+        0, //prev_pos_y
+        0, //direction
+        0, //target_x
+        0, //target_y
+        0, //target direction
+        0  //curent_speed
     };
 
 };

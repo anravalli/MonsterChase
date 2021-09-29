@@ -84,10 +84,10 @@ void Player::checkCollisionsWithMonsters(){
     for (auto m: monsters){
         QRectF i = getIntersectonWith(m);
         if (not i.isEmpty()){
+            //FIXME: this will cause the collision glitch
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
-            //FIXME: this will cause the collision glitch
             cstate->moveBy(-step,-step);
             cstate->collisionWithMonster();
         }
@@ -104,10 +104,10 @@ void Player::checkCollisionsWithWalls(){
     for (auto b: walls){
         QRectF i = collisionBox().intersected(b->boundingRect());
         if (not i.isEmpty()){
+            //FIXME: this will cause the collision glitch
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
-            //FIXME: this will cause the collision glitch
             cstate->moveBy(-step,-step);
         }
     }

@@ -30,6 +30,11 @@ MonsterSm::~MonsterSm()
 
 }
 
+void MonsterSm::enter()
+{
+    this->_model->curent_speed = this->move_speed;
+}
+
 /*
  * State Factory
  */
@@ -156,7 +161,7 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
  * Monster Patrol State
  */
 MonsterPatrol::MonsterPatrol(MonsterModel *model)
-    :_model(model)
+    :MonsterSm(model)
 {
      _model->sub_state = MonsterSubStates::route;
      return;
@@ -171,7 +176,7 @@ void MonsterPatrol::tick(){
  * Monster Patrol Sub State
  */
 MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, BasicBehavior *rotate)
-    :_model(model), _rotate(rotate){
+    :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
@@ -215,7 +220,7 @@ MonsterPatrolFreeze::~MonsterPatrolFreeze() {
 }
 
 MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, BasicBehavior *selector)
-    :_model(model), _selector(selector)
+    : MonsterSm(model), _selector(selector)
 {
 }
 
@@ -232,7 +237,7 @@ MonsterPatrolDecide::~MonsterPatrolDecide(){
 }
 
 MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
-    :_model(model),_move(move),_rotate(rotate)
+    :MonsterSm(model),_move(move),_rotate(rotate)
 {
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
@@ -307,7 +312,7 @@ void MonsterAttack::tick(){
  * Monster Attack Sub State
  */
 MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
-    :_model(model),_move(move),_rotate(rotate)
+    :MonsterSm(model),_move(move),_rotate(rotate)
 {
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
@@ -367,7 +372,7 @@ void MonsterAttackDecide::tick(){
 }
 
 MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, BasicBehavior *rotate)
-    :_model(model), _rotate(rotate){
+    :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
@@ -425,7 +430,7 @@ void MonsterFlee::tick(){
  * Monster Flee Sub State
  */
 MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
-    :_model(model),_move(move),_rotate(rotate){
+    :MonsterSm(model),_move(move),_rotate(rotate){
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
@@ -468,7 +473,7 @@ MonsterFleeMove::~MonsterFleeMove() {
 }
 
 MonsterFleeDecide::MonsterFleeDecide(MonsterModel *model, BasicBehavior *selector)
-    :_model(model), _selector(selector)
+    :MonsterSm(model), _selector(selector)
 {
 }
 
@@ -483,7 +488,7 @@ MonsterFleeDecide::~MonsterFleeDecide() {
 }
 
 MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
-    :_model(model), _rotate(rotate){
+    :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);

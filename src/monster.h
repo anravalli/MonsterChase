@@ -131,6 +131,8 @@ class MonsterSm;
         QRectF* _sight_box;
         QRectF* _warning_box;
 
+        MonsterStates previus_state;
+
     };
 
 } //namescpace Monster

@@ -106,6 +106,13 @@ namespace Monster{
     }
 
     void Monster::update(){
+
+        // state->enter() is executed at the N+1 step while the exit() is executed
+        // inside the N step (when state is changed)
+        if(previus_state != model.state){
+            mstates[model.state]->enter();
+            previus_state = model.state;
+        }
         mstates[model.state]->tick();
 
         shape->setPos(model.pos_x,model.pos_y);
