@@ -183,16 +183,56 @@ BehaviorStatus TronRotation::exec() {
     return success;
 }
 
-typedef enum _side {
-    side_up,
-    side_up_right,
-    side_right,
-    side_down_right,
-    side_down,
-    side_down_left,
-    side_left,
-    side_up_left
-} side;
+/*
+ * 1. innesco: intersezione vuota
+ * 2. uscita:
+ *   * passo ridotto a 1 o minore di 2
+ *   * numero di iterazioni superiore a MAX
+ * 3. algoritmo:
+ *   * convergente: passo dimezzato ad ogni iterazione
+ *   * BW + FW steps:
+ *     - intersezione nulla: se condizione "uscita" non verificata FW altrimenti USCITA
+ *     - intersezione NON nulla: BW
+ * 4. ritorna: punto di contatto
+ * 5. richiede:
+ *    punto base (posizione iniziale)
+ *    velocità iniziale (possibilmente già divese in componenti)
+ *    boundingbox ostacolo
+ *    boungingbox soggetto (sue dimensioni)
+ *
+ */
+bool linearIntersection(double a, double b, double x) {
+    if (x>a and x<b)
+        return true;
+    else
+        return false;
+}
+
+double collisionPointFinder(double a, double b, double old_x, double step, unsigned short iteration)
+{
+    double new_x = old_x;
+    double n_step;
+    //a negative value of dir move closer to the obstacle in the next iteration
+    //vice versa, a positive will move away
+    int dir = -1;
+    iteration--;
+    //if the step is big enough let's iterate one more time
+    if (step >= 2 and iteration > 0)
+    {
+        n_step = step/2;
+        new_x = old_x - step;
+
+        //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
+        if (linearIntersection(a, b, new_x))
+        {
+            dir = 1;
+        }
+        new_x = collisionPointFinder(a, b, old_x, dir*n_step, iteration);
+    }
+
+    return new_x;
+}
+
 /*
  * Checking Behaviors
  */
@@ -212,18 +252,18 @@ BehaviorStatus WallsCollisionChecker::exec()
 
     /*
      * line equations:
-     *   - explicit:  x = my + q
+     *   - explicit:  y = mx + q
      *   - implicit:  ax + by + c = 0
      *
      *  ==> a = (y2 - y1)
      *  ==> b = (x1 - x2)
      *  ==> c = -(ax1 + by1)
      *
-     *  ==> m = -a/b
-     *  ==> q = -c/b = (ax1 + by1)/b
+     *  ==> m = -a/b = (y1 - y2)/(x1 - x2)
+     *  ==> q = -c/b = (ax1 + by1)/b = ((y2 - y1)x1 + (x1 - x2)y1)/(x1 - x2) = (y2 - y1)/(x1 - x2)x1 + y1
      *
      *  m = atan(dir)
-     *  q = x - my = x1 - atan(dir)*y1
+     *  q = y - mx = x1 - atan(dir)*y1
      *
      * the move vector is the vector betwee the initial position and the final position of the entity.
     QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
@@ -237,12 +277,10 @@ BehaviorStatus WallsCollisionChecker::exec()
             //we have at least a collision so the behavior succeded
             status = success;
 
-            //TODO: update the current speed when changing state
-            //TODO: iterate until dx or dy are less than 2 and for a maximum of 3 times
             double dx = cos ( TORAD(_model->direction) ) * _model->curent_speed;
             double dy = sin( TORAD(_model->direction) ) * _model->curent_speed;
-            _model->pos_x = _model->prev_pos_x - dx / 2;
-            _model->pos_y = _model->prev_pos_y - dy / 2;
+            _model->pos_x = collisionPointFinder(b->boundingRect().left(),b->boundingRect().right(), _model->prev_pos_x, dx/2, 3);
+            _model->pos_y = collisionPointFinder(b->boundingRect().top(),b->boundingRect().bottom(), _model->prev_pos_y, dy/2, 3);
         }
     }
     return status;
