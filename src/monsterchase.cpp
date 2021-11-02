@@ -24,7 +24,8 @@
 #include "gameconfig.h"
 #include "arena.h"
 
-#define FRAMERATE 1000/50
+#define FRAMERATE 50
+#define UPDATE_PERIOD 1000/FRAMERATE
 
 MonsterChase::MonsterChase()
 {
@@ -51,7 +52,7 @@ void MonsterChase::start(){
     addPlayTime(); //test
 
     GameWorld::instance().start();
-    timer->start(FRAMERATE);
+    timer->start(UPDATE_PERIOD);
 }
 
 void MonsterChase::pause(){
@@ -81,7 +82,7 @@ MonsterChase::~MonsterChase()
 }
 
 void MonsterChase::addPlayTime(){
-    ptime = new PlayTime();
+    ptime = new PlayTime(FRAMERATE);
     ptime->setPos(-GameConfig::playground_border_width/2,
                   -GameConfig::playground_border_height*0.6);
     scene->addItem(ptime);

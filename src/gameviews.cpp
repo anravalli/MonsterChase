@@ -34,8 +34,8 @@ void GameView::resizeEvent(QResizeEvent *)
 }
 
 
-PlayTime::PlayTime()
-    :color(255,127,127)
+PlayTime::PlayTime(const unsigned short framerate)
+    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
 {
     QFont font("Helvetica",14,QFont::Bold);
     this->setFont(font);
@@ -44,7 +44,7 @@ PlayTime::PlayTime()
 
 void PlayTime::increase(){
     if(!frame_counter){
-        frame_counter=25;
+        frame_counter=frame_max;
         time++;
     }
     else

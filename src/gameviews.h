@@ -23,14 +23,15 @@ private:
 class PlayTime : public QGraphicsSimpleTextItem
 {
 public:
-    PlayTime();
+    PlayTime(unsigned short framerate);
 
     void increase();
 
 private:
     QColor color;
     int time=0;
-    int frame_counter=25;
+    unsigned short frame_max;
+    int frame_counter;
 };
 
 #endif // GAMEVIEWS_H
