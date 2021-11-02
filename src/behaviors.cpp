@@ -183,55 +183,185 @@ BehaviorStatus TronRotation::exec() {
     return success;
 }
 
-/*
- * 1. innesco: intersezione vuota
- * 2. uscita:
- *   * passo ridotto a 1 o minore di 2
- *   * numero di iterazioni superiore a MAX
- * 3. algoritmo:
- *   * convergente: passo dimezzato ad ogni iterazione
- *   * BW + FW steps:
- *     - intersezione nulla: se condizione "uscita" non verificata FW altrimenti USCITA
- *     - intersezione NON nulla: BW
- * 4. ritorna: punto di contatto
- * 5. richiede:
- *    punto base (posizione iniziale)
- *    velocità iniziale (possibilmente già divese in componenti)
- *    boundingbox ostacolo
- *    boungingbox soggetto (sue dimensioni)
- *
- */
-bool linearIntersection(double a, double b, double x) {
-    if (x>a and x<b)
-        return true;
-    else
-        return false;
-}
-
-double collisionPointFinder(double a, double b, double old_x, double step, unsigned short iteration)
+#define positive 1
+#define negative -1
+class collisionPointFinder
 {
-    double new_x = old_x;
-    double n_step;
-    //a negative value of dir move closer to the obstacle in the next iteration
-    //vice versa, a positive will move away
-    int dir = -1;
-    iteration--;
-    //if the step is big enough let's iterate one more time
-    if (step >= 2 and iteration > 0)
-    {
-        n_step = step/2;
-        new_x = old_x - step;
 
-        //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
-        if (linearIntersection(a, b, new_x))
+    /*
+     * line equations:
+     *   - explicit:  y = mx + q
+     *   - implicit:  ax + by + c = 0
+     *
+     *  ==> a = (y2 - y1)
+     *  ==> b = (x1 - x2)
+     *  ==> c = -(ax1 + by1)
+     *
+     *  ==> m = -a/b = (y1 - y2)/(x1 - x2)
+     *  ==> q = -c/b = (ax1 + by1)/b = ((y2 - y1)x1 + (x1 - x2)y1)/(x1 - x2) = (y2 - y1)/(x1 - x2)x1 + y1
+     *
+     *  m = atan(dir)
+     *  q = y - mx = x1 - atan(dir)*y1
+     *
+     * the move vector is the vector between the initial position and the final position of the entity.
+        QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
+     */
+
+public:
+    static double find(double a, double b, double old_x, double step, unsigned short iteration)
+    {
+        double new_x = old_x;
+        double half_step;
+
+        iteration--;
+        //if the step is big enough let's iterate one more time
+        if (iteration > 0)
         {
-            dir = 1;
+            half_step = step/2;
+            new_x = old_x - step;
+
+            //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
+            if (linearIntersection(a, b, new_x))
+            {
+                new_x = collisionPointFinder::find(a, b, old_x, half_step, iteration);
+            }
         }
-        new_x = collisionPointFinder(a, b, old_x, dir*n_step, iteration);
+
+        return new_x;
     }
 
-    return new_x;
-}
+    static QPointF find_point_simple(QRectF m, QRectF b, QPointF old_pos, QPointF step, unsigned short iteration)
+    {
+        QPointF new_pos = old_pos;
+        QPointF half_step;
+
+        //a negative value of dir move closer to the obstacle in the next iteration
+        //vice versa, a positive will move away
+        //if the step is big enough let's iterate one more time
+        if (iteration > 0)
+        {
+            new_pos = old_pos - step;
+            half_step = step / 2;
+            //if (half_step.x() >= 2) half_step.setX(step.x()/2);
+            //if (half_step.y() >= 2) half_step.setY(step.y()/2);
+            m.moveCenter(new_pos);
+            //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
+            if (m.intersects(b))
+            {
+                iteration--;
+
+                new_pos = collisionPointFinder::find_point_simple(m, b, old_pos, half_step, iteration);
+            }
+        }
+
+        return new_pos;
+    }
+
+    static QPointF find_point(QRectF m, QRectF b, QPointF curr_pos, QPointF step, unsigned short iteration, int correction_sign)
+    {
+        QPointF new_pos = curr_pos;
+        QPointF half_step;
+
+        //a negative correction_sign states we must move closer to the obstacle
+        //vice versa, if positive, we must move away from it.
+        //iteration is stopped in absence of collision with a step <= (0.1,0.1)
+        if (iteration > 0)
+        {
+            new_pos = curr_pos - step;
+            m.moveCenter(new_pos);
+
+            half_step = step / 2;
+            int sign = positive; //do not change the sign of "step"
+
+            //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
+            if (m.intersects(b))
+            {
+                if(positive != correction_sign)
+                {
+                    sign = negative;
+                    correction_sign = positive;
+                }
+            }
+            else
+            {
+                if(negative != correction_sign)
+                {
+                    sign = negative;
+                    correction_sign = negative;
+                }
+                if (abs(half_step.x()) <= 0.1) half_step.setX(0);
+                if (abs(half_step.y()) <= 0.1) half_step.setY(0);
+            }
+
+            if (half_step.x() != 0 or half_step.y() != 0)
+            {
+                iteration--;
+
+                new_pos = collisionPointFinder::find_point(m, b, new_pos, sign * half_step, iteration, correction_sign);
+            }
+        }
+
+        return new_pos;
+    }
+
+    static QPointF find_substep(QRectF m, QRectF b, QPointF old_pos, QPointF step, unsigned short num_sub_steps)
+    {
+        QPointF sub_step = step/num_sub_steps;
+        QPointF new_pos = old_pos;
+
+        m.moveCenter(new_pos + sub_step);
+
+        while (not m.intersects(b))
+        {
+            new_pos = m.center();
+            m.moveCenter(new_pos + sub_step);
+        }
+
+        return new_pos;
+    }
+
+    static QPointF find_substep2(QRectF m, QRectF b, QPointF old_pos, QPointF step, unsigned short num_sub_steps)
+    {
+        QPointF sub_step = step/num_sub_steps;
+        QPointF new_pos = old_pos;
+        m.moveCenter(old_pos + sub_step);
+
+        unsigned int remaining_iteration = 10;
+        while (not m.intersects(b) and remaining_iteration > 0)
+        {
+            new_pos = m.center();
+            m.translate(sub_step);
+            remaining_iteration--;
+        }
+
+        return new_pos;
+    }
+
+
+    static QPointF find_substep3(QRectF m, QRectF b, QPointF step, unsigned short num_sub_steps)
+    {
+        QPointF sub_step = step/num_sub_steps;
+
+        m.translate(-sub_step);
+
+        while (m.intersects(b))
+        {
+            m.translate(-sub_step);
+        }
+
+        return m.center();
+    }
+
+private:
+    static bool linearIntersection(double a, double b, double x) {
+        if (x>a and x<b)
+            return true;
+        else
+            return false;
+    }
+
+
+};
 
 /*
  * Checking Behaviors
@@ -249,26 +379,6 @@ BehaviorStatus WallsCollisionChecker::exec()
     QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
                           _entity_size, _entity_size);
 
-
-    /*
-     * line equations:
-     *   - explicit:  y = mx + q
-     *   - implicit:  ax + by + c = 0
-     *
-     *  ==> a = (y2 - y1)
-     *  ==> b = (x1 - x2)
-     *  ==> c = -(ax1 + by1)
-     *
-     *  ==> m = -a/b = (y1 - y2)/(x1 - x2)
-     *  ==> q = -c/b = (ax1 + by1)/b = ((y2 - y1)x1 + (x1 - x2)y1)/(x1 - x2) = (y2 - y1)/(x1 - x2)x1 + y1
-     *
-     *  m = atan(dir)
-     *  q = y - mx = x1 - atan(dir)*y1
-     *
-     * the move vector is the vector betwee the initial position and the final position of the entity.
-    QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
-     */
-
     for (auto b: walls){
         //test: increase displacement due to collisions glitch
         QRectF i = collisionBox.intersected(b->boundingRect());
@@ -276,11 +386,14 @@ BehaviorStatus WallsCollisionChecker::exec()
         if (not i.isEmpty()){
             //we have at least a collision so the behavior succeded
             status = success;
-
             double dx = cos ( TORAD(_model->direction) ) * _model->curent_speed;
             double dy = sin( TORAD(_model->direction) ) * _model->curent_speed;
-            _model->pos_x = collisionPointFinder(b->boundingRect().left(),b->boundingRect().right(), _model->prev_pos_x, dx/2, 3);
-            _model->pos_y = collisionPointFinder(b->boundingRect().top(),b->boundingRect().bottom(), _model->prev_pos_y, dy/2, 3);
+//            QPointF new_pos = collisionPointFinder::find_point_simple(collisionBox, b->boundingRect(), QPointF(_model->prev_pos_x, _model->prev_pos_y), QPointF(dx/2,dy/2), 5);
+//            QPointF new_pos = collisionPointFinder::find_point(collisionBox, b->boundingRect(), QPointF(_model->prev_pos_x, _model->prev_pos_y), QPointF(dx/2,dy/2), 5, positive);
+            QPointF new_pos = collisionPointFinder::find_substep3(collisionBox, b->boundingRect(), QPointF(dx,dy), 5);
+            _model->pos_x = new_pos.x();
+            _model->pos_y = new_pos.y();
+//            _model->pos_y = collisionPointFinder::find(b->boundingRect().top(),b->boundingRect().bottom(), _model->prev_pos_y, dy/2, 3);
         }
     }
     return status;
