@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 QMAKE_CXXFLAGS += -O0 -std=c++11
 
 SOURCES += main.cpp\
+    algorithms.cpp \
         monsterchase.cpp \
     player.cpp \
     monster.cpp \
@@ -39,6 +40,7 @@ SOURCES += main.cpp\
     gameconfig.cpp
 
 HEADERS  += monsterchase.h \
+    algorithms.h \
     player.h \
     monster.h \
     arena.h \

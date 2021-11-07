@@ -27,6 +27,8 @@
 #include "monster.h"
 #include "arena.h"
 
+#include "algorithms.h"
+
 Player::Player()
 {
 
@@ -164,15 +166,19 @@ bool Player::handleKey(int key, bool released){
         ret = true;
         break;
     case Qt::Key_D:
+    case Qt::Key_Right:
         model.direction[player_right]=!released;
         break;
     case Qt::Key_A:
+    case Qt::Key_Left:
         model.direction[player_left]=!released;
         break;
+    case Qt::Key_Up:
     case Qt::Key_W:
         model.direction[player_up]=!released;
         break;
     case Qt::Key_S:
+    case Qt::Key_Down:
         model.direction[player_down]=!released;
         break;
     default:
