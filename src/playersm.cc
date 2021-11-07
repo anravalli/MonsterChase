@@ -53,8 +53,10 @@ PlayerNormal::PlayerNormal(PlayerModel* model) {
 
 void PlayerNormal::updateEnergy() {
     _model->energy=_model->energy+0.125;
-    if(_model->energy == MAX_ENERGY)
+    if(_model->energy >= MAX_ENERGY){
+        _model->energy = MAX_ENERGY;
         _model->state = rage_available;
+    }
 }
 
 void PlayerNormal::move() {
@@ -68,8 +70,10 @@ void PlayerNormal::move() {
 
 void PlayerNormal::collisionWithMonster() {
     _model->energy=_model->energy-DAMAGE;
-    if(_model->energy < 0)
+    if(_model->energy < 0){
+        _model->energy = 0;
         _model->state = dead;
+    }
     _model->state = on_damage;
 }
 
@@ -85,7 +89,7 @@ void PlayerRageAvailable::toggleRage() {
 //Player state On Damage (substate)
 
 void PlayerOnDamage::updateEnergy() {
-    PlayerNormal::updateEnergy();
+    //PlayerNormal::updateEnergy();
     no_damage_counter--;
     if(no_damage_counter<=0){
         _model->state=normal;
@@ -103,7 +107,7 @@ PlayerOnRage::PlayerOnRage(PlayerModel* model) {
 
 void PlayerOnRage::updateEnergy() {
     _model->energy=_model->energy-0.125;
-    if(_model->energy == DEF_ENERGY)
+    if(_model->energy <= DEF_ENERGY)
         _model->state = normal;
 }
 

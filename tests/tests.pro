@@ -26,6 +26,7 @@ HEADERS += \
 
 SOURCES += \
         main.cpp \
+        ../src/algorithms.cpp \
         ../src/player.cpp \
         ../src/playersm.cc \
         ../src/playerqtviews.cpp \

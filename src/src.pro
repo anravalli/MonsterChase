@@ -26,7 +26,7 @@ QMAKE_CXXFLAGS += -O0 -std=c++11
 
 SOURCES += main.cpp\
     algorithms.cpp \
-        monsterchase.cpp \
+    monsterchase.cpp \
     player.cpp \
     monster.cpp \
     arena.cpp \
