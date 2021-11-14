@@ -99,7 +99,7 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
 }
 
 void Arena::startShowMap(){
-    timer->start(10);
+    timer->start(4);
 }
 
 

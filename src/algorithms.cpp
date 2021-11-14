@@ -39,8 +39,6 @@ QPointF collisionPointFinder::find_point_simple(QRectF m, QRectF b, QPointF old_
     {
         new_pos = old_pos - step;
         half_step = step / 2;
-        //if (half_step.x() >= 2) half_step.setX(step.x()/2);
-        //if (half_step.y() >= 2) half_step.setY(step.y()/2);
         m.moveCenter(new_pos);
         //depending on the intersection we will decide in wich direction we shall proceed in the next iteration
         if (m.intersects(b))

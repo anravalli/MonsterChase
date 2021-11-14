@@ -23,7 +23,7 @@ class collisionPointFinder
      *  q = y - mx = x1 - atan(dir)*y1
      *
      * the move vector is the vector between the initial position and the final position of the entity.
-        QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
+       e.g.: QLineF move_vector = QLineF(_model->prev_pos_x, _model->prev_pos_y, _model->pos_x, _model->pos_y);
      */
 
 public:
