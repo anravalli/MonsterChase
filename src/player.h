@@ -90,6 +90,7 @@ public:
 
     PlayerEnergyGauge* getEnergyGauge();
     PlayerStates getRageStatus();
+    void collisionWithMonster();
 
     QRectF collisionBox() const;
 protected:

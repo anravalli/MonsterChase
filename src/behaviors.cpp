@@ -188,6 +188,10 @@ BehaviorStatus TronRotation::exec() {
 /*
  * Checking Behaviors
  */
+
+#define speed_x(m) cos(TORAD(m->direction))*m->curent_speed
+#define speed_y(m) sin(TORAD(m->direction))*m->curent_speed
+
 BehaviorStatus WallsCollisionChecker::exec()
 {
     //model.pos is the center of the collision box
@@ -208,15 +212,12 @@ BehaviorStatus WallsCollisionChecker::exec()
         if (not i.isEmpty()){
             //we have at least a collision so the behavior succeded
             status = success;
-            double dx = cos ( TORAD(_model->direction) ) * _model->curent_speed;
-            double dy = sin( TORAD(_model->direction) ) * _model->curent_speed;
-//            QPointF new_pos = collisionPointFinder::find_point_simple(collisionBox, b->boundingRect(), QPointF(_model->prev_pos_x, _model->prev_pos_y), QPointF(dx/2,dy/2), 5);
-//            QPointF new_pos = collisionPointFinder::find_point(collisionBox, b->boundingRect(), QPointF(_model->prev_pos_x, _model->prev_pos_y), QPointF(dx/2,dy/2), 5, positive);
-            QPointF new_pos = collisionPointFinder::find_substep3(collisionBox, b->boundingRect(), QPointF(dx,dy), 5);
+            QPointF new_pos = collisionPointFinder::find_substep3(
+                        collisionBox,
+                        b->boundingRect(),
+                        QPointF(speed_x(_model),speed_y(_model)), 5);
             _model->pos_x = new_pos.x();
-            _model->pos_y = new_pos.y();
-//            _model->pos_y = collisionPointFinder::find(b->boundingRect().top(),b->boundingRect().bottom(), _model->prev_pos_y, dy/2, 3);
-        }
+            _model->pos_y = new_pos.y();}
     }
     return status;
 }
@@ -227,10 +228,18 @@ BehaviorStatus EntitiesCollisionChecker::exec()
     QRectF pbox = GameWorld::instance().getPlayer()->collisionBox();
     QRectF collisionBox(_model->pos_x-_entity_size/2, _model->pos_y-_entity_size/2,
                           _entity_size, _entity_size);
+    QPointF new_pos = QPointF(_model->pos_x, _model->pos_y);
 
     QRectF i = collisionBox.intersected(pbox);
     if (not i.isEmpty()){
+        GameWorld::instance().getPlayer()->collisionWithMonster();
         status = success;
+        new_pos = collisionPointFinder::find_substep3(
+                    collisionBox,
+                    pbox,
+                    QPointF(speed_x(_model),speed_y(_model)),
+                    5);
+        collisionBox.moveCenter(new_pos);
     }
 
     std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
@@ -239,8 +248,17 @@ BehaviorStatus EntitiesCollisionChecker::exec()
         QRectF i = collisionBox.intersected(m->collisionBox());
         if (not i.isEmpty()){
             status = success;
+            new_pos = collisionPointFinder::find_substep3(
+                        collisionBox,
+                        m->collisionBox(),
+                        QPointF(speed_x(_model),speed_y(_model)),
+                        5);
         }
     }
+
+    _model->pos_x = new_pos.x();
+    _model->pos_y = new_pos.y();
+
     return status;
 }
 

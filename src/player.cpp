@@ -64,8 +64,8 @@ void Player::setEnergyGaugePos(int x, int y){
 void Player::update(){
     computeState();
 
-    checkCollisionsWithMonsters();
     checkCollisionsWithWalls();
+    checkCollisionsWithMonsters();
 
     updateViews();
 
@@ -80,13 +80,17 @@ void Player::computeState(){
     cstate->move();
 }
 
+void Player::collisionWithMonster(){
+    PlayerSm* cstate = pstates[model.state];
+    cstate->collisionWithMonster();
+}
+
 void Player::checkCollisionsWithMonsters(){
     PlayerSm* cstate = pstates[model.state];
     std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
     for (auto m: monsters){
         QRectF i = getIntersectonWith(m);
         if (not i.isEmpty()){
-            //FIXME: this will cause the collision glitch
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
@@ -106,7 +110,6 @@ void Player::checkCollisionsWithWalls(){
     for (auto b: walls){
         QRectF i = collisionBox().intersected(b->boundingRect());
         if (not i.isEmpty()){
-            //FIXME: this will cause the collision glitch
             double step = i.width();
             if(i.height()<i.width())
                 step = i.height();
