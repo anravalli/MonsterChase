@@ -20,24 +20,17 @@
 */
 
 
-#include "gameviews.h"
+#include "editor.h"
+#include "ui_editor.h"
 
-
-PlayTime::PlayTime(const unsigned short framerate)
-    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
+editor::editor(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::editor)
 {
-    QFont font("Helvetica",14,QFont::Bold);
-    this->setFont(font);
-    this->setPen(QPen(color));
+    ui->setupUi(this);
 }
 
-void PlayTime::increase(){
-    if(!frame_counter){
-        frame_counter=frame_max;
-        time++;
-    }
-    else
-        frame_counter--;
-    this->setText(QString::asprintf("%04d", time));
-    return;
+editor::~editor()
+{
+    delete ui;
 }

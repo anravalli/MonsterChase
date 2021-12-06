@@ -20,81 +20,26 @@
 */
 
 #include "monsterchase.h"
-#include "gameworld.h"
-#include "gameconfig.h"
-#include "arena.h"
+#include "gamecontroller.h"
 
-#define FRAMERATE 50
-#define UPDATE_PERIOD 1000/FRAMERATE
+/*
+ * Here we will build all the game objects responsible for the
+ * game business logic, including the UI pages and game controllers.
+ */
 
 MonsterChase::MonsterChase()
 {
-    setUpView();
-
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
-
-    /*
-     * As of now there is only one level and we init right in
-     * MonsterChase constructor
-     */
-    QString map = ":/resources/map.txt";
-    Arena* arena = new Arena(map, scene);
-    connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
-    GameWorld::instance().initLevel(arena);
-}
-
-void MonsterChase::show(){
-    view->show();
-}
-
-void MonsterChase::start(){
-    addPlayTime(); //test
-
-    GameWorld::instance().start();
-    timer->start(UPDATE_PERIOD);
-}
-
-void MonsterChase::pause(){
-    timer->stop();
-}
-
-void MonsterChase::setUpView(){
-    scene = new QGraphicsScene();
-    scene->setSceneRect(0, 0, GameConfig::playground_width, GameConfig::playground_width);
-    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
-
-    view = new GameView(scene);
-    view->setRenderHint(QPainter::Antialiasing);
-    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
-    view->setCacheMode(QGraphicsView::CacheBackground);
-    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
-
-    //TO BE REVIEWED
-    GameWorld::instance().setScene(scene);
+    game_controller = new GameController(this);
 }
 
 MonsterChase::~MonsterChase()
 {
-    delete scene;
-    delete view;
+    delete game_controller;
 }
 
-void MonsterChase::addPlayTime(){
-    ptime = new PlayTime(FRAMERATE);
-    ptime->setPos(-GameConfig::playground_border_width/2,
-                  -GameConfig::playground_border_height*0.6);
-    scene->addItem(ptime);
+void MonsterChase::show()
+{
+    game_controller->show();
 }
 
-void MonsterChase::gameStep(){
-#ifdef  DEBUG
-    QTime t = QTime::currentTime();
-    qDebug("iteration %s", t.toString().toStdString().c_str());
-    qDebug("-> elapsed %d", e.elapsed());
-#endif
-    ptime->increase();
-    GameWorld::instance().nextFrame();
-}
 

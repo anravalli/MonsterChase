@@ -27,8 +27,8 @@ typedef std::tuple< double,                     //direction
 class FakeArena: public Arena {
 public:
 
-    FakeArena(QGraphicsScene* scene, double brick_width):
-        Arena(scene,brick_width)
+    FakeArena(double brick_width):
+        Arena(brick_width)
     {}
 
     virtual ~FakeArena() override {}
@@ -131,9 +131,7 @@ class MonsterCollisions_Test: public testing::Test {
 public:
 
     void SetUp (){
-        scene = new QGraphicsScene();
-        fa = new FakeArena(scene,8);
-        GameWorld::instance().setScene(scene);
+        fa = new FakeArena(8);
     }
 
     void TearDown(){
@@ -172,7 +170,6 @@ public:
     }
 
     FakeArena* fa;
-    QGraphicsScene* scene;
     virtual ~MonsterCollisions_Test(){}
 
 };
@@ -194,15 +191,6 @@ TEST_F(MonsterCollisions_Test, four_block_horizontal)
              << " size=" << b->rect().width() << "," << b->rect().height()
              << endl;
         static_cast<FakeArena*>(fa)->addBrick(b);
-    }
-
-    //init arena
-    try{
-        GameWorld::instance().initLevel(fa);
-    }
-    catch(...){
-        cout << "Exception!!! " << endl;
-        FAIL();
     }
 
     //build test vector

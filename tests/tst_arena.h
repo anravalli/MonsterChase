@@ -14,8 +14,7 @@ using namespace std;
 class Arena_Test: public testing::Test {
 public:
     void SetUp(){
-        scene = new QGraphicsScene();
-        arena = new Arena ("../../MonsterChase/resources/map.txt", scene);
+        arena = new Arena ("../../MonsterChase/resources/map.txt", 8);
     }
     Arena* arena = 0;
     QGraphicsScene* scene = 0;

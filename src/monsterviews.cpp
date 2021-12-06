@@ -1,7 +1,7 @@
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
- *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *	Copyright 2019-2021 Andrea Ravalli <anravalli @ gmail.com>
  *
  *	This file is part of Monster Chase.
  *
@@ -20,6 +20,7 @@
 */
 
 #include "monsterviews.h"
+#include "ui/uipage_qt.h"
 
 #define VIEW_DEBUG 0
 
@@ -27,6 +28,103 @@ namespace Monster{
 /*
  * MonsterShape methods implementation
  */
+
+MonsterView *monsterViewFactory(MonsterType type, MonsterModel* model)
+{
+    MonsterView* monster = new MonsterView(model);
+    //type related elements
+    switch (type){
+    case Blinky:
+        //set shapes
+        monster->shape = new MonsterShape(model);
+        monster->sight = new MonsterSight(model);
+        break;
+    case Pinky:
+        //set shapes
+        monster->shape = new MonsterTriangularShape(model);
+        monster->sight = new MonsterSight(model);
+        break;
+    case Inky:
+        //set shapes
+        monster->shape = new MonsterShape(model);
+        monster->sight = new MonsterSight(model);
+        break;
+    case Clyde:
+        //set shapes
+        monster->shape = new MonsterTriangularShape(model);
+        monster->sight = new MonsterSight(model);
+        break;
+    }
+
+    return monster;
+}
+
+void MonsterView::addToPage(UiPageQt* page)
+{
+    //adding views to scene
+    //the order we add the items to the scene affects the z-order
+    page->addItem(this->shape);
+    page->addItem(this->sight);
+    return;
+}
+
+void MonsterView::show()
+{
+    shape->show();
+    sight->show();
+}
+
+void MonsterView::hide()
+{
+    shape->hide();
+    sight->hide();
+}
+
+void MonsterView::setPosition(double x, double y)
+{
+    shape->setPos(x,y);
+    sight->setPos(x,y);
+}
+
+void MonsterView::setRotation(double direction)
+{
+    shape->setRotation(direction);
+    sight->setRotation(direction+90);
+}
+
+void MonsterView::update()
+{
+    setPosition(model->pos_x,model->pos_y);
+    setRotation(model->direction);
+    shape->update();
+    sight->update();
+}
+
+void MonsterView::updateGeometry(double x, double y, double scale, double direction)
+{
+    Q_UNUSED(scale);
+
+    shape->setPos(x,y);
+    sight->setPos(x,y);
+    shape->setRotation(direction);
+    sight->setRotation(direction+90);
+    shape->update();
+    sight->update();
+}
+
+MonsterView::MonsterView(MonsterModel* model):
+    model(model)
+{
+
+}
+
+MonsterView::~MonsterView()
+{
+    //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
+    // they belongs to
+    delete shape;
+    delete sight;
+}
 
 MonsterShape::MonsterShape(MonsterModel* m)
 {

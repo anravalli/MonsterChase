@@ -1,7 +1,7 @@
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
- *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *	Copyright 2019-2021 Andrea Ravalli <anravalli @ gmail.com>
  *
  *	This file is part of Monster Chase.
  *

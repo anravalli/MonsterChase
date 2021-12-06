@@ -1,9 +1,31 @@
 ﻿#ifndef ARENA_H
 #define ARENA_H
 
+/*
+ *	Monster Chase: a testing playground for behaviors trees
+ *
+ *	Copyright 2021 Andrea Ravalli <anravalli @ gmail.com>
+ *
+ *	This file is part of Monster Chase.
+ *
+ *	Monster Chase is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+
+ *	Monster Chase is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+
+ *	You should have received a copy of the GNU General Public License
+ *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <QGraphicsItem>
 #include <QFile>
 #include <QTextStream>
+#include "game_entity.h"
 
 #define MAP_WIDTH 100
 #define MAP_HEIGHT 100
@@ -18,6 +40,8 @@ enum BrickType {
     throwable
 };
 
+class UiPageQt;
+
 class Brick: public QGraphicsRectItem
 {
 public:
@@ -28,7 +52,7 @@ private:
     std::pair<int,int> _idx;
 };
 
-class Arena: public QObject
+class Arena: public QObject, public GameEntityI
 {
     Q_OBJECT
 
@@ -36,11 +60,13 @@ signals:
     void build_complete();
 
 public:
-    Arena(QGraphicsScene* scene, double brick_width);
-    Arena(QString fname, QGraphicsScene *scene);
+    Arena(double brick_width);
+    Arena(QString fname, double brick_width);
 
+    void show() override;
+    void hide() override;
+    virtual void addToPage(UiPageQt* page) override;
     bool mapComplete();
-    void startShowMap();
 
     virtual Brick *getBrick(std::pair<int, int> idx);
 
@@ -58,12 +84,9 @@ private:
     bool completion_status = false;
     QTimer* timer = nullptr;
 
-    QGraphicsScene *_scene = nullptr;
-
     double map_cell_w = 0;
-    double map_cell_h = 0
-            ;
-    Brick* addBrick(QGraphicsScene *s, std::pair<int,int> idx );
+    double map_cell_h = 0;
+    Brick* addBrick(std::pair<int,int> idx);
 
 };
 

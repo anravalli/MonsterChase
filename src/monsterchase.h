@@ -1,7 +1,7 @@
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
- *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *	Copyright 2021 Andrea Ravalli <anravalli @ gmail.com>
  *
  *	This file is part of Monster Chase.
  *
@@ -22,7 +22,9 @@
 #ifndef MONSTERCHASE_H
 #define MONSTERCHASE_H
 
-#include "gameviews.h"
+#include <QObject>
+
+class GameController;
 
 class MonsterChase : public QObject
 {
@@ -37,21 +39,12 @@ public:
     void show();
 
 public slots:
-    void gameStep() ;
-    void pause();
-    void start();
+
 
 protected:
 
 private:
-    QGraphicsView* view;
-    QGraphicsScene* scene;
-    QTimer* timer;
-    PlayTime* ptime;
-
-    void setUpView();
-    void addPlayTime();
-
+    GameController *game_controller;
 };
 
 #endif // MONSTERCHASE_H

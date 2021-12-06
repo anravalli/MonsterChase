@@ -41,30 +41,7 @@ namespace Monster{
         monster->model.pos_x = pos.x();
         monster->model.pos_y = pos.y();
         monster->model.type = type;
-
-        //type related elements
-        switch (type){
-        case Blinky:
-            //set shapes
-            monster->shape = new MonsterShape(&(monster->model));
-            monster->sight = new MonsterSight(&(monster->model));
-            break;
-        case Pinky:
-            //set shapes
-            monster->shape = new MonsterTriangularShape(&(monster->model));
-            monster->sight = new MonsterSight(&(monster->model));
-            break;
-        case Inky:
-            //set shapes
-            monster->shape = new MonsterShape(&(monster->model));
-            monster->sight = new MonsterSight(&(monster->model));
-            break;
-        case Clyde:
-            //set shapes
-            monster->shape = new MonsterTriangularShape(&(monster->model));
-            monster->sight = new MonsterSight(&(monster->model));
-            break;
-        }
+        monster->monster_view = monsterViewFactory(type, &(monster->model));
 
         //init state machine
         monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model));
@@ -74,10 +51,6 @@ namespace Monster{
         //default state is "patrol" so let's init the "current_speed" accordingly
         monster->model.curent_speed = monster->mstates[patrol]->move_speed;
 
-        //adding views to scene
-        //the order we add the items to the scene affects the z-order
-        monster->addViewComponent(monster->shape);
-        monster->addViewComponent(monster->sight);
         return monster;
     }
 
@@ -89,20 +62,17 @@ namespace Monster{
         _warning_box = new QRectF(-100,-100,200,200);
     }
 
-    void Monster::addViewComponent(QGraphicsItem* component)
+    void Monster::addToPage(UiPageQt* page)
     {
-        GameWorld::instance().addToScene(component);
-        return;
+        monster_view->addToPage(page);
     }
 
     void Monster::show(){
-        shape->show();
-        sight->show();
+        monster_view->show();
     }
 
     void Monster::hide(){
-        shape->hide();
-        sight->hide();
+        monster_view->hide();
     }
 
     void Monster::update(){
@@ -115,12 +85,8 @@ namespace Monster{
         }
         mstates[model.state]->tick();
 
-        shape->setPos(model.pos_x,model.pos_y);
-        shape->setRotation(model.direction);
-        sight->setPos(model.pos_x,model.pos_y);
-        sight->setRotation(model.direction+90);
-        shape->update();
-        sight->update();
+        monster_view->update();
+
     }
 
     int Monster::id(){
@@ -156,10 +122,9 @@ namespace Monster{
         delete mstates[flee];
 
         delete _sight_box;
-        //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene
-        // they belongs to
-        delete shape;
-        delete sight;
+        delete _warning_box;
+
+        delete monster_view;
     }
 
 } //namescpace Monster

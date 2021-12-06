@@ -22,6 +22,7 @@
 #include "player.h"
 #include "playersm.h"
 #include "playerqtviews.h"
+#include "ui/uipage_qt.h"
 
 #include "gameworld.h"
 #include "monster.h"
@@ -43,9 +44,7 @@ Player::Player()
     pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
     //the order we add the items to the scene affects the z-order
-    GameWorld::instance().addToScene(shape);
-    GameWorld::instance().addToScene(score);
-    GameWorld::instance().addToScene(energy_gauge);
+
     QApplication::instance()->installEventFilter(this);
 }
 
@@ -54,6 +53,12 @@ void Player::show(){
 }
 void Player::hide(){
     shape->hide();
+}
+void Player::addToPage(UiPageQt* page)
+{
+    page->addItem(this->shape);
+    page->addItem(this->score);
+    page->addItem(this->energy_gauge);
 }
 
 void Player::setEnergyGaugePos(int x, int y){

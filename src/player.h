@@ -23,6 +23,7 @@
 #define PLAYER_H
 
 #include <QtWidgets>
+#include "game_entity.h"
 
 #define DEF_ENERGY 50
 #define MIN_ENERGY 0
@@ -71,7 +72,7 @@ class PlayerShape;
 class MonsterChase;
 class Brick;
 
-class Player : public QObject
+class Player : public QObject, public GameEntityI
 {
     Q_OBJECT
 
@@ -80,9 +81,9 @@ public:
     void update();
     ~Player() override;
 
-    void show();
-
-    void hide();
+    void show() override;
+    void hide() override;
+    virtual void addToPage(UiPageQt* page) override;
 
     void setEnergyGaugePos(int x, int y);
 

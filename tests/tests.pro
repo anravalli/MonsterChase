@@ -17,7 +17,13 @@ HEADERS += \
     ../src/monster.h \
     ../src/player.h \
     ../src/monsterchase.h \
+    ../src/gamecontroller.h \
     ../src/gameworld.h \
+    ../src/ui/uibase_qtview.h \
+    ../src/ui/uipage_controller.h \
+    ../src/ui/uipage_qt.h \
+    ../src/ui/uipagemenu.h \
+    ../src/ui/uipagemenuitem.h \
     tst_linear_rotation.h \
     tst_player_collisions.h \
     tst_monsters_collisions.h \
@@ -26,6 +32,8 @@ HEADERS += \
 
 SOURCES += \
         main.cpp \
+        ../src/ui/uibase_qtview.cpp \
+        ../src/ui/uipage_qt.cpp \
         ../src/algorithms.cpp \
         ../src/player.cpp \
         ../src/playersm.cc \
@@ -37,6 +45,7 @@ SOURCES += \
         ../src/monsterviews.cpp \
         ../src/monstersm.cpp \
         ../src/gameworld.cpp \
+        ../src/gamecontroller.cpp \
         ../src/gameconfig.cpp \
         ../src/gameviews.cpp
 
