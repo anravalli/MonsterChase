@@ -1,3 +1,6 @@
+#ifndef UIPAGEMENUITEM_H
+#define UIPAGEMENUITEM_H
+
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
@@ -19,25 +22,13 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QObject>
 
-#include "gameviews.h"
-
-
-PlayTime::PlayTime(const unsigned short framerate)
-    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
+class UiPageMenuItem: QObject
 {
-    QFont font("Helvetica",14,QFont::Bold);
-    this->setFont(font);
-    this->setPen(QPen(color));
-}
+    Q_OBJECT
+public:
+    UiPageMenuItem();
+};
 
-void PlayTime::increase(){
-    if(!frame_counter){
-        frame_counter=frame_max;
-        time++;
-    }
-    else
-        frame_counter--;
-    this->setText(QString::asprintf("%04d", time));
-    return;
-}
+#endif // UIPAGEMENUITEM_H

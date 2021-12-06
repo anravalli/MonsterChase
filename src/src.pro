@@ -26,6 +26,8 @@ QMAKE_CXXFLAGS += -O0 -std=c++11
 
 SOURCES += main.cpp\
     algorithms.cpp \
+    editor/editor.cpp \
+    gamecontroller.cpp \
     monsterchase.cpp \
     player.cpp \
     monster.cpp \
@@ -37,10 +39,18 @@ SOURCES += main.cpp\
     behaviors.cpp \
     gameworld.cpp \
     gameviews.cpp \
-    gameconfig.cpp
+    gameconfig.cpp \
+    ui/uibase_qtview.cpp \
+    ui/uipage_controller.cpp \
+    ui/uipage_qt.cpp \
+    ui/uipagemenu.cpp \
+    ui/uipagemenuitem.cpp
 
 HEADERS  += monsterchase.h \
     algorithms.h \
+    editor/editor.h \
+    game_entity.h \
+    gamecontroller.h \
     player.h \
     monster.h \
     arena.h \
@@ -51,7 +61,19 @@ HEADERS  += monsterchase.h \
     behaviors.h \
     gameworld.h \
     gameviews.h \
-    gameconfig.h
+    gameconfig.h \
+    ui/uibase_qtview.h \
+    ui/uipage_controller.h \
+    ui/uipage_qt.h \
+    ui/uipagemenu.h \
+    ui/uipagemenuitem.h
 
 RESOURCES += \
     ../monsterchase.qrc 
+
+FORMS += \
+    editor/editor.ui
+
+DISTFILES += \
+    ../models/monsterchase_ui.qmodel \
+    ../models/monsters.qmodel

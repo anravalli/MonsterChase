@@ -23,6 +23,7 @@
 #define Monster_H
 
 #include <qobject.h>
+#include "game_entity.h"
 
 class MonsterChase;
 class GameWorld;
@@ -32,8 +33,7 @@ class QGraphicsItem;
 
 namespace Monster{
 
-class MonsterShape;
-class MonsterSight;
+class MonsterView;
 class MonsterSm;
 
     enum MonsterStates {
@@ -81,30 +81,27 @@ class MonsterSm;
     class Monster;
     Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
-    class Monster : public QObject
+    class Monster : public QObject, public GameEntityI
     {
         Q_OBJECT
 
+        friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
 
     public:
-        void show();
-
-        void hide();
+        void show() override;
+        void hide() override;
+        virtual void addToPage(UiPageQt* page) override;
 
         QRectF collisionBox() const;
         QRectF sightBox() const;
         QRectF warningBox() const;
 
         void update();
-
-        friend Monster* monsterFactory(MonsterType mtype, QPointF pos);
-
         int id();
 
-        ~Monster();
+        virtual ~Monster();
 
     protected:
-        void addViewComponent(QGraphicsItem* componet);
         Monster();
 
         MonsterModel model = {
@@ -124,10 +121,9 @@ class MonsterSm;
         };
 
     private:
-        MonsterShape* shape=nullptr;
-        MonsterSight* sight=nullptr;
-        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
 
+        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+        MonsterView *monster_view;
         QRectF* _sight_box;
         QRectF* _warning_box;
 

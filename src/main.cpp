@@ -22,6 +22,11 @@
 #include "monsterchase.h"
 #include <QApplication>
 
+/*
+ * Here we do just unix signal handling,
+ * command line processing and game initialization
+ */
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

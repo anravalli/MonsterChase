@@ -1,3 +1,25 @@
+/*
+ *	Monster Chase: a testing playground for behaviors trees
+ *
+ *	Copyright 2021 Andrea Ravalli <anravalli @ gmail.com>
+ *
+ *	This file is part of Monster Chase.
+ *
+ *	Monster Chase is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+
+ *	Monster Chase is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+
+ *	You should have received a copy of the GNU General Public License
+ *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #include "gameworld.h"
 
 #include "player.h"
@@ -5,15 +27,12 @@
 #include "arena.h"
 #include "gameconfig.h"
 
-GameWorld::GameWorld()
-{
-
-}
-
+GameWorld::GameWorld(){}
 
 GameWorld::~GameWorld(){}
 
-GameWorld& GameWorld::instance(){
+GameWorld& GameWorld::instance()
+{
     static GameWorld instance;
     return instance;
 }
@@ -25,21 +44,22 @@ void GameWorld::start()
         m->show();
 }
 
-void GameWorld::nextFrame() {
+void GameWorld::nextFrame()
+{
     player->update();
     for (auto m: monsters)
         m->update();
 }
 
-void GameWorld::initLevel(Arena* a)
+void GameWorld::initLevel(QString map)
 {
-    arena = a;
+    arena = new Arena(map, GameConfig::playground_width/MAP_WIDTH);
     addPlayer();
     addMonsters();
-    arena->startShowMap();
 }
 
-void GameWorld::addPlayer(){
+void GameWorld::addPlayer()
+{
     player = new Player();
     player->setEnergyGaugePos(
                 GameConfig::playground_width/2,
@@ -50,7 +70,8 @@ void GameWorld::addPlayer(){
     player->hide();
 }
 
-void GameWorld::addMonsters(){
+void GameWorld::addMonsters()
+{
     //Adding Blinky at x=200 y=200
     Monster::Monster* m = Monster::monsterFactory(
                 Monster::MonsterType::Blinky,
@@ -66,16 +87,13 @@ void GameWorld::addMonsters(){
     monsters.push_back(m);
 }
 
-void GameWorld::setScene(QGraphicsScene *s){
-    scene = s;
-    return;
-}
-
-std::vector<Monster::Monster*> GameWorld::getMonsters(){
+std::vector<Monster::Monster*> GameWorld::getMonsters()
+{
     return monsters;
 }
 
-std::vector<Brick*> GameWorld::getWallsAround(QPointF tl, QPointF br){
+std::vector<Brick*> GameWorld::getWallsAround(QPointF tl, QPointF br)
+{
     std::pair<int,int> tl_idx = arena->posToIdx(tl);
     std::pair<int,int> br_idx = arena->posToIdx(br);
     std::pair<int,int> idx;
@@ -93,13 +111,14 @@ std::vector<Brick*> GameWorld::getWallsAround(QPointF tl, QPointF br){
     return wall;
 }
 
-Player* GameWorld::getPlayer(){
+Player *GameWorld::getPlayer()
+{
     return player;
 }
 
-void GameWorld::addToScene(QGraphicsItem *item){
-    scene->addItem(item);
-    return;
+Arena *GameWorld::getArena()
+{
+    return arena;
 }
 
 

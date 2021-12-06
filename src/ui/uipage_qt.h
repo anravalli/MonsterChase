@@ -1,3 +1,6 @@
+#ifndef UIPAGEVIEW_H
+#define UIPAGEVIEW_H
+
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
@@ -19,25 +22,33 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QtWidgets>
 
-#include "gameviews.h"
+class UiBaseQtView;
 
-
-PlayTime::PlayTime(const unsigned short framerate)
-    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
+class UiPageQt: QObject
 {
-    QFont font("Helvetica",14,QFont::Bold);
-    this->setFont(font);
-    this->setPen(QPen(color));
-}
+    Q_OBJECT
+public:
+    explicit UiPageQt(QWidget *parent = nullptr);
 
-void PlayTime::increase(){
-    if(!frame_counter){
-        frame_counter=frame_max;
-        time++;
-    }
-    else
-        frame_counter--;
-    this->setText(QString::asprintf("%04d", time));
-    return;
-}
+    void SetPageColor(QColor color);
+
+    double width();
+    double height();
+    void addItem(QGraphicsItem *item);
+    void show();
+
+    virtual ~UiPageQt();
+
+private:
+    UiBaseQtView *view;
+    QGraphicsScene *scene;
+
+public slots:
+
+signals:
+
+};
+
+#endif // UIPAGEVIEW_H

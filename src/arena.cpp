@@ -1,6 +1,29 @@
+/*
+ *	Monster Chase: a testing playground for behaviors trees
+ *
+ *	Copyright 2021 Andrea Ravalli <anravalli @ gmail.com>
+ *
+ *	This file is part of Monster Chase.
+ *
+ *	Monster Chase is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+
+ *	Monster Chase is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+
+ *	You should have received a copy of the GNU General Public License
+ *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 #include "arena.h"
 #include <assert.h>
 #include <QtWidgets>
+#include "ui/uipage_qt.h"
 
 #define BRICK_NONE 32 //' '
 #define BRICK_STANDARD 49 //'1'
@@ -25,20 +48,19 @@ void Brick::setIndex(std::pair<int,int> idx){
  * Beware that this constructor is not meant to create a fully-functional object
  * It's purpose is mainly unit testing and any other usage is deprecated.
  */
-Arena::Arena(QGraphicsScene* scene, double brick_width):
-     _scene(scene), map_cell_w(brick_width), map_cell_h(brick_width)
+Arena::Arena(double brick_width):
+     map_cell_w(brick_width), map_cell_h(brick_width)
 {
     memset(bin_map,0,MAP_WIDTH*MAP_HEIGHT);
     memset(map,0,MAP_WIDTH*MAP_HEIGHT);
     timer = new QTimer(this);
 }
 
-Arena::Arena(QString fname, QGraphicsScene *scene){
+Arena::Arena(QString fname, double brick_width):
+    map_cell_w(brick_width), map_cell_h(brick_width)
+{
     memset(bin_map,0,MAP_WIDTH*MAP_HEIGHT);
     memset(map,0,MAP_WIDTH*MAP_HEIGHT);
-
-    map_cell_w = scene->sceneRect().width()/MAP_WIDTH;
-    map_cell_h = scene->sceneRect().height()/MAP_HEIGHT;
 
     QFile map_file(fname);
     if (!map_file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -69,27 +91,27 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
                 break;
             case BRICK_STANDARD:
                 bin_map[y][x]=standard;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             case BRICK_CAP_UP:
                 bin_map[y][x]=cap_up;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             case BRICK_CAP_DW:
                 bin_map[y][x]=cap_dw;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             case BRICK_CAP_LX:
                 bin_map[y][x]=cap_lx;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             case BRICK_CAP_RX:
                 bin_map[y][x]=cap_rx;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             case BRICK_THROWABLE:
                 bin_map[y][x]=throwable;
-                map[y][x]=addBrick(scene, idx);
+                map[y][x]=addBrick(idx);
                 break;
             }
         }
@@ -98,18 +120,44 @@ Arena::Arena(QString fname, QGraphicsScene *scene){
     connect(timer, SIGNAL(timeout()), this, SLOT(showNextBrick()));
 }
 
-void Arena::startShowMap(){
-    timer->start(4);
+void Arena::show(){
+    timer->start(1);
+}
+
+void Arena::hide()
+{
+    for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
+        Brick* b = map[0][brick_count-1];
+        if(b != nullptr) b->hide();
+    }
+
 }
 
 
-Brick* Arena::addBrick(QGraphicsScene *s, std::pair<int,int> idx ){
-    Brick* b = new Brick( QRectF( idxToPos(idx.first,idx.second),QSizeF(map_cell_w,map_cell_h) ) );
+void Arena::addToPage(UiPageQt* page)
+{
+    //Brick objects are just view items, as of now,
+    //so let's just add them to the page directly.
+    for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
+        Brick* b = map[0][brick_count];
+        if(b != nullptr) page->addItem(b);
+    }
+
+}
+
+Brick* Arena::addBrick(std::pair<int,int> idx )
+{
+    Brick* b = new Brick(
+                QRectF(
+                    idxToPos(idx.first,idx.second),
+                    QSizeF(map_cell_w,map_cell_h)
+                    )
+                );
     b->hide();
     b->setIndex(idx);
-    s->addItem(b);
     return b;
 }
+
 
 void Arena::showNextBrick(){
     if(brick_count<MAP_WIDTH*MAP_HEIGHT){
@@ -127,7 +175,7 @@ void Arena::showNextBrick(){
 
         emit build_complete();
         timer->stop();
-       //check if disconnect can be useful here
+       //TODO: check if a "disconnect" can be useful here
     }
 }
 

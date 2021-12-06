@@ -1,7 +1,7 @@
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
- *	Copyright 2019 Andrea Ravalli <anravalli @ gmail.com>
+ *	Copyright 2021 Andrea Ravalli <anravalli @ gmail.com>
  *
  *	This file is part of Monster Chase.
  *
@@ -27,7 +27,40 @@
 #include <QtWidgets>
 #include <QGraphicsItem>
 
+class UiPageQt;
+
 namespace Monster {
+
+class MonsterShape;
+class MonsterSight;
+class MonsterView;
+
+MonsterView *monsterViewFactory(MonsterType type, MonsterModel* model);
+
+class MonsterView
+{
+    friend MonsterView* monsterViewFactory(MonsterType mtype, MonsterModel* model);
+
+public:
+    MonsterView(MonsterModel* m);
+    virtual ~MonsterView();
+
+    void show();
+    void hide();
+    void update();
+    void updateGeometry(double x, double y, double scale, double direction);
+    void setPosition(double x, double y);
+    void setRotation(double dir);
+
+
+    void addToPage(UiPageQt* page);
+
+protected:
+    MonsterModel* model;
+    MonsterShape* shape=nullptr;
+    MonsterSight* sight=nullptr;
+};
+
 
 class MonsterShape : public QGraphicsItem
 {

@@ -1,3 +1,6 @@
+#ifndef GAME_H
+#define GAME_H
+
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
@@ -20,24 +23,36 @@
 */
 
 
-#include "gameviews.h"
+#include <QObject>
 
+class UiPageQt;
+class QTimer;
+class PlayTime;
 
-PlayTime::PlayTime(const unsigned short framerate)
-    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
+class GameController : public QObject
 {
-    QFont font("Helvetica",14,QFont::Bold);
-    this->setFont(font);
-    this->setPen(QPen(color));
-}
+    Q_OBJECT
+public:
+    explicit GameController(QObject *parent = nullptr);
+    ~GameController() override;
+    void show();
 
-void PlayTime::increase(){
-    if(!frame_counter){
-        frame_counter=frame_max;
-        time++;
-    }
-    else
-        frame_counter--;
-    this->setText(QString::asprintf("%04d", time));
-    return;
-}
+public slots:
+    void gameStep() ;
+    void pause();
+    void start();
+
+protected:
+
+private:
+    UiPageQt *page;
+    QTimer* timer;
+    PlayTime* ptime;
+
+    void setUpView();
+    void addPlayTime();
+signals:
+
+};
+
+#endif // GAME_H
