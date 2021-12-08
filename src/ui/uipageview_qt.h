@@ -32,7 +32,12 @@ class UiPageViewQt: QObject
 public:
     explicit UiPageViewQt(UiPageViewQt *parent = nullptr);
 
-    void SetPageColor(QColor color);
+    /*
+     * setUpView():
+     *  this method should be redefined by sub-classes in order to custoimize
+     *  the page appereance, for instance by setting the background color or texture.
+    */
+    virtual void setUpView();
 
     double width();
     double height();
