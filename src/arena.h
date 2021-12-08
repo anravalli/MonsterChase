@@ -40,7 +40,7 @@ enum BrickType {
     throwable
 };
 
-class UiPageQt;
+class UiPageViewQt;
 
 class Brick: public QGraphicsRectItem
 {
@@ -65,7 +65,7 @@ public:
 
     void show() override;
     void hide() override;
-    virtual void addToPage(UiPageQt* page) override;
+    virtual void addToPage(UiPageViewQt* page) override;
     bool mapComplete();
 
     virtual Brick *getBrick(std::pair<int, int> idx);

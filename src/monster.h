@@ -90,7 +90,7 @@ class MonsterSm;
     public:
         void show() override;
         void hide() override;
-        virtual void addToPage(UiPageQt* page) override;
+        virtual void addToPage(UiPageViewQt* page) override;
 
         QRectF collisionBox() const;
         QRectF sightBox() const;

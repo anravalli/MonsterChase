@@ -19,7 +19,7 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/uipage_qt.h"
+#include "ui/uipageview_qt.h"
 #include "gamecontroller.h"
 #include "gameviews.h"
 #include "gameworld.h"
@@ -46,18 +46,17 @@ GameController::GameController(UiPageController *parent):
     GameWorld::instance().initLevel(map);
 
     Arena* arena = GameWorld::instance().getArena();
-    arena->addToPage(page);
+    arena->addToPage(page_view);
     connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
 
-    GameWorld::instance().getPlayer()->addToPage(page);
+    GameWorld::instance().getPlayer()->addToPage(page_view);
     for(auto m: GameWorld::instance().getMonsters())
-        m->addToPage(page);
+        m->addToPage(page_view);
 }
 
 
 void GameController::show(){
-    QApplication::instance()->installEventFilter(this);
-    page->show();
+    UiPageController::show();
     GameWorld::instance().getArena()->show();
 }
 
@@ -74,24 +73,22 @@ void GameController::exit(){
     qDebug("GameController::exit()");
     qDebug("is_paused %d", is_paused);
     if(is_paused)
-        QApplication::instance()->exit();
-    else {
-        timer->stop();
-        is_paused = true;
-    }
+        UiPageController::exit();
+    timer->stop();
+    is_paused = true;
 }
 
 
 GameController::~GameController()
 {
-    delete page;
+    delete page_view;
 }
 
 void GameController::addPlayTime(){
     ptime = new PlayTime(FRAMERATE);
     ptime->setPos(-GameConfig::playground_border_width/2,
                   -GameConfig::playground_border_height*0.6);
-    page->addItem(ptime);
+    page_view->addItem(ptime);
 }
 
 void GameController::gameStep(){

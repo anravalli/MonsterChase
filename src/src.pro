@@ -41,11 +41,11 @@ SOURCES += main.cpp\
     gameworld.cpp \
     gameviews.cpp \
     gameconfig.cpp \
-    ui/uibase_qtview.cpp \
-    ui/uipage_controller.cpp \
-    ui/uipage_qt.cpp \
+    ui/uipagecontroller.cpp \
     ui/uipagemenu.cpp \
-    ui/uipagemenuitem.cpp
+    ui/uipagemenuitem.cpp \
+    ui/uipageview_qt.cpp \
+    ui/uiviewitems_qt.cpp
 
 HEADERS  += monsterchase.h \
     algorithms.h \
@@ -63,11 +63,11 @@ HEADERS  += monsterchase.h \
     gameworld.h \
     gameviews.h \
     gameconfig.h \
-    ui/uibase_qtview.h \
-    ui/uipage_controller.h \
-    ui/uipage_qt.h \
+    ui/uipagecontroller.h \
     ui/uipagemenu.h \
-    ui/uipagemenuitem.h
+    ui/uipagemenuitem.h \
+    ui/uipageview_qt.h \
+    ui/uiviewitems_qt.h
 
 RESOURCES += \
     ../monsterchase.qrc 

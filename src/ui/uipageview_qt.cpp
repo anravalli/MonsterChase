@@ -19,12 +19,12 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uipage_qt.h"
-#include "uibase_qtview.h"
+#include "uipageview_qt.h"
+#include "uiviewitems_qt.h"
 
 #include "gameconfig.h"
 
-UiPageQt::UiPageQt(UiPageQt *parent)
+UiPageViewQt::UiPageViewQt(UiPageViewQt *parent)
 {
     Q_UNUSED(parent);
 
@@ -34,7 +34,7 @@ UiPageQt::UiPageQt(UiPageQt *parent)
 
     if(parent == nullptr)
     {
-        view = new UiBaseQtView(scene);
+        view = new UiBaseQGraphicsView(scene);
         view->setRenderHint(QPainter::Antialiasing);
         view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
         view->setCacheMode(QGraphicsView::CacheBackground);
@@ -47,39 +47,41 @@ UiPageQt::UiPageQt(UiPageQt *parent)
     }
 }
 
-UiPageQt::~UiPageQt()
+UiPageViewQt::~UiPageViewQt()
 {
     delete view; //it should be reference counted to avoid crash on exit!
     delete scene;
 }
 
-UiBaseQtView *UiPageQt::getView() const
+UiBaseQGraphicsView *UiPageViewQt::getView() const
 {
     return view;
 }
 
-double UiPageQt::width()
+double UiPageViewQt::width()
 {
     return scene->sceneRect().width();
 }
 
-double UiPageQt::height()
+double UiPageViewQt::height()
 {
     return scene->sceneRect().height();
 }
 
-void UiPageQt::show()
+void UiPageViewQt::show()
 {
     view->setScene(scene);
     view->show();
 }
 
-void UiPageQt::hide()
+void UiPageViewQt::hide()
 {
+    for(auto i: scene->items())
+        i->hide();
     view->hide();
 }
 
-void UiPageQt::addItem(QGraphicsItem *item)
+void UiPageViewQt::addItem(QGraphicsItem *item)
 {
     scene->addItem(item);
 }

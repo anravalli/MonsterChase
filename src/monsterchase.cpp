@@ -20,7 +20,7 @@
 */
 
 #include "monsterchase.h"
-#include "ui/uipage_qt.h"
+#include "ui/uipageview_qt.h"
 #include "gamecontroller.h"
 
 /*
@@ -76,12 +76,6 @@ void MonsterChase::exit(){
     QApplication::instance()->exit();
 }
 
-void MonsterChase::show()
-{
-    QApplication::instance()->installEventFilter(this);
-    page->show();
-}
-
 void MonsterChase::select_next_item(bool released)
 {
 //    qDebug("select_next_item - released: %d", released);
@@ -105,7 +99,7 @@ void MonsterChase::show_selcted_item(bool released)
     //qDebug("show_selcted_item - released: %d", released);
     if(released)
     {
-        page->hide();
+        page_view->hide();
         QApplication::instance()->removeEventFilter(this);
         items[current_item_idx]->show();
     }

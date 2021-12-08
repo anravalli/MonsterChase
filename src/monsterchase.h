@@ -22,7 +22,7 @@
 #ifndef MONSTERCHASE_H
 #define MONSTERCHASE_H
 
-#include "ui/uipage_controller.h"
+#include "ui/uipagecontroller.h"
 #include <vector>
 #include <QTimer>
 
@@ -35,7 +35,6 @@ class MonsterChase : public UiPageController
 public:
     MonsterChase();
     ~MonsterChase() override ;
-    void show() override;
     void exit() override;
     bool handleKey(int key, bool released) override;
 

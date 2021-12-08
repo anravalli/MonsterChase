@@ -20,14 +20,14 @@
 */
 
 
-#include "uibase_qtview.h"
+#include "uiviewitems_qt.h"
 #include "gameconfig.h"
 #include <QOpenGLWidget>
 
 #define USE_OGL 1
 //#define DEBUG
 
-UiBaseQtView::UiBaseQtView(QGraphicsScene *scene) : QGraphicsView(scene)
+UiBaseQGraphicsView::UiBaseQGraphicsView(QGraphicsScene *scene) : QGraphicsView(scene)
 {
     setFocusPolicy(Qt::StrongFocus);
     setDragMode(NoDrag);
@@ -55,11 +55,11 @@ UiBaseQtView::UiBaseQtView(QGraphicsScene *scene) : QGraphicsView(scene)
 #endif
 }
 
-const QRect *UiBaseQtView::innerBorder(){
+const QRect *UiBaseQGraphicsView::innerBorder(){
     return inner_border;
 }
 
-void UiBaseQtView::keyPressEvent(QKeyEvent *event){
+void UiBaseQGraphicsView::keyPressEvent(QKeyEvent *event){
 #ifdef  DEBUG
     qDebug("Event received by GameView %d (%s)",event->key(), event->text().toStdString().c_str());
 #endif
@@ -67,7 +67,7 @@ void UiBaseQtView::keyPressEvent(QKeyEvent *event){
     return;
 }
 
-void UiBaseQtView::resizeEvent(QResizeEvent *)
+void UiBaseQGraphicsView::resizeEvent(QResizeEvent *)
 {
 }
 

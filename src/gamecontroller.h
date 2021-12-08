@@ -23,9 +23,9 @@
 */
 
 
-#include "ui/uipage_controller.h"
+#include "ui/uipagecontroller.h"
 
-class UiPageQt;
+class UiPageViewQt;
 class QTimer;
 class PlayTime;
 

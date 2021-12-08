@@ -22,7 +22,7 @@
 #include "player.h"
 #include "playersm.h"
 #include "playerqtviews.h"
-#include "ui/uipage_qt.h"
+#include "ui/uipageview_qt.h"
 
 #include "gameworld.h"
 #include "monster.h"
@@ -51,7 +51,7 @@ void Player::show(){
 void Player::hide(){
     shape->hide();
 }
-void Player::addToPage(UiPageQt* page)
+void Player::addToPage(UiPageViewQt* page)
 {
     page->addItem(this->shape);
     page->addItem(this->score);
