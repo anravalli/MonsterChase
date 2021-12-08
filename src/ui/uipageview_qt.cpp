@@ -36,7 +36,6 @@ UiPageViewQt::UiPageViewQt(UiPageViewQt *parent)
     {
         view = new UiBaseQGraphicsView(scene);
         view->setRenderHint(QPainter::Antialiasing);
-        view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
         view->setCacheMode(QGraphicsView::CacheBackground);
         view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
         view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
@@ -71,17 +70,23 @@ double UiPageViewQt::height()
 void UiPageViewQt::show()
 {
     view->setScene(scene);
+    setUpView();
     view->show();
 }
 
 void UiPageViewQt::hide()
 {
-    for(auto i: scene->items())
-        i->hide();
-    view->hide();
+    //using a NULL scene here, instead of the QWidget inherited hide() method,
+    //seems to fix the rendering issues related the page change.
+    view->setScene(nullptr);
 }
 
 void UiPageViewQt::addItem(QGraphicsItem *item)
 {
     scene->addItem(item);
 }
+
+void UiPageViewQt::setUpView()
+{
+    view->setBackgroundBrush(QColor(Qt::yellow));
+};
