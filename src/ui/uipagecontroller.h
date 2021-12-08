@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-class UiPageQt;
+class UiPageViewQt;
 
 class UiPageController: public QObject
 {
@@ -33,20 +33,21 @@ public:
     explicit UiPageController(UiPageController *parent = nullptr);
 
     //show the page
-    virtual void show() = 0;
-    virtual void exit() = 0;
+    virtual void show();
+    virtual void exit();
 
-    UiPageQt *getPage() const;
+    UiPageViewQt *getPageView() const;
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
     virtual bool handleKey(int key, bool released) = 0;
+    //virtual bool handlePointDev(int key, bool released);
 
-    UiPageQt *page;
+    UiPageViewQt *page_view;
+    UiPageController *parent_page;
 
 private:
 
-    //virtual bool handlePointDev(int key, bool released);
 };
 
 #endif // GAMEPAGE_H

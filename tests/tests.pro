@@ -19,9 +19,9 @@ HEADERS += \
     ../src/monsterchase.h \
     ../src/gamecontroller.h \
     ../src/gameworld.h \
-    ../src/ui/uibase_qtview.h \
-    ../src/ui/uipage_controller.h \
-    ../src/ui/uipage_qt.h \
+    ../src/ui/uiviewitems_qt.h \
+    ../src/ui/uipagecontroller.h \
+    ../src/ui/uipageview_qt.h \
     ../src/ui/uipagemenu.h \
     ../src/ui/uipagemenuitem.h \
     tst_linear_rotation.h \
@@ -32,9 +32,9 @@ HEADERS += \
 
 SOURCES += \
         main.cpp \
-        ../src/ui/uibase_qtview.cpp \
-        ../src/ui/uipage_qt.cpp \
-        ../src/ui/uipage_controller.cpp \
+        ../src/ui/uiviewitems_qt.cpp \
+        ../src/ui/uipageview_qt.cpp \
+        ../src/ui/uipagecontroller.cpp \
         ../src/algorithms.cpp \
         ../src/player.cpp \
         ../src/playersm.cc \

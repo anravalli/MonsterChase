@@ -23,7 +23,7 @@
 #include "arena.h"
 #include <assert.h>
 #include <QtWidgets>
-#include "ui/uipage_qt.h"
+#include "ui/uipageview_qt.h"
 
 #define BRICK_NONE 32 //' '
 #define BRICK_STANDARD 49 //'1'
@@ -134,7 +134,7 @@ void Arena::hide()
 }
 
 
-void Arena::addToPage(UiPageQt* page)
+void Arena::addToPage(UiPageViewQt* page)
 {
     //Brick objects are just view items, as of now,
     //so let's just add them to the page directly.

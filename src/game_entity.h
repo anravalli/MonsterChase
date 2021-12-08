@@ -1,13 +1,13 @@
 #ifndef GAME_ENTITY_H
 #define GAME_ENTITY_H
 
-class UiPageQt;
+class UiPageViewQt;
 
 class GameEntityI
 {
 public:
     virtual ~GameEntityI() {};
-    virtual void addToPage(UiPageQt* page) = 0;
+    virtual void addToPage(UiPageViewQt* page) = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
 };

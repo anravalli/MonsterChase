@@ -20,7 +20,7 @@
 */
 
 #include "monsterviews.h"
-#include "ui/uipage_qt.h"
+#include "ui/uipageview_qt.h"
 
 #define VIEW_DEBUG 0
 
@@ -59,7 +59,7 @@ MonsterView *monsterViewFactory(MonsterType type, MonsterModel* model)
     return monster;
 }
 
-void MonsterView::addToPage(UiPageQt* page)
+void MonsterView::addToPage(UiPageViewQt* page)
 {
     //adding views to scene
     //the order we add the items to the scene affects the z-order

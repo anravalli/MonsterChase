@@ -62,7 +62,7 @@ namespace Monster{
         _warning_box = new QRectF(-100,-100,200,200);
     }
 
-    void Monster::addToPage(UiPageQt* page)
+    void Monster::addToPage(UiPageViewQt* page)
     {
         monster_view->addToPage(page);
     }

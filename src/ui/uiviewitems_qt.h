@@ -24,10 +24,10 @@
 
 #include <QtWidgets>
 
-class UiBaseQtView: public QGraphicsView
+class UiBaseQGraphicsView: public QGraphicsView
 {
 public:
-    UiBaseQtView(QGraphicsScene *scene);
+    UiBaseQGraphicsView(QGraphicsScene *scene);
 
     QRect const * innerBorder();
 

@@ -24,13 +24,13 @@
 
 #include <QtWidgets>
 
-class UiBaseQtView;
+class UiBaseQGraphicsView;
 
-class UiPageQt: QObject
+class UiPageViewQt: QObject
 {
     Q_OBJECT
 public:
-    explicit UiPageQt(UiPageQt *parent = nullptr);
+    explicit UiPageViewQt(UiPageViewQt *parent = nullptr);
 
     void SetPageColor(QColor color);
 
@@ -40,12 +40,12 @@ public:
     void show();
     void hide();
 
-    virtual ~UiPageQt();
+    virtual ~UiPageViewQt();
 
-    UiBaseQtView *getView() const;
+    UiBaseQGraphicsView *getView() const;
 
 private:
-    UiBaseQtView *view;
+    UiBaseQGraphicsView *view;
     QGraphicsScene *scene;
 
 public slots:

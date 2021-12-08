@@ -19,16 +19,16 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uipage_controller.h"
-#include "uipage_qt.h"
+#include "uipagecontroller.h"
+#include "uipageview_qt.h"
 
 UiPageController::UiPageController(UiPageController *parent):
-    QObject((QObject *)parent)
+    QObject((QObject *)parent), parent_page(parent)
 {
-    UiPageQt *parent_page = nullptr;
-    if(parent)
-        parent_page = parent->getPage();
-    page = new UiPageQt(parent_page);
+    UiPageViewQt *view = nullptr;
+    if(parent_page)
+        view = parent_page->getPageView();
+    page_view = new UiPageViewQt(view);
 }
 
 bool UiPageController::eventFilter(QObject *watched, QEvent *event)
@@ -49,7 +49,23 @@ bool UiPageController::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-UiPageQt *UiPageController::getPage() const
+UiPageViewQt *UiPageController::getPageView() const
 {
-    return page;
+    return page_view;
+}
+
+void UiPageController::show()
+{
+    QApplication::instance()->installEventFilter(this);
+    page_view->show();
+}
+
+void UiPageController::exit(){
+    qDebug("UiPageController::exit()");
+    if(parent_page)
+    {
+        page_view->hide();
+        QApplication::instance()->removeEventFilter(this);
+        parent_page->show();
+    }
 }

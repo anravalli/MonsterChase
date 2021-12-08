@@ -27,7 +27,7 @@
 #include <QtWidgets>
 #include <QGraphicsItem>
 
-class UiPageQt;
+class UiPageViewQt;
 
 namespace Monster {
 
@@ -53,7 +53,7 @@ public:
     void setRotation(double dir);
 
 
-    void addToPage(UiPageQt* page);
+    void addToPage(UiPageViewQt* page);
 
 protected:
     MonsterModel* model;
