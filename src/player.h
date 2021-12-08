@@ -94,8 +94,8 @@ public:
     void collisionWithMonster();
 
     QRectF collisionBox() const;
-protected:
-    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
+
+    bool handleKey(int key, bool released);
 
 private:
     PlayerModel model = {
@@ -113,7 +113,6 @@ private:
     PlayerSm* pstates[5]={nullptr,nullptr,nullptr,nullptr,nullptr};
 
     void move();
-    bool handleKey(int key, bool released);
 
     void computeState();
     void checkCollisionsWithMonsters();

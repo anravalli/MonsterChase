@@ -32,11 +32,9 @@
 #define UPDATE_PERIOD 1000/FRAMERATE
 
 
-GameController::GameController(QObject *parent) : QObject(parent)
+GameController::GameController(UiPageController *parent):
+    UiPageController(parent), is_paused(true)
 {
-    //setUpView();
-
-    page = new UiPageQt();
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
@@ -50,7 +48,6 @@ GameController::GameController(QObject *parent) : QObject(parent)
     Arena* arena = GameWorld::instance().getArena();
     arena->addToPage(page);
     connect(arena,SIGNAL(build_complete()),this,SLOT(start()));
-    arena->show();
 
     GameWorld::instance().getPlayer()->addToPage(page);
     for(auto m: GameWorld::instance().getMonsters())
@@ -59,7 +56,9 @@ GameController::GameController(QObject *parent) : QObject(parent)
 
 
 void GameController::show(){
+    QApplication::instance()->installEventFilter(this);
     page->show();
+    GameWorld::instance().getArena()->show();
 }
 
 void GameController::start(){
@@ -67,10 +66,19 @@ void GameController::start(){
 
     GameWorld::instance().start();
     timer->start(UPDATE_PERIOD);
+
+    is_paused = false;
 }
 
-void GameController::pause(){
-    timer->stop();
+void GameController::exit(){
+    qDebug("GameController::exit()");
+    qDebug("is_paused %d", is_paused);
+    if(is_paused)
+        QApplication::instance()->exit();
+    else {
+        timer->stop();
+        is_paused = true;
+    }
 }
 
 
@@ -94,5 +102,31 @@ void GameController::gameStep(){
 #endif
     ptime->increase();
     GameWorld::instance().nextFrame();
+}
+
+bool GameController::handleKey(int key, bool released){
+    bool ret = false;
+
+    switch(key){
+    case Qt::Key_Space:
+    case Qt::Key_D:
+    case Qt::Key_Right:
+    case Qt::Key_A:
+    case Qt::Key_Left:
+    case Qt::Key_Up:
+    case Qt::Key_W:
+    case Qt::Key_S:
+    case Qt::Key_Down:
+        ret = GameWorld::instance().getPlayer()->handleKey(key, released);
+        break;
+    case Qt::Key_Exit:
+    case Qt::Key_Escape:
+        if (released) exit();
+        ret = true;
+        break;
+    default:
+        break;
+    }
+    return ret;
 }
 

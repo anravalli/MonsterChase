@@ -23,34 +23,37 @@
 */
 
 
-#include <QObject>
+#include "ui/uipage_controller.h"
 
 class UiPageQt;
 class QTimer;
 class PlayTime;
 
-class GameController : public QObject
+class GameController : public UiPageController
 {
     Q_OBJECT
 public:
-    explicit GameController(QObject *parent = nullptr);
+    explicit GameController(UiPageController *parent = nullptr);
     ~GameController() override;
-    void show();
+    void show() override;
+    void exit() override;
 
 public slots:
     void gameStep() ;
-    void pause();
     void start();
 
 protected:
+    bool handleKey(int key, bool released) override;
 
 private:
-    UiPageQt *page;
     QTimer* timer;
     PlayTime* ptime;
 
+    bool is_paused; //temporary: this "state variable" has to be changed to a "real" state
+
     void setUpView();
     void addPlayTime();
+
 signals:
 
 };
