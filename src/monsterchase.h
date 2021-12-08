@@ -22,29 +22,34 @@
 #ifndef MONSTERCHASE_H
 #define MONSTERCHASE_H
 
-#include <QObject>
+#include "ui/uipage_controller.h"
+#include <vector>
+#include <QTimer>
 
-class GameController;
+using namespace std;
 
-class MonsterChase : public QObject
+class MonsterChase : public UiPageController
 {
-    Q_OBJECT
+    //Q_OBJECT
 
 public:
-    explicit MonsterChase();
-
-
-    ~MonsterChase() override;
-
-    void show();
-
-public slots:
-
+    MonsterChase();
+    ~MonsterChase() override ;
+    void show() override;
+    void exit() override;
+    bool handleKey(int key, bool released) override;
 
 protected:
+    void select_next_item(bool released);
+    void select_previous_item(bool released);
+    void show_selcted_item(bool released);
 
 private:
-    GameController *game_controller;
+    vector<UiPageController *> items;
+    int current_item_idx = 0;
+    int last_item_index = 0;
+    QTimer key_outo_repeat;
 };
+
 
 #endif // MONSTERCHASE_H

@@ -21,6 +21,7 @@
 
 #include "monsterchase.h"
 #include <QApplication>
+#include "ui/uipage_qt.h"
 
 /*
  * Here we do just unix signal handling,
@@ -32,6 +33,18 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     MonsterChase game;
+    QWidget * main_window = new QWidget();
+
+    QLayout * layout = new QVBoxLayout();
+    UiPageQt *game_page = game.getPage();
+    QGraphicsView * view = (QGraphicsView *)(game_page->getView());
+
+    layout->addWidget(view);
+    main_window->setLayout(layout);
+
+    game_page->hide();
+    main_window->show();
+
     game.show();
 
     return a.exec();

@@ -43,9 +43,6 @@ Player::Player()
     pstates[on_rage] = new PlayerOnRage(&model);
     pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
-    //the order we add the items to the scene affects the z-order
-
-    QApplication::instance()->installEventFilter(this);
 }
 
 void Player::show(){
@@ -142,24 +139,6 @@ QRectF Player::collisionBox() const
     int size = 30;
     return QRectF(model.pos_x-size/2, model.pos_y-size/2,
                   size,size);
-}
-
-bool Player::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress) {
-#ifdef  DEBUG
-        qDebug("%d KeyPress received by Player", __LINE__);
-#endif
-        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-        int key = ke->key();
-        return handleKey(key, false);
-    } else  if (event->type() == QEvent::KeyRelease) {
-        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-        int key = ke->key();
-        return handleKey(key, true);
-    }
-    // Make sure the rest of events are handled
-    return QObject::eventFilter(watched, event);
 }
 
 bool Player::handleKey(int key, bool released){

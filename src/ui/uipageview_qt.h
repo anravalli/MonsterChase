@@ -30,7 +30,7 @@ class UiPageQt: QObject
 {
     Q_OBJECT
 public:
-    explicit UiPageQt(QWidget *parent = nullptr);
+    explicit UiPageQt(UiPageQt *parent = nullptr);
 
     void SetPageColor(QColor color);
 
@@ -38,8 +38,11 @@ public:
     double height();
     void addItem(QGraphicsItem *item);
     void show();
+    void hide();
 
     virtual ~UiPageQt();
+
+    UiBaseQtView *getView() const;
 
 private:
     UiBaseQtView *view;

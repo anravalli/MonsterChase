@@ -34,6 +34,7 @@ SOURCES += \
         main.cpp \
         ../src/ui/uibase_qtview.cpp \
         ../src/ui/uipage_qt.cpp \
+        ../src/ui/uipage_controller.cpp \
         ../src/algorithms.cpp \
         ../src/player.cpp \
         ../src/playersm.cc \

@@ -30,14 +30,23 @@ class UiPageController: public QObject
 {
     Q_OBJECT
 public:
-    UiPageController();
+    explicit UiPageController(UiPageController *parent = nullptr);
 
     //show the page
     virtual void show() = 0;
     virtual void exit() = 0;
 
+    UiPageQt *getPage() const;
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
+    virtual bool handleKey(int key, bool released) = 0;
+
+    UiPageQt *page;
+
 private:
-    UiPageQt *view;
+
+    //virtual bool handlePointDev(int key, bool released);
 };
 
 #endif // GAMEPAGE_H

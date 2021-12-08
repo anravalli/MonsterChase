@@ -24,7 +24,7 @@
 
 #include "gameconfig.h"
 
-UiPageQt::UiPageQt(QWidget *parent)
+UiPageQt::UiPageQt(UiPageQt *parent)
 {
     Q_UNUSED(parent);
 
@@ -32,18 +32,30 @@ UiPageQt::UiPageQt(QWidget *parent)
     scene->setSceneRect(0, 0, GameConfig::playground_width, GameConfig::playground_width);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
-    view = new UiBaseQtView(scene);
-    view->setRenderHint(QPainter::Antialiasing);
-    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
-    view->setCacheMode(QGraphicsView::CacheBackground);
-    view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
+    if(parent == nullptr)
+    {
+        view = new UiBaseQtView(scene);
+        view->setRenderHint(QPainter::Antialiasing);
+        view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
+        view->setCacheMode(QGraphicsView::CacheBackground);
+        view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+        view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
+    }
+    else
+    {
+        view = parent->getView();
+    }
 }
 
 UiPageQt::~UiPageQt()
 {
-    delete view;
+    delete view; //it should be reference counted to avoid crash on exit!
     delete scene;
+}
+
+UiBaseQtView *UiPageQt::getView() const
+{
+    return view;
 }
 
 double UiPageQt::width()
@@ -58,7 +70,13 @@ double UiPageQt::height()
 
 void UiPageQt::show()
 {
+    view->setScene(scene);
     view->show();
+}
+
+void UiPageQt::hide()
+{
+    view->hide();
 }
 
 void UiPageQt::addItem(QGraphicsItem *item)
