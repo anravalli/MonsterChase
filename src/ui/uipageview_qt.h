@@ -32,12 +32,6 @@ class UiPageViewQt: QObject
 public:
     explicit UiPageViewQt(UiPageViewQt *parent = nullptr);
 
-    /*
-     * setUpView():
-     *  this method should be redefined by sub-classes in order to custoimize
-     *  the page appereance, for instance by setting the background color or texture.
-    */
-    virtual void setUpView();
 
     double width();
     double height();
@@ -49,8 +43,16 @@ public:
 
     UiBaseQGraphicsView *getView() const;
 
-private:
+protected:
     UiBaseQGraphicsView *view;
+    /*
+     * setUpView():
+     *  this method should be redefined by sub-classes in order to custoimize
+     *  the page appereance, for instance by setting the background color or texture.
+    */
+    virtual void setUpView();
+
+private:
     QGraphicsScene *scene;
 
 public slots:

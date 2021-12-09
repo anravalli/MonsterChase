@@ -22,6 +22,16 @@
 */
 
 #include <QtWidgets>
+#include "ui/uipageview_qt.h"
+
+class GamePage: public UiPageViewQt
+{
+public:
+    GamePage(UiPageViewQt *parent);
+
+protected:
+    virtual void setUpView() override;
+};
 
 class PlayTime : public QGraphicsSimpleTextItem
 {

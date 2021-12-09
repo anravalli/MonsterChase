@@ -19,7 +19,6 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ui/uipageview_qt.h"
 #include "gamecontroller.h"
 #include "gameviews.h"
 #include "gameworld.h"
@@ -35,6 +34,8 @@
 GameController::GameController(UiPageController *parent):
     UiPageController(parent), is_paused(true)
 {
+    initPageView<GamePage>();
+
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
@@ -53,7 +54,6 @@ GameController::GameController(UiPageController *parent):
     for(auto m: GameWorld::instance().getMonsters())
         m->addToPage(page_view);
 }
-
 
 void GameController::show(){
     UiPageController::show();
@@ -77,7 +77,6 @@ void GameController::exit(){
     timer->stop();
     is_paused = true;
 }
-
 
 GameController::~GameController()
 {

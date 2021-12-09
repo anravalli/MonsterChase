@@ -41,7 +41,8 @@ public:
 protected:
     bool eventFilter(QObject *watched, QEvent *event) Q_DECL_OVERRIDE;
     virtual bool handleKey(int key, bool released) = 0;
-    //virtual bool handlePointDev(int key, bool released);
+
+    template<class T> void initPageView();
 
     UiPageViewQt *page_view;
     UiPageController *parent_page;
@@ -49,5 +50,14 @@ protected:
 private:
 
 };
+
+template<class T> void UiPageController::initPageView()
+{
+    UiPageViewQt *view = nullptr;
+    if(parent_page)
+        view = parent_page->getPageView();
+    page_view = new T(view);
+}
+
 
 #endif // GAMEPAGE_H
