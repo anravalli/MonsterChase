@@ -31,6 +31,7 @@
 MonsterChase::MonsterChase():
     UiPageController(nullptr)
 {
+    initPageView<UiPageViewQt>();
     UiPageController *game_controller = new GameController(this);
     items.push_back(game_controller);
 }

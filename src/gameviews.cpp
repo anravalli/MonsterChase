@@ -21,7 +21,17 @@
 
 
 #include "gameviews.h"
+#include "ui/uiviewitems_qt.h"
 
+GamePage::GamePage(UiPageViewQt *parent):
+    UiPageViewQt(parent)
+{
+}
+
+void GamePage::setUpView()
+{
+    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
+}
 
 PlayTime::PlayTime(const unsigned short framerate)
     :color(255,127,127), frame_max(framerate), frame_counter(framerate)
@@ -41,3 +51,4 @@ void PlayTime::increase(){
     this->setText(QString::asprintf("%04d", time));
     return;
 }
+

@@ -25,10 +25,6 @@
 UiPageController::UiPageController(UiPageController *parent):
     QObject((QObject *)parent), parent_page(parent)
 {
-    UiPageViewQt *view = nullptr;
-    if(parent_page)
-        view = parent_page->getPageView();
-    page_view = new UiPageViewQt(view);
 }
 
 bool UiPageController::eventFilter(QObject *watched, QEvent *event)
