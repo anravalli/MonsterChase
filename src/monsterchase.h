@@ -24,6 +24,7 @@
 
 #include "ui/uipagecontroller.h"
 #include <vector>
+#include <functional>
 #include <QTimer>
 
 using namespace std;
@@ -44,7 +45,7 @@ protected:
     void show_selcted_item(bool released);
 
 private:
-    vector<UiPageController *> items;
+    vector<function<void()>> actions;
     int current_item_idx = 0;
     int last_item_index = 0;
     QTimer key_outo_repeat;
