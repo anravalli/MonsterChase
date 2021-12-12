@@ -32,15 +32,16 @@ MonsterChase::MonsterChase():
     UiPageController(nullptr)
 {
     initPageView<UiPageViewQt>();
-    UiPageController *game_controller = new GameController(this);
-    items.push_back(game_controller);
+    auto game_controller = new GameController(this);
+    function<void()> a = [game_controller]{game_controller->show();};
+    actions.push_back(a);
 }
 
 
 MonsterChase::~MonsterChase()
 {
-    for(auto i: items)
-        delete i;
+//    for(auto i: actions)
+//        delete i;
 }
 
 bool MonsterChase::handleKey(int key, bool released){
@@ -102,6 +103,6 @@ void MonsterChase::show_selcted_item(bool released)
     {
         page_view->hide();
         QApplication::instance()->removeEventFilter(this);
-        items[current_item_idx]->show();
+        actions[current_item_idx]();
     }
 }

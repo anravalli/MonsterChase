@@ -24,7 +24,7 @@
 #include "gameconfig.h"
 #include <QOpenGLWidget>
 
-#define USE_OGL 1
+#define USE_OGL 0
 //#define DEBUG
 
 UiBaseQGraphicsView::UiBaseQGraphicsView(QGraphicsScene *scene) : QGraphicsView(scene)
