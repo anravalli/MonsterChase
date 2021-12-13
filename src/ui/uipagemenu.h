@@ -22,13 +22,45 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <vector>
+#include <functional>
+#include <QTimer>
 #include <QObject>
+
+#include <QtWidgets>
+
+using namespace std;
+
+//class UiMenuModel
+//{
+//public:
+//	vector<string> model;
+//};
+
+class UiPageViewQt;
 
 class UiPageMenu: QObject
 {
     Q_OBJECT
 public:
-    UiPageMenu();
+    UiPageMenu(vector<function<void()>> actions, vector<QString> model);
+    void addToPage(UiPageViewQt* page);
+    bool handleKey(int key, bool released);
+
+protected:
+    void select_next_item(bool released);
+    void select_previous_item(bool released);
+    void show_selcted_item(bool released);
+
+private:
+    vector<function<void()>> actions;
+    vector<QString> model;
+    int current_item_idx = 0;
+    int last_item_index = 0;
+    QTimer key_outo_repeat;
+
+    QGraphicsSimpleTextItem view;
+
 };
 
 #endif // UIPAGEMENU_H

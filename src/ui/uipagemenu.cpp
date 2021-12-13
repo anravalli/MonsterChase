@@ -20,8 +20,81 @@
 */
 
 #include "uipagemenu.h"
+#include "ui/uipageview_qt.h"
+#include "gameconfig.h"
 
-UiPageMenu::UiPageMenu()
+UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model):
+		actions(actions), model(model)
 {
-
+	QFont font("Helvetica",14,QFont::Bold);
+	view.setFont(font);
+	view.setPen(QPen(QColor(Qt::darkRed)));
+	view.setBrush(QBrush(QColor(Qt::red)));
+	view.setText(this->model[0]);
+	view.setPos(GameConfig::playground_view_width/2-150,
+			GameConfig::playground_view_height/2+100);
+	view.show();
 }
+
+bool UiPageMenu::handleKey(int key, bool released){
+    bool ret = false;
+    switch(key){
+    case Qt::Key_Up:
+    case Qt::Key_W:
+        select_previous_item(released);
+        ret = true;
+        break;
+    case Qt::Key_S:
+    case Qt::Key_Down:
+        select_next_item(released);
+        ret = true;
+        break;
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        show_selcted_item(released);
+        ret = true;
+        break;
+    case Qt::Key_Exit:
+    case Qt::Key_Escape:
+    default:
+        break;
+    }
+    return ret;
+}
+
+void UiPageMenu::select_next_item(bool released)
+{
+//    qDebug("select_next_item - released: %d", released);
+    if(current_item_idx < last_item_index)
+        current_item_idx++;
+    if(released)
+        key_outo_repeat.stop();
+}
+
+void UiPageMenu::select_previous_item(bool released)
+{
+//    qDebug("select_previous_item - released: %d", released);
+    if(current_item_idx > 0)
+        current_item_idx--;
+    if(released)
+        key_outo_repeat.stop();
+}
+
+void UiPageMenu::show_selcted_item(bool released)
+{
+    //qDebug("show_selcted_item - released: %d", released);
+    if(released)
+    {
+        actions[current_item_idx]();
+    }
+}
+
+void UiPageMenu::addToPage(UiPageViewQt* page)
+{
+    page->addItem(&(this->view));
+}
+
+//void UiPageMenu::show(){
+//
+//    view.show();
+//}

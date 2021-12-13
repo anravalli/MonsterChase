@@ -32,6 +32,7 @@ HEADERS += \
 
 SOURCES += \
         main.cpp \
+        ../src/ui/uipagemenu.cpp \
         ../src/ui/uiviewitems_qt.cpp \
         ../src/ui/uipageview_qt.cpp \
         ../src/ui/uipagecontroller.cpp \
