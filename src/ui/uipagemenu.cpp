@@ -26,6 +26,8 @@
 UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model):
 		actions(actions), model(model)
 {
+	last_item_index = this->actions.size();
+
 	QFont font("Helvetica",14,QFont::Bold);
 	view.setFont(font);
 	view.setPen(QPen(QColor(Qt::darkRed)));
@@ -94,7 +96,3 @@ void UiPageMenu::addToPage(UiPageViewQt* page)
     page->addItem(&(this->view));
 }
 
-//void UiPageMenu::show(){
-//
-//    view.show();
-//}

@@ -86,32 +86,3 @@ void MonsterChase::exit(){
     qDebug("MonsterChase::exit()");
     QApplication::instance()->exit();
 }
-
-//void MonsterChase::select_next_item(bool released)
-//{
-////    qDebug("select_next_item - released: %d", released);
-//    if(current_item_idx < last_item_index)
-//        current_item_idx++;
-//    if(released)
-//        key_outo_repeat.stop();
-//}
-//
-//void MonsterChase::select_previous_item(bool released)
-//{
-////    qDebug("select_previous_item - released: %d", released);
-//    if(current_item_idx > 0)
-//        current_item_idx--;
-//    if(released)
-//        key_outo_repeat.stop();
-//}
-//
-//void MonsterChase::show_selcted_item(bool released)
-//{
-//    //qDebug("show_selcted_item - released: %d", released);
-//    if(released)
-//    {
-//        page_view->hide();
-//        QApplication::instance()->removeEventFilter(this);
-//        actions[current_item_idx]();
-//    }
-//}
