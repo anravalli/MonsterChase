@@ -23,11 +23,14 @@
 #define MONSTERCHASE_H
 
 #include "ui/uipagecontroller.h"
+#include "ui/uipagemenu.h"
 #include <vector>
 #include <functional>
 #include <QTimer>
 
 using namespace std;
+
+class QGraphicsPixmapItem;
 
 class MonsterChase : public UiPageController
 {
@@ -45,10 +48,12 @@ protected:
     void show_selcted_item(bool released);
 
 private:
-    vector<function<void()>> actions;
-    int current_item_idx = 0;
-    int last_item_index = 0;
-    QTimer key_outo_repeat;
+    UiPageMenu *menu;
+    QGraphicsPixmapItem *logo;
+//    vector<function<void()>> actions;
+//    int current_item_idx = 0;
+//    int last_item_index = 0;
+//    QTimer key_outo_repeat;
 };
 
 
