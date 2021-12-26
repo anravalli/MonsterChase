@@ -20,7 +20,7 @@
 */
 
 #include "monsterchase.h"
-#include "ui/uipageview_qt.h"
+#include "monsterchase_mainpage.h"
 #include "gamecontroller.h"
 
 #include <QGraphicsPixmapItem>
@@ -32,32 +32,48 @@
 MonsterChase::MonsterChase():
     UiPageController(nullptr)
 {
-    initPageView<UiPageViewQt>();
+    initPageView<MonsterChaseMainPage>();
     auto game_controller = new GameController(this); //game_controller will be leaked on exit
-    function<void()> a = [this, game_controller]{
+    vector<function<void()>> actions;
+    actions.push_back([this, game_controller]{
     	this->page_view->hide();
     	QApplication::instance()->removeEventFilter(this);
     	game_controller->show();
-    };
-    vector<function<void()>> actions;
-    actions.push_back(a);
-    actions.push_back([this]{this->exit();});
+    });
+    actions.push_back([this]{
+    	this->current_menu->deactivate();
+    	this->current_menu = this->confirm_exit_menu;
+    	this->current_menu->show();
+    });
 
-    vector<QString> model;
-    model.push_back("Press ENTER to start");
-    model.push_back("EXIT");
+    vector<QString> model = {"Start Game","EXIT"};
+    base_menu = new UiPageMenu(actions, model);
 
-    menu = new UiPageMenu(actions, model);
-    menu->addToPage(page_view);
+    vector<QString> popup_model = {"yes", "not"};
+    vector<function<void()>> popup_actions;
+    popup_actions.push_back([this]{this->exit();});
+    popup_actions.push_back([this]{
+    	this->current_menu->hide();
+    	this->current_menu = this->base_menu;
+    	this->current_menu->activate();
+    });
+    auto *popup_view = new UiPagePopupWidget_qt(QString("Are you sure you want to exit?"),
+    		new UiPageMenuWidget_qt(&popup_model));
 
-    logo = new QGraphicsPixmapItem(QPixmap(":/resources/monster_chase_logo.png"));
-    page_view->addItem(logo);
+    confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
+    confirm_exit_menu->hide();
+    confirm_exit_menu->addToPage(page_view);
+
+    current_menu = base_menu;
+    current_menu->addToPage(page_view);
 }
 
 
 MonsterChase::~MonsterChase()
 {
-	delete menu;
+	current_menu = nullptr;
+	delete confirm_exit_menu;
+	delete base_menu;
 }
 
 bool MonsterChase::handleKey(int key, bool released){
@@ -69,11 +85,21 @@ bool MonsterChase::handleKey(int key, bool released){
     case Qt::Key_Down:
     case Qt::Key_Enter:
     case Qt::Key_Return:
-    	ret = menu->handleKey(key, released);
+    	ret = current_menu->handleKey(key, released);
     	break;
     case Qt::Key_Exit:
     case Qt::Key_Escape:
-        exit();
+    	if (released)
+    	{
+    		if(current_menu == confirm_exit_menu)
+    		{
+    			this->current_menu->hide();
+    			this->current_menu = this->base_menu;
+    			this->current_menu->activate();
+    		}
+    		else
+    			exit();
+    	}
         ret = true;
         break;
     default:

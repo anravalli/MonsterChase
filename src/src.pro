@@ -43,11 +43,12 @@ SOURCES += main.cpp\
     gameconfig.cpp \
     ui/uipagecontroller.cpp \
     ui/uipagemenu.cpp \
-    ui/uipagemenuitem.cpp \
+    ui/uipagemenuwidgets_qt.cpp \
     ui/uipageview_qt.cpp \
     ui/uiviewitems_qt.cpp
 
 HEADERS  += monsterchase.h \
+	monsterchase_mainpage.h \
     algorithms.h \
     editor/editor.h \
     game_entity.h \
@@ -65,7 +66,7 @@ HEADERS  += monsterchase.h \
     gameconfig.h \
     ui/uipagecontroller.h \
     ui/uipagemenu.h \
-    ui/uipagemenuitem.h \
+    ui/uipagemenuwidgets_qt.h \
     ui/uipageview_qt.h \
     ui/uiviewitems_qt.h
 

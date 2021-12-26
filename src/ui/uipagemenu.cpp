@@ -21,21 +21,24 @@
 
 #include "uipagemenu.h"
 #include "ui/uipageview_qt.h"
-#include "gameconfig.h"
 
-UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model):
-		actions(actions), model(model)
+
+UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model, int start_index):
+        actions(actions)
 {
-	last_item_index = this->actions.size();
+	last_item_index = this->actions.size()-1;
+	current_item_idx = start_index;
 
-	QFont font("Helvetica",14,QFont::Bold);
-	view.setFont(font);
-	view.setPen(QPen(QColor(Qt::darkRed)));
-	view.setBrush(QBrush(QColor(Qt::red)));
-	view.setText(this->model[0]);
-	view.setPos(GameConfig::playground_view_width/2-150,
-			GameConfig::playground_view_height/2+100);
-	view.show();
+	view = new UiPageMenuWidget_qt(&model);
+	view->show();
+}
+
+UiPageMenu::UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenu *view, int start_index):
+        actions(actions), view(view)
+{
+	last_item_index = this->actions.size()-1;
+	current_item_idx = start_index;
+	this->view->show();
 }
 
 bool UiPageMenu::handleKey(int key, bool released){
@@ -67,19 +70,24 @@ bool UiPageMenu::handleKey(int key, bool released){
 void UiPageMenu::select_next_item(bool released)
 {
 //    qDebug("select_next_item - released: %d", released);
-    if(current_item_idx < last_item_index)
+    if(!released) return;
+	if(current_item_idx < last_item_index)
         current_item_idx++;
+    view->selectionChanged(current_item_idx);
     if(released)
         key_outo_repeat.stop();
 }
 
 void UiPageMenu::select_previous_item(bool released)
 {
-//    qDebug("select_previous_item - released: %d", released);
-    if(current_item_idx > 0)
-        current_item_idx--;
-    if(released)
-        key_outo_repeat.stop();
+	//    qDebug("select_previous_item - released: %d", released);
+	if(!released) return;
+	if(current_item_idx > 0)
+		current_item_idx--;
+	view->selectionChanged(current_item_idx);
+
+	if(released)
+		key_outo_repeat.stop();
 }
 
 void UiPageMenu::show_selcted_item(bool released)
@@ -93,6 +101,9 @@ void UiPageMenu::show_selcted_item(bool released)
 
 void UiPageMenu::addToPage(UiPageViewQt* page)
 {
-    page->addItem(&(this->view));
+   view->addToPage(page);
 }
+
+
+
 
