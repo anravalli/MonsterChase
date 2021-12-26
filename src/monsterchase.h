@@ -48,12 +48,11 @@ protected:
     void show_selcted_item(bool released);
 
 private:
-    UiPageMenu *menu;
+    UiPageMenu *current_menu;
+    UiPageMenu *base_menu;
+    UiPageMenu *confirm_exit_menu;
     QGraphicsPixmapItem *logo;
-//    vector<function<void()>> actions;
-//    int current_item_idx = 0;
-//    int last_item_index = 0;
-//    QTimer key_outo_repeat;
+
 };
 
 

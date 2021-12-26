@@ -88,5 +88,5 @@ void UiPageViewQt::addItem(QGraphicsItem *item)
 
 void UiPageViewQt::setUpView()
 {
-    view->setBackgroundBrush(QColor(Qt::yellow));
+    view->setBackgroundBrush(QColor(Qt::darkGray));
 };

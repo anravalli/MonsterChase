@@ -45,6 +45,7 @@ public:
 
 protected:
     UiBaseQGraphicsView *view;
+    QGraphicsScene *scene;
     /*
      * setUpView():
      *  this method should be redefined by sub-classes in order to custoimize
@@ -53,7 +54,6 @@ protected:
     virtual void setUpView();
 
 private:
-    QGraphicsScene *scene;
 
 public slots:
 

@@ -26,16 +26,11 @@
 #include <functional>
 #include <QTimer>
 #include <QObject>
-
 #include <QtWidgets>
 
-using namespace std;
+#include "uipagemenuwidgets_qt.h"
 
-//class UiMenuModel
-//{
-//public:
-//	vector<string> model;
-//};
+using namespace std;
 
 class UiPageViewQt;
 
@@ -43,9 +38,15 @@ class UiPageMenu: QObject
 {
     Q_OBJECT
 public:
-    UiPageMenu(vector<function<void()>> actions, vector<QString> model);
+    UiPageMenu(vector<function<void()>> actions, vector<QString> model, int start_index = 0);
+    UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenu *view, int start_index = 0);
     void addToPage(UiPageViewQt* page);
     bool handleKey(int key, bool released);
+	void setPos(double x, double y);
+	void show();
+	void hide();
+	void activate();
+	void deactivate();
 
 protected:
     void select_next_item(bool released);
@@ -54,13 +55,39 @@ protected:
 
 private:
     vector<function<void()>> actions;
-    vector<QString> model;
+//    vector<QString> model;
     int current_item_idx = 0;
     int last_item_index = 0;
     QTimer key_outo_repeat;
 
-    QGraphicsSimpleTextItem view;
+    UiPageAbstractMenu *view;
 
 };
+
+inline void UiPageMenu::setPos(double x, double y)
+{
+	view->setPos(x, y);
+}
+
+inline void UiPageMenu::show()
+{
+	view->selectionChanged(current_item_idx);
+	view->show();
+}
+
+inline void UiPageMenu::hide()
+{
+	view->hide();
+}
+
+inline void UiPageMenu::activate()
+{
+	view->activate();
+}
+
+inline void UiPageMenu::deactivate()
+{
+	view->deactivate();
+}
 
 #endif // UIPAGEMENU_H
