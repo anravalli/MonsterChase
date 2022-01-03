@@ -22,6 +22,8 @@
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
 #include "gamecontroller.h"
+#include "editor/editor.h"
+#include "level_editor/leveleditor.h"
 
 #include <QGraphicsPixmapItem>
 /*
@@ -34,28 +36,47 @@ MonsterChase::MonsterChase():
 {
     initPageView<MonsterChaseMainPage>();
     auto game_controller = new GameController(this); //game_controller will be leaked on exit
+
+    //This string array will be passed the menu widget to build the view, representing the model shared with the controller
+    vector<QString> model = {"Start Game","Options","High Scores","Editor","EXIT"};
+
+    //This array of function objects to the menu controller to implement the actions associated to each menu entry
     vector<function<void()>> actions;
+
+    //Start Game action: move to the match and profile selection page
     actions.push_back([this, game_controller]{
     	this->page_view->hide();
     	QApplication::instance()->removeEventFilter(this);
     	game_controller->show();
     });
+
+    //Option action: move the option page
     actions.push_back([this]{
-    	this->current_menu->deactivate();
-    	this->current_menu = this->confirm_exit_menu;
-    	this->current_menu->show();
+    		this->open_options_panel();
     });
 
-    vector<QString> model = {"Start Game","EXIT"};
+    //High Score action: move to high score page
+    actions.push_back([this]{
+    	this->open_high_score_page();
+    });
+
+    //Editor action: open up the level editor
+    actions.push_back([this]{
+    	this->open_level_editor();
+    });
+
+    //Exit action: open the exit confirmation popup
+    actions.push_back([this]{
+    	this->open_exit_popup();
+    });
+
     base_menu = new UiPageMenu(actions, model);
 
     vector<QString> popup_model = {"yes", "not"};
     vector<function<void()>> popup_actions;
     popup_actions.push_back([this]{this->exit();});
     popup_actions.push_back([this]{
-    	this->current_menu->hide();
-    	this->current_menu = this->base_menu;
-    	this->current_menu->activate();
+    	this->close_exit_popup();
     });
     auto *popup_view = new UiPagePopupWidget_qt(QString("Are you sure you want to exit?"),
     		new UiPageMenuWidget_qt(&popup_model));
@@ -93,12 +114,11 @@ bool MonsterChase::handleKey(int key, bool released){
     	{
     		if(current_menu == confirm_exit_menu)
     		{
-    			this->current_menu->hide();
-    			this->current_menu = this->base_menu;
-    			this->current_menu->activate();
+    			close_exit_popup();
     		}
-    		else
-    			exit();
+    		else{
+    			open_exit_popup();
+    		}
     	}
         ret = true;
         break;
@@ -112,3 +132,44 @@ void MonsterChase::exit(){
     qDebug("MonsterChase::exit()");
     QApplication::instance()->exit();
 }
+
+void MonsterChase::close_exit_popup()
+{
+	this->current_menu->hide();
+	this->current_menu = this->base_menu;
+	this->current_menu->activate();
+}
+
+void MonsterChase::open_exit_popup()
+{
+	this->current_menu->deactivate();
+	this->current_menu = this->confirm_exit_menu;
+	this->current_menu->show();
+}
+
+void MonsterChase::open_level_editor()
+{
+	this->page_view->hide();
+	this->current_menu->deactivate();
+	level_editor = new editor(this->page_view, this->main_window);
+	connect(level_editor, SIGNAL(editor_closed()),this,SLOT(editor_closed()));
+	level_editor->show();
+}
+
+void MonsterChase::editor_closed()
+{
+	qDebug("editor_closed");
+	this->current_menu->activate();
+	UiPageController::show();
+	//delete level_editor;
+}
+
+void MonsterChase::open_options_panel()
+{
+}
+
+void MonsterChase::open_high_score_page()
+{
+}
+
+

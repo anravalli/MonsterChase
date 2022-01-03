@@ -22,15 +22,50 @@
 
 #include "editor.h"
 #include "ui_editor.h"
+#include "ui/uiviewitems_qt.h"
 
-editor::editor(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::editor)
+#include "../arena.h"
+#include "../gameconfig.h"
+
+editor::editor(UiPageViewQt *parent, QWidget *parent_widget) :
+	UiPageViewQt(parent),
+	ui(new Ui::editor),
+	ui_parent(parent_widget)
 {
-    ui->setupUi(this);
+	ui_parent->layout()->removeWidget(view);
+
+	ui->setupUi(&ui_host);
+	delete ui->map_view;
+	ui->map_view = nullptr;
+
+	ui_parent->layout()->addWidget(&ui_host);
+
+	ui->horizontalLayout->replaceWidget(ui->map_frame, view);
+
+	QString map = ":/resources/map.txt";
+	arena = new Arena(map, GameConfig::playground_width/MAP_WIDTH);
+	arena->addToPage(this);
+	arena->showAll();
+
+	connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(close_editor()));
 }
 
 editor::~editor()
 {
+	delete arena;
     delete ui;
 }
+
+void editor::close_editor()
+{
+	qDebug("close editor");
+	ui_parent->layout()->removeWidget(&ui_host);
+	ui_parent->layout()->addWidget(view);
+	emit(editor_closed());
+}
+
+void editor::setUpView()
+{
+    view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
+}
+

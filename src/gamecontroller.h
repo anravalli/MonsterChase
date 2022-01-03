@@ -51,7 +51,6 @@ private:
 
     bool is_paused; //temporary: this "state variable" has to be changed to a "real" state
 
-    void setUpView();
     void addPlayTime();
 
 signals:

@@ -31,6 +31,7 @@
 using namespace std;
 
 class QGraphicsPixmapItem;
+class editor;
 
 class MonsterChase : public UiPageController
 {
@@ -39,8 +40,15 @@ class MonsterChase : public UiPageController
 public:
     MonsterChase();
     ~MonsterChase() override ;
-    void exit() override;
+    virtual void exit() override;
     bool handleKey(int key, bool released) override;
+
+    void setMainWindow(QWidget *mainWindow) {
+         main_window = mainWindow;
+    }
+
+public slots:
+    virtual void editor_closed();
 
 protected:
     void select_next_item(bool released);
@@ -53,6 +61,16 @@ private:
     UiPageMenu *confirm_exit_menu;
     QGraphicsPixmapItem *logo;
 
+    editor *level_editor;
+
+    void open_exit_popup();
+    void close_exit_popup();
+
+    void open_level_editor();
+    void open_options_panel();
+    void open_high_score_page();
+
+    QWidget *main_window;
 };
 
 

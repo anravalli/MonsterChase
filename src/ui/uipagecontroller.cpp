@@ -18,9 +18,11 @@
  *	You should have received a copy of the GNU General Public License
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <QtWidgets>
+#include <QObject>
 #include "uipagecontroller.h"
 #include "uipageview_qt.h"
+
 
 UiPageController::UiPageController(UiPageController *parent):
     QObject((QObject *)parent), parent_page(parent)

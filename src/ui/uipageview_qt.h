@@ -22,11 +22,13 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtWidgets>
+#include <QObject>
 
 class UiBaseQGraphicsView;
+class QGraphicsScene;
+class QGraphicsItem;
 
-class UiPageViewQt: QObject
+class UiPageViewQt: public QObject
 {
     Q_OBJECT
 public:

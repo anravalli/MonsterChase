@@ -22,22 +22,38 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../ui/uipageview_qt.h"
+#include <QObject>
 #include <QWidget>
+
 
 namespace Ui {
 class editor;
 }
 
-class editor : public QWidget
-{
-    Q_OBJECT
+class Arena;
 
+class editor : public UiPageViewQt
+{
+	Q_OBJECT
 public:
-    explicit editor(QWidget *parent = nullptr);
+    explicit editor(UiPageViewQt *parent = nullptr, QWidget *parent_widget = nullptr);
     ~editor();
+
+public slots:
+    void close_editor();
+
+signals:
+	void editor_closed();
+
+protected:
+    virtual void setUpView() final override;
 
 private:
     Ui::editor *ui;
+    QWidget ui_host;
+    QWidget *ui_parent;
+    Arena *arena;
 };
 
 #endif // EDITOR_H

@@ -23,18 +23,13 @@
 */
 
 #include <vector>
-#include <QObject>
 #include "gameconfig.h"
 #include "ui/uipageview_qt.h"
 
 using namespace std;
 
-class UiPageMenuModel
-{
-public:
-    vector<QString> *items = nullptr;
-    int selected_item_index = 0;
-};
+class QGraphicsRectItem;
+class QGraphicsSimpleTextItem;
 
 #define MENU_ROW_OFFSET 35
 

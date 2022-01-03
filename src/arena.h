@@ -64,6 +64,7 @@ public:
     Arena(QString fname, double brick_width);
 
     void show() override;
+    void showAll();
     void hide() override;
     virtual void addToPage(UiPageViewQt* page) override;
     bool mapComplete();
@@ -80,7 +81,6 @@ private:
     char bin_map[MAP_HEIGHT][MAP_WIDTH];
     Brick* map[MAP_HEIGHT][MAP_WIDTH];
 
-    int brick_count = 0;
     bool completion_status = false;
     QTimer* timer = nullptr;
 
