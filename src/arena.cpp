@@ -124,10 +124,17 @@ void Arena::show(){
     timer->start(1);
 }
 
+void Arena::showAll(){
+	for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
+		Brick* b = map[0][brick_count];
+		if(b != nullptr) b->show();
+	}
+}
+
 void Arena::hide()
 {
     for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
-        Brick* b = map[0][brick_count-1];
+        Brick* b = map[0][brick_count];
         if(b != nullptr) b->hide();
     }
 
@@ -160,6 +167,7 @@ Brick* Arena::addBrick(std::pair<int,int> idx )
 
 
 void Arena::showNextBrick(){
+	static int brick_count = 0;
     if(brick_count<MAP_WIDTH*MAP_HEIGHT){
         brick_count++;
 
@@ -176,6 +184,7 @@ void Arena::showNextBrick(){
         emit build_complete();
         timer->stop();
        //TODO: check if a "disconnect" can be useful here
+        brick_count = 0;
     }
 }
 

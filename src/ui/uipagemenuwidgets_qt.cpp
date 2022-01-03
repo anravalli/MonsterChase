@@ -18,7 +18,7 @@
  *	You should have received a copy of the GNU General Public License
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <QtWidgets>
 #include "uipagemenuwidgets_qt.h"
 
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
