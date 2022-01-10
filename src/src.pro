@@ -28,12 +28,14 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050000    # disables all the APIs depr
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
-QMAKE_CXXFLAGS += -O0 -std=c++11
+QMAKE_CXXFLAGS += -O0 -std=c++11 -g
 
 SOURCES += main.cpp\
     algorithms.cpp \
 #    level_editor/*.cpp \
-    editor/editor.cpp \
+    editor/level_editor.cpp \
+    editor/editor_ui.cpp \
+    editor/level_models.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
     player.cpp \
@@ -56,7 +58,9 @@ SOURCES += main.cpp\
 HEADERS  += monsterchase.h \
 	monsterchase_mainpage.h \
     algorithms.h \
-    editor/editor.h \
+    editor/level_editor.h \
+    editor/editor_ui.h \
+    editor/level_models.h \
     game_entity.h \
     gamecontroller.h \
     player.h \

@@ -20,52 +20,42 @@
 */
 
 
-#include "editor.h"
+#include <editor/editor_ui.h>
 #include "ui_editor.h"
 #include "ui/uiviewitems_qt.h"
 
-#include "../arena.h"
-#include "../gameconfig.h"
-
-editor::editor(UiPageViewQt *parent, QWidget *parent_widget) :
+EditorUi::EditorUi(UiPageViewQt *parent) :
 	UiPageViewQt(parent),
-	ui(new Ui::editor),
-	ui_parent(parent_widget)
+	ui(new Ui::editor)
 {
-	ui_parent->layout()->removeWidget(view);
-
 	ui->setupUi(&ui_host);
-	delete ui->map_view;
-	ui->map_view = nullptr;
-
-	ui_parent->layout()->addWidget(&ui_host);
-
-	ui->horizontalLayout->replaceWidget(ui->map_frame, view);
-
-	QString map = ":/resources/map.txt";
-	arena = new Arena(map, GameConfig::playground_width/MAP_WIDTH);
-	arena->addToPage(this);
-	arena->showAll();
 
 	connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(close_editor()));
 }
 
-editor::~editor()
+EditorUi::~EditorUi()
 {
-	delete arena;
     delete ui;
 }
 
-void editor::close_editor()
+void EditorUi::close_editor()
 {
 	qDebug("close editor");
-	ui_parent->layout()->removeWidget(&ui_host);
-	ui_parent->layout()->addWidget(view);
+	ui_host.hide();
+	main_window->layout()->removeWidget(&ui_host);
+	main_window->layout()->addWidget(view);
+
+	hide();
 	emit(editor_closed());
 }
 
-void editor::setUpView()
+void EditorUi::setUpView()
 {
     view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
+    main_window->layout()->removeWidget(view);
+    //main_window->layout()->setMenuBar(new QMenuBar());
+    main_window->layout()->addWidget(&ui_host);
+    ui->horizontalLayout->replaceWidget(ui->map_frame, view);
+    //ui->horizontalLayout->setMenuBar(new QMenuBar());
 }
 

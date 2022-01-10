@@ -33,19 +33,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     MonsterChase game;
-    auto *main_window = new QWidget();
 
-    QLayout * layout = new QVBoxLayout();
-    UiPageViewQt *game_page = game.getPageView();
-    QGraphicsView * view = (QGraphicsView *)(game_page->getView());
-
-    layout->addWidget(view);
-    main_window->setLayout(layout);
-
-    game_page->hide();
-    main_window->show();
-
-    game.setMainWindow(main_window);
     game.show();
 
     return a.exec();
