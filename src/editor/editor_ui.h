@@ -31,14 +31,12 @@ namespace Ui {
 class editor;
 }
 
-class Arena;
-
-class editor : public UiPageViewQt
+class EditorUi : public UiPageViewQt
 {
 	Q_OBJECT
 public:
-    explicit editor(UiPageViewQt *parent = nullptr, QWidget *parent_widget = nullptr);
-    ~editor();
+    explicit EditorUi(UiPageViewQt *parent = nullptr);
+    ~EditorUi();
 
 public slots:
     void close_editor();
@@ -46,14 +44,13 @@ public slots:
 signals:
 	void editor_closed();
 
+
 protected:
     virtual void setUpView() final override;
 
 private:
     Ui::editor *ui;
     QWidget ui_host;
-    QWidget *ui_parent;
-    Arena *arena;
 };
 
 #endif // EDITOR_H

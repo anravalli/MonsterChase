@@ -19,11 +19,10 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "editor/level_editor.h"
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
 #include "gamecontroller.h"
-#include "editor/editor.h"
-#include "level_editor/leveleditor.h"
 
 #include <QGraphicsPixmapItem>
 /*
@@ -97,7 +96,8 @@ MonsterChase::~MonsterChase()
 	delete base_menu;
 }
 
-bool MonsterChase::handleKey(int key, bool released){
+bool MonsterChase::handleKey(int key, bool released)
+{
     bool ret = false;
     switch(key){
     case Qt::Key_Up:
@@ -128,7 +128,8 @@ bool MonsterChase::handleKey(int key, bool released){
     return ret;
 }
 
-void MonsterChase::exit(){
+void MonsterChase::exit()
+{
     qDebug("MonsterChase::exit()");
     QApplication::instance()->exit();
 }
@@ -151,17 +152,19 @@ void MonsterChase::open_level_editor()
 {
 	this->page_view->hide();
 	this->current_menu->deactivate();
-	level_editor = new editor(this->page_view, this->main_window);
-	connect(level_editor, SIGNAL(editor_closed()),this,SLOT(editor_closed()));
+	QApplication::instance()->removeEventFilter(this);
+
+	level_editor = new LevelEditor::LevelEditor(this);
 	level_editor->show();
+	connect(level_editor, SIGNAL(editor_finalized()),this,SLOT(editor_closed()));
 }
 
 void MonsterChase::editor_closed()
 {
-	qDebug("editor_closed");
+	qDebug("MonsterChase::editor_closed()");
 	this->current_menu->activate();
 	UiPageController::show();
-	//delete level_editor;
+	delete level_editor;
 }
 
 void MonsterChase::open_options_panel()

@@ -26,11 +26,14 @@ HEADERS += \
     ../src/ui/uipageview_qt.h \
     ../src/ui/uipagemenu.h \
     ../src/ui/uipagemenuwidgets_qt.h \
-    ../src/editor/editor.h
+    ../src/editor/level_editor.h \
+    ../src/editor/editor_ui.h
 
 SOURCES += \
         main.cpp \
-        ../src/editor/editor.cpp \
+        ../src/editor/level_editor.cpp \
+        ../src/editor/editor_ui.cpp \
+        ../src/editor/level_models.cpp \
         ../src/ui/uipagemenu.cpp \
         ../src/ui/uipagemenuwidgets_qt.cpp \
         ../src/ui/uiviewitems_qt.cpp \

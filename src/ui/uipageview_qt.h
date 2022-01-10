@@ -43,9 +43,9 @@ public:
 
     virtual ~UiPageViewQt();
 
-    UiBaseQGraphicsView *getView() const;
 
 protected:
+    QWidget *main_window;
     UiBaseQGraphicsView *view;
     QGraphicsScene *scene;
     /*
@@ -54,6 +54,11 @@ protected:
      *  the page appereance, for instance by setting the background color or texture.
     */
     virtual void setUpView();
+    /*
+     * make view details visible only to sub-classes
+     */
+    UiBaseQGraphicsView *getView() const;
+	QWidget *getMainWindow() const;
 
 private:
 

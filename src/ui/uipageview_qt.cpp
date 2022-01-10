@@ -34,15 +34,23 @@ UiPageViewQt::UiPageViewQt(UiPageViewQt *parent)
 
     if(parent == nullptr)
     {
-        view = new UiBaseQGraphicsView(scene);
-        view->setRenderHint(QPainter::Antialiasing);
-        view->setCacheMode(QGraphicsView::CacheBackground);
-        view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-        view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
+    	main_window = new QWidget();
+
+    	view = new UiBaseQGraphicsView(scene);
+    	view->setRenderHint(QPainter::Antialiasing);
+    	view->setCacheMode(QGraphicsView::CacheBackground);
+    	view->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    	view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Monster Chase"));
+
+    	auto *layout = new QVBoxLayout();
+    	layout->setSizeConstraint(QLayout::SetFixedSize);
+    	layout->addWidget(view);
+    	main_window->setLayout(layout);
     }
     else
     {
         view = parent->getView();
+        main_window = parent->getMainWindow();
     }
 }
 
@@ -55,6 +63,11 @@ UiPageViewQt::~UiPageViewQt()
 UiBaseQGraphicsView *UiPageViewQt::getView() const
 {
     return view;
+}
+
+QWidget *UiPageViewQt::getMainWindow() const
+{
+		return main_window;
 }
 
 double UiPageViewQt::width()
@@ -72,6 +85,7 @@ void UiPageViewQt::show()
     view->setScene(scene);
     setUpView();
     view->show();
+    main_window->show();
 }
 
 void UiPageViewQt::hide()
