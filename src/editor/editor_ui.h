@@ -22,9 +22,9 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../ui/uipageview_qt.h"
 #include <QObject>
 #include <QWidget>
+#include "../ui_framework/uipageview_qt.h"
 
 
 namespace Ui {

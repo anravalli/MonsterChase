@@ -19,11 +19,10 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ui_framework/uipageview_qt.h>
 #include "player.h"
 #include "playersm.h"
 #include "playerqtviews.h"
-#include "ui/uipageview_qt.h"
-
 #include "gameworld.h"
 #include "monster.h"
 #include "arena.h"

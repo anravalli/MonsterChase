@@ -8,8 +8,8 @@
 #ifndef SRC_MONSTERCHASE_MAINPAGE_H_
 #define SRC_MONSTERCHASE_MAINPAGE_H_
 
-#include "ui/uipageview_qt.h"
-#include "ui/uiviewitems_qt.h"
+#include <ui_framework/uipageview_qt.h>
+#include <ui_framework/uiviewitems_qt.h>
 class MonsterChaseMainPage: public UiPageViewQt
 {
 public:

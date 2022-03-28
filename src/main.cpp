@@ -21,7 +21,8 @@
 
 #include "monsterchase.h"
 #include <QApplication>
-#include "ui/uipageview_qt.h"
+
+#include <ui_framework/uipageview_qt.h>
 
 /*
  * Here we do just unix signal handling,

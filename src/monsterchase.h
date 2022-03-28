@@ -22,11 +22,11 @@
 #ifndef MONSTERCHASE_H
 #define MONSTERCHASE_H
 
-#include "ui/uipagecontroller.h"
-#include "ui/uipagemenu.h"
 #include <vector>
 #include <functional>
 #include <QTimer>
+#include <ui_framework/uipagecontroller.h>
+#include <ui_framework/uipagemenu.h>
 
 using namespace std;
 
@@ -35,6 +35,7 @@ class QGraphicsPixmapItem;
 namespace LevelEditor{
 class LevelEditor;
 }
+class OptionPageController;
 
 class MonsterChase : public UiPageController
 {
@@ -61,6 +62,7 @@ private:
     QGraphicsPixmapItem *logo;
 
     LevelEditor::LevelEditor *level_editor;
+    OptionPageController *options_panel;
 
     void open_exit_popup();
     void close_exit_popup();

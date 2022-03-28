@@ -20,8 +20,8 @@
 */
 
 
+#include <ui_framework/uiviewitems_qt.h>
 #include "gameviews.h"
-#include "ui/uiviewitems_qt.h"
 
 GamePage::GamePage(UiPageViewQt *parent):
     UiPageViewQt(parent)

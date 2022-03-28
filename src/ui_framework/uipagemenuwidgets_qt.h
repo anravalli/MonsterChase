@@ -23,8 +23,9 @@
 */
 
 #include <vector>
-#include "gameconfig.h"
-#include "ui/uipageview_qt.h"
+
+#include <ui_framework/uipageview_qt.h>
+#include <gameconfig.h>
 
 using namespace std;
 

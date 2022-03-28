@@ -22,8 +22,8 @@
 
 #include "arena.h"
 #include <assert.h>
+#include <ui_framework/uipageview_qt.h>
 #include <QtWidgets>
-#include "ui/uipageview_qt.h"
 
 #define BRICK_NONE 32 //' '
 #define BRICK_STANDARD 49 //'1'

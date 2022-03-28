@@ -19,8 +19,8 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <ui_framework/uipageview_qt.h>
 #include "monsterviews.h"
-#include "ui/uipageview_qt.h"
 
 #define VIEW_DEBUG 0
 

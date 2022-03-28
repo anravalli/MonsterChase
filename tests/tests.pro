@@ -21,11 +21,11 @@ HEADERS += \
     ../src/monsterchase_mainpage.h \
     ../src/gamecontroller.h \
     ../src/gameworld.h \
-    ../src/ui/uiviewitems_qt.h \
-    ../src/ui/uipagecontroller.h \
-    ../src/ui/uipageview_qt.h \
-    ../src/ui/uipagemenu.h \
-    ../src/ui/uipagemenuwidgets_qt.h \
+    ../src/ui_framework/uiviewitems_qt.h \
+    ../src/ui_framework/uipagecontroller.h \
+    ../src/ui_framework/uipageview_qt.h \
+    ../src/ui_framework/uipagemenu.h \
+    ../src/ui_framework/uipagemenuwidgets_qt.h \
     ../src/editor/level_editor.h \
     ../src/editor/editor_ui.h
 
@@ -34,11 +34,11 @@ SOURCES += \
         ../src/editor/level_editor.cpp \
         ../src/editor/editor_ui.cpp \
         ../src/editor/level_models.cpp \
-        ../src/ui/uipagemenu.cpp \
-        ../src/ui/uipagemenuwidgets_qt.cpp \
-        ../src/ui/uiviewitems_qt.cpp \
-        ../src/ui/uipageview_qt.cpp \
-        ../src/ui/uipagecontroller.cpp \
+        ../src/ui_framework/uipagemenu.cpp \
+        ../src/ui_framework/uipagemenuwidgets_qt.cpp \
+        ../src/ui_framework/uiviewitems_qt.cpp \
+        ../src/ui_framework/uipageview_qt.cpp \
+        ../src/ui_framework/uipagecontroller.cpp \
         ../src/algorithms.cpp \
         ../src/player.cpp \
         ../src/playersm.cc \
