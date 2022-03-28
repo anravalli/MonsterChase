@@ -21,8 +21,8 @@
 
 
 #include <editor/editor_ui.h>
+#include <ui_framework/uiviewitems_qt.h>
 #include "ui_editor.h"
-#include "ui/uiviewitems_qt.h"
 
 EditorUi::EditorUi(UiPageViewQt *parent) :
 	UiPageViewQt(parent),

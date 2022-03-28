@@ -28,7 +28,7 @@
 #include <QObject>
 #include <QtWidgets>
 
-#include "uipagemenuwidgets_qt.h"
+#include <ui_framework/uipagemenuwidgets_qt.h>
 
 using namespace std;
 

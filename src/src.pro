@@ -30,6 +30,10 @@ DEFINES += QT_MESSAGELOGCONTEXT
 
 QMAKE_CXXFLAGS += -O0 -std=c++11 -g
 
+INCLUDEPATH += .
+#	options_panel \
+#	level_editor
+
 SOURCES += main.cpp\
     algorithms.cpp \
 #    level_editor/*.cpp \
@@ -49,11 +53,11 @@ SOURCES += main.cpp\
     gameworld.cpp \
     gameviews.cpp \
     gameconfig.cpp \
-    ui/uipagecontroller.cpp \
-    ui/uipagemenu.cpp \
-    ui/uipagemenuwidgets_qt.cpp \
-    ui/uipageview_qt.cpp \
-    ui/uiviewitems_qt.cpp
+    ui_framework/uipagecontroller.cpp \
+    ui_framework/uipagemenu.cpp \
+    ui_framework/uipagemenuwidgets_qt.cpp \
+    ui_framework/uipageview_qt.cpp \
+    ui_framework/uiviewitems_qt.cpp
 
 HEADERS  += monsterchase.h \
 	monsterchase_mainpage.h \
@@ -74,11 +78,11 @@ HEADERS  += monsterchase.h \
     gameworld.h \
     gameviews.h \
     gameconfig.h \
-    ui/uipagecontroller.h \
-    ui/uipagemenu.h \
-    ui/uipagemenuwidgets_qt.h \
-    ui/uipageview_qt.h \
-    ui/uiviewitems_qt.h
+    ui_framework/uipagecontroller.h \
+    ui_framework/uipagemenu.h \
+    ui_framework/uipagemenuwidgets_qt.h \
+    ui_framework/uipageview_qt.h \
+    ui_framework/uiviewitems_qt.h
 
 RESOURCES += \
     ../monsterchase.qrc 

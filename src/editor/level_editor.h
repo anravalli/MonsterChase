@@ -8,7 +8,7 @@
 #ifndef SRC_EDITOR_LEVEL_EDITOR_H_
 #define SRC_EDITOR_LEVEL_EDITOR_H_
 
-#include "ui/uipagecontroller.h"
+#include <ui_framework/uipagecontroller.h>
 #include "level_models.h"
 
 class EditorUi;

@@ -23,7 +23,7 @@
 */
 
 
-#include "ui/uipagecontroller.h"
+#include <ui_framework/uipagecontroller.h>
 
 class UiPageViewQt;
 class QTimer;

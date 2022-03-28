@@ -22,7 +22,8 @@
 */
 
 #include <QtWidgets>
-#include "ui/uipageview_qt.h"
+
+#include <ui_framework/uipageview_qt.h>
 
 class GamePage: public UiPageViewQt
 {
