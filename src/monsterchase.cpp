@@ -23,6 +23,7 @@
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
 #include "gamecontroller.h"
+#include "options_panel/optionpage_controller.h"
 
 #include <QGraphicsPixmapItem>
 /*
@@ -35,6 +36,8 @@ MonsterChase::MonsterChase():
 {
     initPageView<MonsterChaseMainPage>();
     auto game_controller = new GameController(this); //game_controller will be leaked on exit
+
+    options_panel = new OptionPageController(this);
 
     //This string array will be passed the menu widget to build the view, representing the model shared with the controller
     vector<QString> model = {"Start Game","Options","High Scores","Editor","EXIT"};
@@ -169,6 +172,9 @@ void MonsterChase::editor_closed()
 
 void MonsterChase::open_options_panel()
 {
+	this->page_view->hide();
+	QApplication::instance()->removeEventFilter(this);
+	options_panel->show();
 }
 
 void MonsterChase::open_high_score_page()
