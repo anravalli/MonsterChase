@@ -32,7 +32,13 @@ using namespace std;
 class QGraphicsRectItem;
 class QGraphicsSimpleTextItem;
 
-#define MENU_ROW_OFFSET 35
+//#define MENU_ROW_OFFSET 35
+
+enum MenuAlignement {
+	align_left,
+	align_center,
+	align_right
+};
 
 class UiPageAbstractMenu
 {
@@ -45,6 +51,29 @@ public:
 	virtual void addToPage(UiPageViewQt* page) = 0;
 	virtual void selectionChanged(int index) = 0;
 	virtual void setPos(double x, double y) = 0;
+};
+
+class UiPageMenuItemSelectioBoxWidget_qt
+{
+public:
+	UiPageMenuItemSelectioBoxWidget_qt(QPointF initial_pos, double inner_w,
+			double inner_h);
+	void show();
+	void hide();
+	void resetToPos(double new_x, double new_y);
+	void selectItemAt(int index, double spacing = 1);
+	void addToPage(UiPageViewQt* page);
+
+private:
+	QGraphicsRectItem *selection_box;
+	double x;
+	double y;
+	double inner_width;
+	double inner_height;
+
+	double menu_item_height = 0;
+	int selection_box_border_width = 15;
+	int selection_box_border_heigth = 5;
 };
 
 class UiPageMenuWidget_qt: public UiPageAbstractMenu
@@ -63,9 +92,11 @@ public:
 	virtual void setPos(double x, double y) override final;
 
 private:
-    double selection_box_base_x = 0;
-    double selection_box_base_y = 0;
-    QGraphicsRectItem *selection_box;
+	MenuAlignement alignement = align_left;
+
+    UiPageMenuItemSelectioBoxWidget_qt *selection_box;
+    double item_vertical_spacing_factor = 1.5;
+    double menu_item_height = 0;
     double menu_item_base_x;
     double menu_item_base_y;
     vector<QGraphicsSimpleTextItem *> menu_items;
@@ -91,10 +122,10 @@ public:
 	virtual void setPos(double x, double y) override final;
 
 private:
+    double item_vertical_spacing_factor = 1.5;
 	QGraphicsSimpleTextItem *info;
 	QGraphicsRectItem *drop;
 	UiPageMenuWidget_qt *menu;
 };
-
 
 #endif // UIPAGEMENUWIDGETS_QT_H
