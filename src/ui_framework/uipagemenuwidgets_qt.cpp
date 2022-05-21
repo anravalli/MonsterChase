@@ -21,12 +21,18 @@
 #include <QtWidgets>
 #include "uipagemenuwidgets_qt.h"
 
+static float h_spacing_factor = 1.5;
+static float menu_item_height = 0;
+static int selection_box_border_width = 15;
+static int selection_box_border_heigth = 5;
+
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 //	:model(model)
 {
 	QFont font("Helvetica",14,QFont::Bold);
 
 	int offset = 0;
+	qreal max_witdh = 0;
 	menu_item_base_x = GameConfig::playground_view_width/2-150;
 	menu_item_base_y = GameConfig::playground_view_height/2+100;
 	for(auto model_item: *model)
@@ -39,18 +45,24 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 		item->setPos(menu_item_base_x, menu_item_base_y+offset);
 		menu_items.push_back(item);
 
-		offset += MENU_ROW_OFFSET;
+		qreal item_witdh = item->boundingRect().width();
+		menu_item_height = item->boundingRect().height();
+		//find the items max width; it will be used to properly dimension selection_box
+		max_witdh = max_witdh > item_witdh ? max_witdh : item_witdh;
+
+		offset += menu_item_height*h_spacing_factor;
 	}
-	double selection_box_x = menu_items[0]->pos().x()-15;
-	double selection_box_y = menu_items[0]->pos().y()-5;
+	double selection_box_x = menu_items[0]->pos().x()-selection_box_border_width;
+	double selection_box_y = menu_items[0]->pos().y()-selection_box_border_heigth;
 	qDebug("building selection_box at: %f,%f", selection_box_x,selection_box_y);
 	selection_box = new QGraphicsRectItem(
 			selection_box_x,
 			selection_box_y,
-			menu_items[0]->boundingRect().width()+30,
-			menu_items[0]->boundingRect().height()+10);
+			max_witdh+selection_box_border_width*2,
+			menu_item_height+selection_box_border_heigth*2);
 	qDebug("selection_box position: %f,%f", selection_box->x(),selection_box->y());
-	qDebug("selection_box rect position: %f,%f", selection_box->rect().topLeft().x(),selection_box->rect().topLeft().y());
+	qDebug("selection_box rect position: %f,%f", selection_box->rect().topLeft().x(),
+			selection_box->rect().topLeft().y());
 	selection_box->setBrush(QBrush(QColor(0xFF,0xD7,0x00,0x80)));
 	selection_box->setPen(QPen(Qt::PenStyle::NoPen));
 };
@@ -94,7 +106,7 @@ void UiPageMenuWidget_qt::addToPage(UiPageViewQt* page)
 
 void UiPageMenuWidget_qt::selectionChanged(int index)
 {
-	selection_box->setPos(selection_box_base_x, selection_box_base_y+MENU_ROW_OFFSET*index);
+	selection_box->setPos(selection_box_base_x, selection_box_base_y+menu_item_height*h_spacing_factor*index);
 	qDebug(" -- selection_box position: %f,%f", selection_box->x(),selection_box->y());
 	qDebug(" -- selection_box rect position: %f,%f", selection_box->rect().topLeft().x(),selection_box->rect().topLeft().y());
 }
@@ -102,8 +114,8 @@ void UiPageMenuWidget_qt::selectionChanged(int index)
 void UiPageMenuWidget_qt::setPos(double x, double y)
 {
 	int offset = 0;
-	selection_box_base_x = x-selection_box->rect().topLeft().x()-15;
-	selection_box_base_y = y-selection_box->rect().topLeft().y()-5;
+	selection_box_base_x = x-selection_box->rect().topLeft().x()-selection_box_border_width;
+	selection_box_base_y = y-selection_box->rect().topLeft().y()-selection_box_border_heigth;
 
 	qDebug(" ++ new pos: %f,%f", x, y);
 	qDebug(" ++ selection_box_base: %f,%f", selection_box_base_x, selection_box_base_y);
@@ -112,7 +124,7 @@ void UiPageMenuWidget_qt::setPos(double x, double y)
 	for(auto item: menu_items)
 	{
 		item->setPos(x,y+offset);
-		offset += MENU_ROW_OFFSET;
+		offset += menu_item_height*h_spacing_factor;
 	}
 }
 
@@ -132,15 +144,19 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 	this->info->setBrush(QBrush(QColor(Qt::red)));
 	double info_w = this->info->boundingRect().width();
 	//double info_h = this->info->boundingRect().height();
-	this->info->setPos(base_pos_x-info_w/2, base_pos_y-(info_w+30)/2+15);
+	this->info->setPos(base_pos_x-info_w/2,
+			base_pos_y-(info_w+selection_box_border_width*2)/2+selection_box_border_width);
 	this->info->hide();
 
 //	qDebug("base_pos: %f, %f", base_pos_x, base_pos_y);
 //	qDebug("info_w: %f; info_h %f", info_w, info_h);
 //	qDebug("drop pos: %f, %f", base_pos_x-((info_w+30)/2), base_pos_y-(info_w+30)/2);
-	this->drop = new QGraphicsRectItem(base_pos_x-((info_w+30)/2), base_pos_y-(info_w+30)/2,
-			info_w+30,
-			MENU_ROW_OFFSET*4);
+	this->drop = new QGraphicsRectItem(
+			base_pos_x-((info_w+selection_box_border_width*2)/2),
+			base_pos_y-(info_w+selection_box_border_width*2)/2,
+			info_w+selection_box_border_width*2,
+			menu_item_height*h_spacing_factor*4
+			);
 	this->drop->setBrush(QBrush(QColor(0xD7,0xD7,0xD7,0x80)));
 	this->drop->setPen(QPen(QBrush(QColor(0xFF,0xD7,0xD7,0xFF)), 2, Qt::PenStyle::SolidLine));
 	this->drop->hide();
