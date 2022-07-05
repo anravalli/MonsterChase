@@ -51,6 +51,7 @@ public:
 	virtual void addToPage(UiPageViewQt* page) = 0;
 	virtual void selectionChanged(int index) = 0;
 	virtual void setPos(double x, double y) = 0;
+	virtual void setAlignement(MenuAlignement a) = 0;
 };
 
 class UiPageMenuItemSelectioBoxWidget_qt
@@ -90,6 +91,7 @@ public:
     virtual void addToPage(UiPageViewQt* page) override final;
     virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
+	virtual void setAlignement(MenuAlignement a) override final;
 
 private:
 	MenuAlignement alignement = align_left;
@@ -99,8 +101,13 @@ private:
     double menu_item_height = 0;
     double menu_item_base_x;
     double menu_item_base_y;
+    double menu_width = 0;
+    double menu_height = 0;
     vector<QGraphicsSimpleTextItem *> menu_items;
     //vector<QString> *model;
+    void alignRight();
+    void alignLeft();
+    void alignCenter();
 };
 
 /*
@@ -120,6 +127,7 @@ public:
 	virtual void addToPage(UiPageViewQt* page) override final;
 	virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
+	virtual void setAlignement(MenuAlignement a) override final;
 
 private:
     double item_vertical_spacing_factor = 1.5;

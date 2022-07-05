@@ -27,7 +27,7 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 	QFont font("Helvetica",14,QFont::Bold);
 
 	int offset = 0;
-	qreal max_witdh = 0;
+	//qreal max_witdh = 0;
 	menu_item_base_x = GameConfig::playground_view_width/2-150;
 	menu_item_base_y = GameConfig::playground_view_height/2+100;
 	for(auto model_item: *model)
@@ -52,13 +52,15 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 		item->setPos(menu_item_base_x, menu_item_base_y+offset);
 		double item_witdh = item->boundingRect().width();
 		//find the items max width; it will be used to properly dimension selection_box
-		max_witdh = max_witdh > item_witdh ? max_witdh : item_witdh;
+		menu_width = menu_width > item_witdh ? menu_width : item_witdh;
 		offset += menu_item_height*item_vertical_spacing_factor;
 	}
-
+	menu_height = offset;
 	selection_box = new UiPageMenuItemSelectioBoxWidget_qt(menu_items[0]->pos(),
-			max_witdh, menu_item_height);
+			menu_width, menu_item_height);
 
+	//alignRight();
+	alignCenter();
 };
 
 UiPageMenuWidget_qt::~UiPageMenuWidget_qt()
@@ -112,6 +114,56 @@ void UiPageMenuWidget_qt::setPos(double x, double y)
 	{
 		item->setPos(x,y+offset);
 		offset += menu_item_height * item_vertical_spacing_factor;
+	}
+}
+
+void UiPageMenuWidget_qt::setAlignement(MenuAlignement a)
+{
+	alignement = a;
+	switch(alignement)
+	{
+	case align_left:
+		this->alignLeft();
+		break;
+	case align_center:
+		this->alignCenter();
+		break;
+	case align_right:
+		this->alignRight();
+		break;
+	default:
+		break;
+	}
+	return;
+}
+
+void UiPageMenuWidget_qt::alignRight()
+{
+
+	double dx = 0;
+	for(auto item: menu_items)
+	{
+		dx = menu_width - item->boundingRect().width();
+		item->moveBy(dx, 0);
+	}
+}
+void UiPageMenuWidget_qt::alignLeft()
+{
+
+	double dx = 0;
+	for(auto item: menu_items)
+	{
+		dx =item->boundingRect().width()-menu_width;
+		item->moveBy(dx, 0);
+	}
+}
+void UiPageMenuWidget_qt::alignCenter()
+{
+	double dx = 0;
+	for(auto item: menu_items)
+	{
+		dx = (menu_width - item->boundingRect().width())/2;
+		item->moveBy(dx, 0);
 	}
 }
 
@@ -209,6 +261,11 @@ void UiPagePopupWidget_qt::setPos(double x, double y)
 }
 
 
+void UiPagePopupWidget_qt::setAlignement(MenuAlignement a)
+{
+	menu->setAlignement(a);
+}
+
 UiPageMenuItemSelectioBoxWidget_qt::UiPageMenuItemSelectioBoxWidget_qt(
 		QPointF initial_pos, double inner_w, double inner_h) :
 		inner_width(inner_w), inner_height(inner_h)
@@ -252,3 +309,5 @@ void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
 {
 	page->addItem(selection_box);
 }
+
+

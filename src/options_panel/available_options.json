@@ -1,0 +1,20 @@
+{
+	"options": 
+	[
+		{
+			"name": "Screen Resolution",
+			"values": ["800x600","1024x768","1280x960"],
+			"default": "800x600"
+		},
+		{
+			"name": "Fullscreen",
+			"values": ["yes", "not"],
+			"default": "not"
+		},
+		{
+			"name": "Sound",
+			"values": ["on","off"],
+			"default": "on"
+		}
+	]
+}
