@@ -26,8 +26,8 @@ public:
 private:
 	vector<OptionItem> model;
 
-	UiPageAbstractMenu *active_menu;
-	UiPageAbstractMenu *options_menu;
+	UiPageMenu *active_menu;
+	UiPageMenu *options_menu;
 	UiPageMenu *confirm_exit_menu;
 	QGraphicsPixmapItem *logo;
 

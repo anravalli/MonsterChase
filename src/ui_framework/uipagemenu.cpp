@@ -33,7 +33,7 @@ UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model, 
 	view->show();
 }
 
-UiPageMenu::UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenu *view, int start_index):
+UiPageMenu::UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenuWidget *view, int start_index):
         actions(actions), view(view)
 {
 	last_item_index = this->actions.size()-1;

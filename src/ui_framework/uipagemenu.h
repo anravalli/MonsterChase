@@ -34,33 +34,51 @@ using namespace std;
 
 class UiPageViewQt;
 
+//class UiPageAbstractMenu
+//{
+//public:
+//	virtual void show() = 0;
+//	virtual void hide() = 0;
+//	virtual void activate() = 0;
+//	virtual void deactivate() = 0;
+//
+//	virtual void addToPage(UiPageViewQt* page) = 0;
+//	virtual void selectionChanged(int index) = 0;
+//	virtual void setPos(double x, double y) = 0;
+//	virtual void setAlignement(MenuAlignement a) = 0;
+//};
+
+
 class UiPageMenu: QObject
 {
     Q_OBJECT
 public:
+	UiPageMenu(){};
     UiPageMenu(vector<function<void()>> actions, vector<QString> model, int start_index = 0);
-    UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenu *view, int start_index = 0);
-    void addToPage(UiPageViewQt* page);
-    bool handleKey(int key, bool released);
-	void setPos(double x, double y);
-	void show();
-	void hide();
-	void activate();
-	void deactivate();
+    UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenuWidget *view, int start_index = 0);
+    virtual void addToPage(UiPageViewQt* page);
+    virtual bool handleKey(int key, bool released);
+    virtual void setPos(double x, double y);
+    virtual void show();
+    virtual void hide();
+    virtual void activate();
+    virtual void deactivate();
+
+    virtual ~UiPageMenu() {};
 
 protected:
     void select_next_item(bool released);
     void select_previous_item(bool released);
     void show_selcted_item(bool released);
 
-private:
+//private:
     vector<function<void()>> actions;
 //    vector<QString> model;
     int current_item_idx = 0;
     int last_item_index = 0;
     QTimer key_outo_repeat;
 
-    UiPageAbstractMenu *view;
+    UiPageAbstractMenuWidget *view = nullptr;
 
 };
 

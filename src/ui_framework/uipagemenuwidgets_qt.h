@@ -40,7 +40,7 @@ enum MenuAlignement {
 	align_right
 };
 
-class UiPageAbstractMenu
+class UiPageAbstractMenuWidget
 {
 public:
 	virtual void show() = 0;
@@ -77,7 +77,7 @@ private:
 	int selection_box_border_heigth = 5;
 };
 
-class UiPageMenuWidget_qt: public UiPageAbstractMenu
+class UiPageMenuWidget_qt: public UiPageAbstractMenuWidget
 {
 public:
 	UiPageMenuWidget_qt(vector<QString> *model);
@@ -113,7 +113,7 @@ private:
 /*
  * UiPagePopupWidget_qt decorate a UiPageMenuWidget_qt with a popup window
  */
-class UiPagePopupWidget_qt: public UiPageAbstractMenu
+class UiPagePopupWidget_qt: public UiPageAbstractMenuWidget
 {
 public:
 	UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *menu);

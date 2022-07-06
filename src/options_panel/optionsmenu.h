@@ -8,7 +8,7 @@
 #ifndef SRC_OPTIONS_PANEL_OPTIONSMENU_H_
 #define SRC_OPTIONS_PANEL_OPTIONSMENU_H_
 
-#include "ui_framework/uipagemenuwidgets_qt.h"
+#include "ui_framework/uipagemenu.h"
 #include <vector>
 #include <functional>
 
@@ -24,7 +24,7 @@ public:
 	  action(_action)
 	{}
 
-private:
+//private:
 	QString name;
 	vector<QString> values ;
 	int default_idx;
@@ -32,21 +32,21 @@ private:
 	function<void()> action;
 };
 
-class OptionsMenu: public UiPageAbstractMenu
+class OptionsMenu: public UiPageMenu
 {
 public:
 	OptionsMenu(vector<OptionItem> *model);
 	virtual ~OptionsMenu();
 
-	virtual void show() override final;
-	virtual void hide() override final;
-	virtual void activate() override final;
-	virtual void deactivate() override final;
-
-	virtual void addToPage(UiPageViewQt* page) override final;
-	virtual void selectionChanged(int index) override final;
-	virtual void setPos(double x, double y) override final;
-	virtual void setAlignement(MenuAlignement a) override final;
+//	virtual void show() override final;
+//	virtual void hide() override final;
+//	virtual void activate() override final;
+//	virtual void deactivate() override final;
+//
+//	virtual void addToPage(UiPageViewQt* page) override final;
+//	virtual void selectionChanged(int index) override final;
+//	virtual void setPos(double x, double y) override final;
+//	virtual void setAlignement(MenuAlignement a) override final;
 
 private:
 	vector<OptionItem> *model;
