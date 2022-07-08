@@ -24,19 +24,13 @@
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 //	:model(model)
 {
-	QFont font("Helvetica",14,QFont::Bold);
-
 	int offset = 0;
 	//qreal max_witdh = 0;
 	menu_item_base_x = GameConfig::playground_view_width/2-150;
 	menu_item_base_y = GameConfig::playground_view_height/2+100;
 	for(auto model_item: *model)
 	{
-		auto item = new QGraphicsSimpleTextItem();
-		item->setFont(font);
-		item->setPen(QPen(QColor(Qt::darkRed)));
-		item->setBrush(QBrush(QColor(Qt::red)));
-		item->setText(model_item);
+		auto item = new UiMenuItemWidget_qt(model_item);
 
 //		double item_witdh = item->boundingRect().width();
 //		double item_height = item->boundingRect().height();
@@ -45,12 +39,12 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 //		offset += item_height*item_vertical_spacing_factor;
 		menu_items.push_back(item);
 	}
-	menu_item_height = menu_items[0]->boundingRect().height();
+	menu_item_height = menu_items[0]->height();
 
 	for (auto item: menu_items)
 	{
 		item->setPos(menu_item_base_x, menu_item_base_y+offset);
-		double item_witdh = item->boundingRect().width();
+		double item_witdh = item->width();
 		//find the items max width; it will be used to properly dimension selection_box
 		menu_width = menu_width > item_witdh ? menu_width : item_witdh;
 		offset += menu_item_height*item_vertical_spacing_factor;
@@ -97,7 +91,7 @@ void UiPageMenuWidget_qt::addToPage(UiPageViewQt* page)
 {
 	selection_box->addToPage(page);
 	for(auto item: menu_items)
-		page->addItem(item);
+		item->addToPage(page);
 }
 
 void UiPageMenuWidget_qt::selectionChanged(int index)
@@ -143,7 +137,7 @@ void UiPageMenuWidget_qt::alignRight()
 	double dx = 0;
 	for(auto item: menu_items)
 	{
-		dx = menu_width - item->boundingRect().width();
+		dx = menu_width - item->width();
 		item->moveBy(dx, 0);
 	}
 }
@@ -153,7 +147,7 @@ void UiPageMenuWidget_qt::alignLeft()
 	double dx = 0;
 	for(auto item: menu_items)
 	{
-		dx =item->boundingRect().width()-menu_width;
+		dx =item->width()-menu_width;
 		item->moveBy(dx, 0);
 	}
 }
@@ -162,7 +156,7 @@ void UiPageMenuWidget_qt::alignCenter()
 	double dx = 0;
 	for(auto item: menu_items)
 	{
-		dx = (menu_width - item->boundingRect().width())/2;
+		dx = (menu_width - item->width())/2;
 		item->moveBy(dx, 0);
 	}
 }
@@ -175,6 +169,7 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 {
 	QFont font("Helvetica",14,QFont::Bold);
 	double border_width = 15;
+
 	double base_pos_x = GameConfig::playground_width/2;
 	double base_pos_y = GameConfig::playground_height/2;
 
@@ -310,4 +305,64 @@ void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
 	page->addItem(selection_box);
 }
 
+UiMenuItemWidget_qt::UiMenuItemWidget_qt(QString label)
+{
+	_label = new QGraphicsSimpleTextItem();
+	QFont font("Helvetica",14,QFont::Bold);
 
+	_label->setFont(font);
+	_label->setPen(QPen(QColor(Qt::darkRed)));
+	_label->setBrush(QBrush(QColor(Qt::red)));
+	_label->setText(label);
+
+	_width = _label->boundingRect().width();
+	_height = _label->boundingRect().height();
+}
+
+void UiMenuItemWidget_qt::setPos(double x, double y)
+{
+	this->_pos.setX(x);
+	this->_pos.setY(y);
+	this->_label->setPos(_pos);
+}
+
+double UiMenuItemWidget_qt::height()
+{
+	return this->_height;
+}
+
+double UiMenuItemWidget_qt::width()
+{
+	return this->_width;
+}
+
+QPointF UiMenuItemWidget_qt::pos()
+{
+	return this->_pos;
+}
+
+void UiMenuItemWidget_qt::moveBy(double x, double y)
+{
+	this->_pos.setX(_pos.x()+x);
+	this->_pos.setY(_pos.y()+y);
+	this->_label->moveBy(x, y);
+}
+
+void UiMenuItemWidget_qt::show()
+{
+	this->_label->show();
+}
+
+void UiMenuItemWidget_qt::hide()
+{
+	this->_label->hide();
+}
+
+void UiMenuItemWidget_qt::addToPage(UiPageViewQt *page)
+{
+	page->addItem(this->_label);
+}
+
+UiMenuItemWidget_qt::~UiMenuItemWidget_qt()
+{
+}

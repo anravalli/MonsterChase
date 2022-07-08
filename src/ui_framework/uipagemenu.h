@@ -76,7 +76,7 @@ protected:
 //    vector<QString> model;
     int current_item_idx = 0;
     int last_item_index = 0;
-    QTimer key_outo_repeat;
+    QTimer key_auto_repeat;
 
     UiPageAbstractMenuWidget *view = nullptr;
 

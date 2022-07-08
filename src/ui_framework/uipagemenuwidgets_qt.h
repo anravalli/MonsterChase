@@ -54,6 +54,44 @@ public:
 	virtual void setAlignement(MenuAlignement a) = 0;
 };
 
+class UiAbstractMenuItemWidget
+{
+public:
+	virtual void setPos(double x, double y) = 0;
+	virtual void moveBy(double x, double y) = 0;
+	virtual double height() = 0;
+	virtual double width() = 0;
+	virtual QPointF pos() = 0;
+
+	virtual void show() = 0;
+	virtual void hide() = 0;
+	virtual void addToPage(UiPageViewQt* page) = 0;
+};
+
+class UiMenuItemWidget_qt: UiAbstractMenuItemWidget
+{
+public:
+	UiMenuItemWidget_qt(QString label);
+
+	virtual void setPos(double x, double y) override final;
+	virtual void moveBy(double x, double y) override final;
+	virtual double height() override final;
+	virtual double width() override final;
+	virtual QPointF pos() override final;
+
+	virtual void show() override final;
+	virtual void hide() override final;
+	virtual void addToPage(UiPageViewQt* page) override final;
+
+	virtual ~UiMenuItemWidget_qt();
+
+private:
+	QGraphicsSimpleTextItem *_label;
+	QPointF _pos;
+	double _height;
+	double _width;
+};
+
 class UiPageMenuItemSelectioBoxWidget_qt
 {
 public:
@@ -103,7 +141,7 @@ private:
     double menu_item_base_y;
     double menu_width = 0;
     double menu_height = 0;
-    vector<QGraphicsSimpleTextItem *> menu_items;
+    vector<UiMenuItemWidget_qt *> menu_items;
     //vector<QString> *model;
     void alignRight();
     void alignLeft();

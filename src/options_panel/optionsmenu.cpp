@@ -15,7 +15,10 @@ OptionsMenu::OptionsMenu(vector<OptionItem> *model)
 	for (auto item: *model)
 	{
 		names.push_back(item.name);
+		actions.push_back(item.action);
 	}
+	last_item_index = this->actions.size()-1;
+	//current_item_idx = start_index;
 
 	view = new UiPageMenuWidget_qt(&names);
 

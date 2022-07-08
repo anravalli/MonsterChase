@@ -59,7 +59,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 
 	model.push_back(
 			OptionItem(
-					"exit",
+					"EXIT",
 					{},
 					-1,
 					-1,

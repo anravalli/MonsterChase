@@ -75,7 +75,7 @@ void UiPageMenu::select_next_item(bool released)
         current_item_idx++;
     view->selectionChanged(current_item_idx);
     if(released)
-        key_outo_repeat.stop();
+        key_auto_repeat.stop();
 }
 
 void UiPageMenu::select_previous_item(bool released)
@@ -87,7 +87,7 @@ void UiPageMenu::select_previous_item(bool released)
 	view->selectionChanged(current_item_idx);
 
 	if(released)
-		key_outo_repeat.stop();
+		key_auto_repeat.stop();
 }
 
 void UiPageMenu::show_selcted_item(bool released)
