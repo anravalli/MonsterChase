@@ -32,6 +32,7 @@ public:
 	function<void()> action;
 };
 
+//controller part for the menu
 class OptionsMenu: public UiPageMenu
 {
 public:

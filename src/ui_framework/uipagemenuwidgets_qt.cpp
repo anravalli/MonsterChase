@@ -21,41 +21,56 @@
 #include <QtWidgets>
 #include "uipagemenuwidgets_qt.h"
 
-UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
-//	:model(model)
+UiPageAbstractMenuWidget::~UiPageAbstractMenuWidget() {};
+UiAbstractMenuItemWidget::~UiAbstractMenuItemWidget() {};
+
+double UiAbstractMenuItemWidget::height()
 {
-	int offset = 0;
-	//qreal max_witdh = 0;
+	return this->_height;
+}
+
+double UiAbstractMenuItemWidget::width()
+{
+	return this->_width;
+}
+
+QPointF UiAbstractMenuItemWidget::pos()
+{
+	return this->_pos;
+}
+
+UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
+{
+
 	menu_item_base_x = GameConfig::playground_view_width/2-150;
 	menu_item_base_y = GameConfig::playground_view_height/2+100;
+
 	for(auto model_item: *model)
 	{
 		auto item = new UiMenuItemWidget_qt(model_item);
-
-//		double item_witdh = item->boundingRect().width();
-//		double item_height = item->boundingRect().height();
-//		//find the items max width; it will be used to properly dimension selection_box
-//		max_witdh = max_witdh > item_witdh ? max_witdh : item_witdh;
-//		offset += item_height*item_vertical_spacing_factor;
-		menu_items.push_back(item);
+		append_item(item);
 	}
-	menu_item_height = menu_items[0]->height();
 
-	for (auto item: menu_items)
-	{
-		item->setPos(menu_item_base_x, menu_item_base_y+offset);
-		double item_witdh = item->width();
-		//find the items max width; it will be used to properly dimension selection_box
-		menu_width = menu_width > item_witdh ? menu_width : item_witdh;
-		offset += menu_item_height*item_vertical_spacing_factor;
-	}
-	menu_height = offset;
 	selection_box = new UiPageMenuItemSelectioBoxWidget_qt(menu_items[0]->pos(),
-			menu_width, menu_item_height);
+			menu_width, menu_items[0]->height());
 
 	//alignRight();
 	alignCenter();
 };
+
+void UiPageMenuWidget_qt::append_item(UiAbstractMenuItemWidget *item)
+{
+	menu_items.push_back(item);
+	int offset = (menu_items.size()-1) * item->height()*item_vertical_spacing_factor;
+
+	double item_witdh = item->width();
+	menu_width = menu_width > item_witdh ? menu_width : item_witdh;
+
+	item->setPos(menu_item_base_x, menu_item_base_y+offset);
+
+	menu_height += offset;
+}
+
 
 UiPageMenuWidget_qt::~UiPageMenuWidget_qt()
 {
@@ -107,7 +122,7 @@ void UiPageMenuWidget_qt::setPos(double x, double y)
 	for(auto item: menu_items)
 	{
 		item->setPos(x,y+offset);
-		offset += menu_item_height * item_vertical_spacing_factor;
+		offset += item->height() * item_vertical_spacing_factor;
 	}
 }
 
@@ -162,7 +177,7 @@ void UiPageMenuWidget_qt::alignCenter()
 }
 
 /*
- * UiPagePopupWidget_qt mthods
+ * UiPagePopupWidget_qt methods
  */
 UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *menu):
 		menu(menu)
@@ -326,21 +341,6 @@ void UiMenuItemWidget_qt::setPos(double x, double y)
 	this->_label->setPos(_pos);
 }
 
-double UiMenuItemWidget_qt::height()
-{
-	return this->_height;
-}
-
-double UiMenuItemWidget_qt::width()
-{
-	return this->_width;
-}
-
-QPointF UiMenuItemWidget_qt::pos()
-{
-	return this->_pos;
-}
-
 void UiMenuItemWidget_qt::moveBy(double x, double y)
 {
 	this->_pos.setX(_pos.x()+x);
@@ -365,4 +365,50 @@ void UiMenuItemWidget_qt::addToPage(UiPageViewQt *page)
 
 UiMenuItemWidget_qt::~UiMenuItemWidget_qt()
 {
+}
+
+UiMenuItemMultiValWidget_qt::UiMenuItemMultiValWidget_qt(vector<QString> values):
+		UiMenuItemWidget_qt(values[0]), _values(values)
+{
+}
+
+UiMenuItemMultiValWidget_qt::~UiMenuItemMultiValWidget_qt()
+{
+}
+
+void UiMenuItemMultiValWidget_qt::next()
+{
+	unsigned int idx = current_idx;
+	unsigned int max = _values.size()-1;
+	if (++idx > max) idx = max;
+
+	set_current(idx);
+}
+
+void UiMenuItemMultiValWidget_qt::previous()
+{
+	//unsigned int idx = current_idx;
+	//if (--idx < 0) idx = 0;
+
+	set_current(--current_idx);
+}
+
+int UiMenuItemMultiValWidget_qt::get_current()
+{
+	return current_idx;
+}
+
+void UiMenuItemMultiValWidget_qt::set_current(unsigned int idx)
+{
+	if(idx>=_values.size()) return;
+
+	current_idx = idx;
+
+	QString pre_label("< ");
+	QString post_label(" >");
+	if (idx == 0)
+		pre_label = "  ";
+	if (idx == _values.size()-1)
+		post_label = "  ";
+	_label->setText(pre_label + _values[current_idx] + post_label);
 }
