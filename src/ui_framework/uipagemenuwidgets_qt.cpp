@@ -116,6 +116,7 @@ void UiPageMenuWidget_qt::selectionChanged(int index)
 
 void UiPageMenuWidget_qt::setPos(double x, double y)
 {
+	qDebug("UiPageMenuWidget_qt::setPos (x,y): %.02f, %.02f", x,y);
 	int offset = 0;
 
 	selection_box->resetToPos(x,y);
@@ -370,6 +371,18 @@ UiMenuItemWidget_qt::~UiMenuItemWidget_qt()
 UiMenuItemMultiValWidget_qt::UiMenuItemMultiValWidget_qt(vector<QString> values):
 		UiMenuItemWidget_qt(values[0]), _values(values)
 {
+	int max_lenght = 0;
+	int idx_max = 0;
+	for (unsigned int i = 0; i < _values.size(); i++)
+	{
+		if (_values[i].size() > max_lenght)
+		{
+			max_lenght = _values[i].size();
+			idx_max = i;
+		}
+	}
+	set_current(idx_max);
+	this->_width = _label->boundingRect().width();
 }
 
 UiMenuItemMultiValWidget_qt::~UiMenuItemMultiValWidget_qt()
