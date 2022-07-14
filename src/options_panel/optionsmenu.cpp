@@ -15,7 +15,7 @@ public:
 	{
 		qDebug("item name: %s", name.toStdString().c_str());
 		this->name = new UiMenuItemWidget_qt(name);
-		qDebug("item values - size: %d; at [0]: %s", values.size(), values[0].toStdString().c_str());
+		qDebug("item values - size: %ld; at [0]: %s", values.size(), values[0].toStdString().c_str());
 		this->values = new UiMenuItemMultiValWidget_qt(values);
 		this->_height = this->name->height();
 		this->_width = this->name->width() + item_spacing + this->values->width();
@@ -55,10 +55,16 @@ public:
 		values->addToPage(page);
 	}
 
+	virtual QPointF center_anchor()  override final
+	{
+		double anchor_x = this->_pos.x()+this->name->width() + item_spacing/2;
+		return QPointF(anchor_x, this->_pos.y());
+	}
+
 private:
 	UiMenuItemWidget_qt *name;
 	UiMenuItemMultiValWidget_qt *values;
-	double item_spacing = 20; //ixels between option name and value field
+	double item_spacing = 20; //pixels between option name and value field
 };
 
 class OptionMenuWidget_qt: public UiPageMenuWidget_qt
@@ -83,13 +89,24 @@ public:
 
 		selection_box = new UiPageMenuItemSelectioBoxWidget_qt(menu_items[0]->pos(),
 				menu_width, menu_items[0]->height());
-		qDebug("GameConfig::playground_view_width/2: %.02f",GameConfig::playground_width/2);
-		qDebug("this->menu_width/2: %.02f",this->menu_width/2);
-		qDebug("menu position (x,y): %.02f, %.02f", GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
+		qDebug("OptionMenuWidget_qt - GameConfig::playground_view_width/2: %.02f",GameConfig::playground_width/2);
+		qDebug("OptionMenuWidget_qt - this->menu_width/2: %.02f",this->menu_width/2);
+		qDebug("OptionMenuWidget_qt- menu position (x,y): %.02f, %.02f", GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
 		setPos(GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
 		//alignRight();
 		alignCenter();
 	}
+
+//	void alignCenter()
+//	{
+//		double dx = 0;
+//		for(auto item: menu_items)
+//		{
+//			//get center
+//			dx = (menu_width - item->width())/2;
+//			item->moveBy(dx, 0);
+//		}
+//	}
 
 };
 

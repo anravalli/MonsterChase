@@ -39,11 +39,17 @@ QPointF UiAbstractMenuItemWidget::pos()
 	return this->_pos;
 }
 
+QPointF UiAbstractMenuItemWidget::center_anchor()
+{
+	double anchor_x = this->_pos.x()+this->_width/2;
+	return QPointF(anchor_x, this->_pos.y());
+}
+
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 {
 
-	menu_item_base_x = GameConfig::playground_view_width/2-150;
-	menu_item_base_y = GameConfig::playground_view_height/2+100;
+	menu_item_base_x = GameConfig::playground_width/2; //HINT:
+	menu_item_base_y = GameConfig::playground_width/2+100;
 
 	for(auto model_item: *model)
 	{
@@ -53,13 +59,15 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 
 	selection_box = new UiPageMenuItemSelectioBoxWidget_qt(menu_items[0]->pos(),
 			menu_width, menu_items[0]->height());
-
-	//alignRight();
+	qDebug("UiPageMenuWidget_qt - menu position (x,y): %.02f, %.02f",
+			GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
+	setPos(GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
 	alignCenter();
 };
 
 void UiPageMenuWidget_qt::append_item(UiAbstractMenuItemWidget *item)
 {
+	qDebug("UiPageMenuWidget_qt::append_item");
 	menu_items.push_back(item);
 	int offset = (menu_items.size()-1) * item->height()*item_vertical_spacing_factor;
 
@@ -172,7 +180,7 @@ void UiPageMenuWidget_qt::alignCenter()
 	double dx = 0;
 	for(auto item: menu_items)
 	{
-		dx = (menu_width - item->width())/2;
+		dx = (menu_item_base_x + menu_width/2 - item->center_anchor().x());
 		item->moveBy(dx, 0);
 	}
 }
@@ -337,8 +345,10 @@ UiMenuItemWidget_qt::UiMenuItemWidget_qt(QString label)
 
 void UiMenuItemWidget_qt::setPos(double x, double y)
 {
+	qDebug("UiMenuItemWidget_qt - OLD pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
 	this->_pos.setX(x);
 	this->_pos.setY(y);
+	qDebug("UiMenuItemWidget_qt - NEW pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
 	this->_label->setPos(_pos);
 }
 

@@ -67,6 +67,7 @@ public:
 	virtual double height();
 	virtual double width();
 	virtual QPointF pos();
+	virtual QPointF center_anchor();
 
 	virtual void show() = 0;
 	virtual void hide() = 0;
