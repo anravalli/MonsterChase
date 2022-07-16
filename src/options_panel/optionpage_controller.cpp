@@ -68,7 +68,9 @@ OptionPageController::OptionPageController(UiPageController *parent):
 	);
 
 	options_menu = new OptionsMenu(&model);
-	//options_menu->setAlignement(align_right);
+	options_menu->setPos(GameConfig::playground_width/2,
+	    		GameConfig::playground_width/2+100);
+	options_menu->setAlignement(align_center);
 
 	vector<QString> popup_model = {"apply", "discard"};
 	vector<function<void()>> popup_actions;

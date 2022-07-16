@@ -63,6 +63,7 @@ public:
     virtual void hide();
     virtual void activate();
     virtual void deactivate();
+    void setAlignement(MenuAlignement a);
 
     virtual ~UiPageMenu() {};
 
@@ -84,7 +85,7 @@ protected:
 
 inline void UiPageMenu::setPos(double x, double y)
 {
-	view->setPos(x, y);
+	view->setPos(x-view->width()/2, y);
 }
 
 inline void UiPageMenu::show()
@@ -107,5 +108,10 @@ inline void UiPageMenu::deactivate()
 {
 	view->deactivate();
 }
+
+inline void UiPageMenu::setAlignement(MenuAlignement a)
+{
+	view->setAlignement(a);
+};
 
 #endif // UIPAGEMENU_H

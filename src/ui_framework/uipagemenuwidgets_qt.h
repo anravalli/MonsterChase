@@ -55,6 +55,9 @@ public:
 	virtual void selectionChanged(int index) = 0;
 	virtual void setPos(double x, double y) = 0;
 	virtual void setAlignement(MenuAlignement a) = 0;
+	virtual double height() = 0;
+	virtual double width() = 0;
+	virtual QPointF pos() = 0;
 };
 
 class UiAbstractMenuItemWidget
@@ -85,9 +88,6 @@ public:
 
 	virtual void setPos(double x, double y) override final;
 	virtual void moveBy(double x, double y) override final;
-//	virtual double height() override final;
-//	virtual double width() override final;
-//	virtual QPointF pos() override final;
 
 	virtual void show() override final;
 	virtual void hide() override final;
@@ -103,16 +103,6 @@ class UiMenuItemMultiValWidget_qt: public UiMenuItemWidget_qt
 {
 public:
 	UiMenuItemMultiValWidget_qt(vector<QString> values);
-
-//	virtual void setPos(double x, double y) override final;
-//	virtual void moveBy(double x, double y) override final;
-//	virtual double height() override final;
-//	virtual double width() override final;
-//	virtual QPointF pos() override final;
-//
-//	virtual void show() override final;
-//	virtual void hide() override final;
-//	virtual void addToPage(UiPageViewQt* page) override final;
 
 	virtual ~UiMenuItemMultiValWidget_qt();
 
@@ -168,6 +158,11 @@ public:
     virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
 	virtual void setAlignement(MenuAlignement a) override final;
+
+	virtual double height() override final;
+	virtual double width() override final;
+	virtual QPointF pos() override final;
+	void moveBy(double dx, double dy);
 	void append_item(UiAbstractMenuItemWidget *item);
 
 protected:
@@ -175,15 +170,15 @@ protected:
 
     UiPageMenuItemSelectioBoxWidget_qt *selection_box;
     double item_vertical_spacing_factor = 1.5;
-    double menu_item_base_x;
-    double menu_item_base_y;
+    double menu_item_base_x = 0;
+    double menu_item_base_y = 0;
     double menu_width = 0;
     double menu_height = 0;
     vector<UiAbstractMenuItemWidget *> menu_items;
     //vector<QString> *model;
-    void alignRight();
-    void alignLeft();
-    void alignCenter();
+    virtual void alignRight();
+    virtual void alignLeft();
+    virtual void alignCenter();
 };
 
 /*
@@ -204,6 +199,10 @@ public:
 	virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
 	virtual void setAlignement(MenuAlignement a) override final;
+
+	virtual double height() override final;
+	virtual double width() override final;
+	virtual QPointF pos() override final;
 
 private:
     double item_vertical_spacing_factor = 1.5;

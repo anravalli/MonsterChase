@@ -73,6 +73,9 @@ MonsterChase::MonsterChase():
     });
     qDebug("------- BASE MENU -------");
     base_menu = new UiPageMenu(actions, model);
+    base_menu->setPos(GameConfig::playground_width/2,
+    		GameConfig::playground_width/2+100);
+    base_menu->setAlignement(MenuAlignement::align_center);
 
     vector<QString> popup_model = {"yes", "not"};
     vector<function<void()>> popup_actions;
@@ -85,6 +88,7 @@ MonsterChase::MonsterChase():
     		new UiPageMenuWidget_qt(&popup_model));
 
     confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
+    confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
     confirm_exit_menu->hide();
     confirm_exit_menu->addToPage(page_view);
 

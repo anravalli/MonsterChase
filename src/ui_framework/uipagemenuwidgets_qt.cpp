@@ -47,10 +47,6 @@ QPointF UiAbstractMenuItemWidget::center_anchor()
 
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 {
-
-	menu_item_base_x = GameConfig::playground_width/2; //HINT:
-	menu_item_base_y = GameConfig::playground_width/2+100;
-
 	for(auto model_item: *model)
 	{
 		auto item = new UiMenuItemWidget_qt(model_item);
@@ -61,8 +57,6 @@ UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 			menu_width, menu_items[0]->height());
 	qDebug("UiPageMenuWidget_qt - menu position (x,y): %.02f, %.02f",
 			GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
-	setPos(GameConfig::playground_width/2-this->menu_width/2, menu_item_base_y);
-	alignCenter();
 };
 
 void UiPageMenuWidget_qt::append_item(UiAbstractMenuItemWidget *item)
@@ -126,13 +120,23 @@ void UiPageMenuWidget_qt::setPos(double x, double y)
 {
 	qDebug("UiPageMenuWidget_qt::setPos (x,y): %.02f, %.02f", x,y);
 	int offset = 0;
-
+	menu_item_base_x = x;
+	menu_item_base_y = y;
 	selection_box->resetToPos(x,y);
 	for(auto item: menu_items)
 	{
 		item->setPos(x,y+offset);
 		offset += item->height() * item_vertical_spacing_factor;
 	}
+}
+
+void UiPageMenuWidget_qt::moveBy(double dx, double dy)
+{
+	for(auto item: menu_items)
+	{
+		item->moveBy(dx, dy);
+	}
+	this->selection_box->resetToPos(menu_items[0]->pos().x(), menu_items[0]->pos().y());
 }
 
 void UiPageMenuWidget_qt::setAlignement(MenuAlignement a)
@@ -185,6 +189,21 @@ void UiPageMenuWidget_qt::alignCenter()
 	}
 }
 
+double UiPageMenuWidget_qt::height()
+{
+	return menu_height;
+}
+
+double UiPageMenuWidget_qt::width()
+{
+	return menu_width;
+}
+
+QPointF UiPageMenuWidget_qt::pos()
+{
+	return QPointF(menu_item_base_x, menu_item_base_y);
+}
+
 /*
  * UiPagePopupWidget_qt methods
  */
@@ -194,8 +213,8 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 	QFont font("Helvetica",14,QFont::Bold);
 	double border_width = 15;
 
-	double base_pos_x = GameConfig::playground_width/2;
-	double base_pos_y = GameConfig::playground_height/2;
+	double base_pos_x = 0;
+	double base_pos_y = 0;
 
 	this->info = new QGraphicsSimpleTextItem(info);
 	this->info->setFont(font);
@@ -222,7 +241,7 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 	this->drop->setPen(QPen(QBrush(QColor(0xFF,0xD7,0xD7,0xFF)), 2, Qt::PenStyle::SolidLine));
 	this->drop->hide();
 
-	this->menu->setPos(this->info->x()+info_w/2-30, this->info->y()+50);
+	this->menu->setPos(this->info->x()+info_w/2-this->menu->width()/2, this->info->y()+50);
 	this->menu->hide();
 }
 
@@ -271,12 +290,13 @@ void UiPagePopupWidget_qt::selectionChanged(int index)
 
 void UiPagePopupWidget_qt::setPos(double x, double y)
 {
+	//qDebug("UiPagePopupWidget_qt::setPos (x,y): %.02f, %.02f", x,y);
 	QPointF current_pos = drop->pos();
-	double delta_x = x - current_pos.x();
+	double delta_x = x + width()/2 - current_pos.x();
 	double delta_y = y - current_pos.y();
 	drop->moveBy(delta_x, delta_y);
 	info->moveBy(delta_x, delta_y);
-	menu->setPos(delta_x, delta_y);
+	menu->moveBy(delta_x, delta_y);
 }
 
 
@@ -285,17 +305,33 @@ void UiPagePopupWidget_qt::setAlignement(MenuAlignement a)
 	menu->setAlignement(a);
 }
 
+double UiPagePopupWidget_qt::height()
+{
+	return drop->rect().height();
+}
+
+double UiPagePopupWidget_qt::width()
+{
+	return drop->rect().width();
+}
+
+QPointF UiPagePopupWidget_qt::pos()
+{
+	return drop->pos();
+}
+
 UiPageMenuItemSelectioBoxWidget_qt::UiPageMenuItemSelectioBoxWidget_qt(
 		QPointF initial_pos, double inner_w, double inner_h) :
 		inner_width(inner_w), inner_height(inner_h)
 {
 	x = initial_pos.x() - selection_box_border_width;
 	y = initial_pos.y() - selection_box_border_heigth;
+	//qDebug("UiPageMenuItemSelectioBoxWidget_qt - pos(x,y): %.02f, %.02f", x,y);
 	selection_box = new QGraphicsRectItem(x, y,
 			inner_width + selection_box_border_width * 2,
 			inner_height + selection_box_border_heigth * 2);
-	x=0; //Workaround to cope with "mysterious" QGraphicsRectItem.setPos() behavior
-	y=0; //Workaround to cope with "mysterious" QGraphicsRectItem.setPos() behavior
+//	x=0; //Workaround to cope with "mysterious" QGraphicsRectItem.setPos() behavior
+//	y=0; //Workaround to cope with "mysterious" QGraphicsRectItem.setPos() behavior
 	selection_box->setBrush(QBrush(QColor(0xFF, 0xD7, 0x00, 0x80)));
 	selection_box->setPen(QPen(Qt::PenStyle::NoPen));
 }
@@ -316,12 +352,24 @@ void UiPageMenuItemSelectioBoxWidget_qt::resetToPos(double new_x, double new_y)
 			- selection_box_border_width;
 	y = new_y - selection_box->rect().topLeft().y()
 			- selection_box_border_heigth;
+	//qDebug("UiPageMenuItemSelectioBoxWidget_qt::resetToPos - pos(x,y): %.02f, %.02f", x,y);
+	//qDebug("+++ pos(x,y): %.02f, %.02f",selection_box->pos().x(),selection_box->pos().y());
+	//qDebug("+++ selection_box->rect().topLeft()(x,y): %.02f, %.02f", selection_box->rect().topLeft().x(),selection_box->rect().topLeft().y());
+	/*
+	 * Sets the position of the item to pos, which is in parent coordinates. For items with no parent, pos is in scene coordinates.
+	 * The position of the item describes its origin (local coordinate (0, 0)) in parent coordinates.
+	 */
 	selection_box->setPos(x, y);
 }
 
 void UiPageMenuItemSelectioBoxWidget_qt::selectItemAt(int index,
 		double spacing) {
+	//qDebug("UiPageMenuItemSelectioBoxWidget_qt - selectItemAt(%d,%f)", index,spacing);
+	//qDebug("+++ pos(x,y): %.02f, %.02f", x,y);
+	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
+
 	selection_box->setPos(x, y + inner_height * spacing * index);
+	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
 }
 
 void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
@@ -345,10 +393,10 @@ UiMenuItemWidget_qt::UiMenuItemWidget_qt(QString label)
 
 void UiMenuItemWidget_qt::setPos(double x, double y)
 {
-	qDebug("UiMenuItemWidget_qt - OLD pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
+	//qDebug("UiMenuItemWidget_qt - OLD pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
 	this->_pos.setX(x);
 	this->_pos.setY(y);
-	qDebug("UiMenuItemWidget_qt - NEW pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
+	//qDebug("UiMenuItemWidget_qt - NEW pos(x,y): %.02f, %.02f", this->_pos.x(),this->_pos.y());
 	this->_label->setPos(_pos);
 }
 
@@ -435,3 +483,9 @@ void UiMenuItemMultiValWidget_qt::set_current(unsigned int idx)
 		post_label = "  ";
 	_label->setText(pre_label + _values[current_idx] + post_label);
 }
+
+void UiPageMenuItemSelectioBoxWidget_qt::update_width()
+{
+
+}
+
