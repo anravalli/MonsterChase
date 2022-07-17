@@ -87,6 +87,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 			new UiPageMenuWidget_qt(&popup_model));
 
 	confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
+	confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
 	confirm_exit_menu->hide();
 	confirm_exit_menu->addToPage(page_view);
 
@@ -122,10 +123,14 @@ bool OptionPageController::handleKey(int key, bool released)
 
     bool ret = false;
     switch(key){
-    case Qt::Key_Up:
     case Qt::Key_W:
     case Qt::Key_S:
+    case Qt::Key_A:
+    case Qt::Key_D:
+    case Qt::Key_Up:
     case Qt::Key_Down:
+    case Qt::Key_Left:
+    case Qt::Key_Right:
     case Qt::Key_Enter:
     case Qt::Key_Return:
     	ret = active_menu->handleKey(key, released);

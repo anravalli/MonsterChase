@@ -38,18 +38,11 @@ class OptionsMenu: public UiPageMenu
 public:
 	OptionsMenu(vector<OptionItem> *model);
 	virtual ~OptionsMenu();
-
-//	virtual void show() override final;
-//	virtual void hide() override final;
-//	virtual void activate() override final;
-//	virtual void deactivate() override final;
-//
-//	virtual void addToPage(UiPageViewQt* page) override final;
-//	virtual void selectionChanged(int index) override final;
-//	virtual void setPos(double x, double y) override final;
-//	virtual void setAlignement(MenuAlignement a) override final;
-
+	virtual bool handleKey(int key, bool released) override final;
 private:
+	void select_next_value(bool released);
+	void select_previous_value(bool released);
+
 	vector<OptionItem> *model;
 };
 

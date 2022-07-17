@@ -78,6 +78,7 @@ UiPageMenuWidget_qt::~UiPageMenuWidget_qt()
 {
 	for(auto item: menu_items)
 		delete item;
+	delete selection_box;
 };
 
 void UiPageMenuWidget_qt::show()
@@ -336,6 +337,11 @@ UiPageMenuItemSelectioBoxWidget_qt::UiPageMenuItemSelectioBoxWidget_qt(
 	selection_box->setPen(QPen(Qt::PenStyle::NoPen));
 }
 
+UiPageMenuItemSelectioBoxWidget_qt::~UiPageMenuItemSelectioBoxWidget_qt()
+{
+	delete selection_box;
+}
+
 void UiPageMenuItemSelectioBoxWidget_qt::show()
 {
 	selection_box->show();
@@ -361,6 +367,18 @@ void UiPageMenuItemSelectioBoxWidget_qt::resetToPos(double new_x, double new_y)
 	 */
 	selection_box->setPos(x, y);
 }
+
+
+void UiPageMenuItemSelectioBoxWidget_qt::grow_by(double dw)
+{
+	x = selection_box->pos().x() - dw/2;
+	y = selection_box->pos().y();
+	selection_box->setPos(x,y);
+	QRectF r = selection_box->rect();
+	r.setWidth(r.width() + dw);
+	selection_box->setRect(r);
+}
+
 
 void UiPageMenuItemSelectioBoxWidget_qt::selectItemAt(int index,
 		double spacing) {
@@ -424,6 +442,7 @@ void UiMenuItemWidget_qt::addToPage(UiPageViewQt *page)
 
 UiMenuItemWidget_qt::~UiMenuItemWidget_qt()
 {
+	delete this->_label;
 }
 
 UiMenuItemMultiValWidget_qt::UiMenuItemMultiValWidget_qt(vector<QString> values):
@@ -458,10 +477,7 @@ void UiMenuItemMultiValWidget_qt::next()
 
 void UiMenuItemMultiValWidget_qt::previous()
 {
-	//unsigned int idx = current_idx;
-	//if (--idx < 0) idx = 0;
-
-	set_current(--current_idx);
+	if (current_idx) set_current(--current_idx);
 }
 
 int UiMenuItemMultiValWidget_qt::get_current()
@@ -482,10 +498,5 @@ void UiMenuItemMultiValWidget_qt::set_current(unsigned int idx)
 	if (idx == _values.size()-1)
 		post_label = "  ";
 	_label->setText(pre_label + _values[current_idx] + post_label);
-}
-
-void UiPageMenuItemSelectioBoxWidget_qt::update_width()
-{
-
 }
 

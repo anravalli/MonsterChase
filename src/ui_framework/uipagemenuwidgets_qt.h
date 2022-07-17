@@ -113,7 +113,6 @@ public:
 private:
 	vector<QString> _values;
 	unsigned int current_idx = 0;
-//	QGraphicsSimpleTextItem *_label;
 
 };
 
@@ -122,13 +121,14 @@ class UiPageMenuItemSelectioBoxWidget_qt
 public:
 	UiPageMenuItemSelectioBoxWidget_qt(QPointF initial_pos, double inner_w,
 			double inner_h);
+	~UiPageMenuItemSelectioBoxWidget_qt();
 	void show();
 	void hide();
 	void resetToPos(double new_x, double new_y);
 	void selectItemAt(int index, double spacing = 1);
 	void addToPage(UiPageViewQt* page);
 
-	void update_width();
+	void grow_by(double dw);
 
 private:
 	QGraphicsRectItem *selection_box;
@@ -175,7 +175,7 @@ protected:
     double menu_width = 0;
     double menu_height = 0;
     vector<UiAbstractMenuItemWidget *> menu_items;
-    //vector<QString> *model;
+
     virtual void alignRight();
     virtual void alignLeft();
     virtual void alignCenter();
