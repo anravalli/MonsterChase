@@ -39,6 +39,9 @@ public:
 	OptionsMenu(vector<OptionItem> *model);
 	virtual ~OptionsMenu();
 	virtual bool handleKey(int key, bool released) override final;
+	virtual void run_item_action(bool released) override final;
+	int get_current_value_of(int idx);
+	void change_current_value_of(int item_idx, int val_idx);
 private:
 	void select_next_value(bool released);
 	void select_previous_value(bool released);
