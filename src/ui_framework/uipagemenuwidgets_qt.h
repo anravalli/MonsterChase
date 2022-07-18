@@ -40,9 +40,12 @@ enum MenuAlignement {
 	align_right
 };
 
-class UiPageAbstractMenu
+//required for decoration
+class UiPageAbstractMenuWidget
 {
 public:
+	virtual ~UiPageAbstractMenuWidget() = 0;
+
 	virtual void show() = 0;
 	virtual void hide() = 0;
 	virtual void activate() = 0;
@@ -51,6 +54,66 @@ public:
 	virtual void addToPage(UiPageViewQt* page) = 0;
 	virtual void selectionChanged(int index) = 0;
 	virtual void setPos(double x, double y) = 0;
+	virtual void setAlignement(MenuAlignement a) = 0;
+	virtual double height() = 0;
+	virtual double width() = 0;
+	virtual QPointF pos() = 0;
+};
+
+class UiAbstractMenuItemWidget
+{
+public:
+	virtual ~UiAbstractMenuItemWidget() = 0;
+
+	virtual void setPos(double x, double y) = 0;
+	virtual void moveBy(double x, double y) = 0;
+	virtual double height();
+	virtual double width();
+	virtual QPointF pos();
+	virtual QPointF center_anchor();
+
+	virtual void show() = 0;
+	virtual void hide() = 0;
+	virtual void addToPage(UiPageViewQt* page) = 0;
+protected:
+	QPointF _pos;
+	double _height;
+	double _width;
+};
+
+class UiMenuItemWidget_qt: public UiAbstractMenuItemWidget
+{
+public:
+	UiMenuItemWidget_qt(QString label);
+
+	virtual void setPos(double x, double y) override final;
+	virtual void moveBy(double x, double y) override final;
+
+	virtual void show() override final;
+	virtual void hide() override final;
+	virtual void addToPage(UiPageViewQt* page) override final;
+
+	virtual ~UiMenuItemWidget_qt();
+protected:
+	QGraphicsSimpleTextItem *_label;
+
+};
+
+class UiMenuItemMultiValWidget_qt: public UiMenuItemWidget_qt
+{
+public:
+	UiMenuItemMultiValWidget_qt(vector<QString> values);
+
+	virtual ~UiMenuItemMultiValWidget_qt();
+
+	void next();
+	void previous();
+	int get_current();
+	void set_current(unsigned int idx);
+private:
+	vector<QString> _values;
+	unsigned int current_idx = 0;
+
 };
 
 class UiPageMenuItemSelectioBoxWidget_qt
@@ -58,11 +121,14 @@ class UiPageMenuItemSelectioBoxWidget_qt
 public:
 	UiPageMenuItemSelectioBoxWidget_qt(QPointF initial_pos, double inner_w,
 			double inner_h);
+	~UiPageMenuItemSelectioBoxWidget_qt();
 	void show();
 	void hide();
 	void resetToPos(double new_x, double new_y);
 	void selectItemAt(int index, double spacing = 1);
 	void addToPage(UiPageViewQt* page);
+
+	void grow_by(double dw);
 
 private:
 	QGraphicsRectItem *selection_box;
@@ -76,9 +142,10 @@ private:
 	int selection_box_border_heigth = 5;
 };
 
-class UiPageMenuWidget_qt: public UiPageAbstractMenu
+class UiPageMenuWidget_qt: public UiPageAbstractMenuWidget
 {
 public:
+	UiPageMenuWidget_qt(){};
 	UiPageMenuWidget_qt(vector<QString> *model);
     virtual ~UiPageMenuWidget_qt();
 
@@ -90,23 +157,34 @@ public:
     virtual void addToPage(UiPageViewQt* page) override final;
     virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
+	virtual void setAlignement(MenuAlignement a) override final;
 
-private:
+	virtual double height() override final;
+	virtual double width() override final;
+	virtual QPointF pos() override final;
+	void moveBy(double dx, double dy);
+	void append_item(UiAbstractMenuItemWidget *item);
+
+protected:
 	MenuAlignement alignement = align_left;
 
     UiPageMenuItemSelectioBoxWidget_qt *selection_box;
     double item_vertical_spacing_factor = 1.5;
-    double menu_item_height = 0;
-    double menu_item_base_x;
-    double menu_item_base_y;
-    vector<QGraphicsSimpleTextItem *> menu_items;
-    //vector<QString> *model;
+    double menu_item_base_x = 0;
+    double menu_item_base_y = 0;
+    double menu_width = 0;
+    double menu_height = 0;
+    vector<UiAbstractMenuItemWidget *> menu_items;
+
+    virtual void alignRight();
+    virtual void alignLeft();
+    virtual void alignCenter();
 };
 
 /*
- * UiPagePopupWidget_qt decorate a UiPageMenuWidget_qt with a popup window
+ * UiPagePopupWidget_qt decorate a UiPageMenuWidget_qt like a popup window
  */
-class UiPagePopupWidget_qt: public UiPageAbstractMenu
+class UiPagePopupWidget_qt: public UiPageAbstractMenuWidget
 {
 public:
 	UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *menu);
@@ -120,6 +198,11 @@ public:
 	virtual void addToPage(UiPageViewQt* page) override final;
 	virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
+	virtual void setAlignement(MenuAlignement a) override final;
+
+	virtual double height() override final;
+	virtual double width() override final;
+	virtual QPointF pos() override final;
 
 private:
     double item_vertical_spacing_factor = 1.5;

@@ -36,6 +36,7 @@ SOURCES += \
         ../src/editor/level_models.cpp \
         ../src/options_panel/optionpage_controller.cpp \
         ../src/options_panel/optionpage_view.cpp \
+        ../src/options_panel/optionsmenu.cpp \
         ../src/ui_framework/uipagemenu.cpp \
         ../src/ui_framework/uipagemenuwidgets_qt.cpp \
         ../src/ui_framework/uiviewitems_qt.cpp \

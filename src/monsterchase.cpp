@@ -36,7 +36,7 @@ MonsterChase::MonsterChase():
 {
     initPageView<MonsterChaseMainPage>();
     auto game_controller = new GameController(this); //game_controller will be leaked on exit
-
+    qDebug("------- OOPTION MENU -------");
     options_panel = new OptionPageController(this);
 
     //This string array will be passed the menu widget to build the view, representing the model shared with the controller
@@ -71,8 +71,11 @@ MonsterChase::MonsterChase():
     actions.push_back([this]{
     	this->open_exit_popup();
     });
-
+    qDebug("------- BASE MENU -------");
     base_menu = new UiPageMenu(actions, model);
+    base_menu->setPos(GameConfig::playground_width/2,
+    		GameConfig::playground_width/2+100);
+    base_menu->setAlignement(MenuAlignement::align_center);
 
     vector<QString> popup_model = {"yes", "not"};
     vector<function<void()>> popup_actions;
@@ -80,10 +83,12 @@ MonsterChase::MonsterChase():
     popup_actions.push_back([this]{
     	this->close_exit_popup();
     });
+    qDebug("------- EXIT MENU -------");
     auto *popup_view = new UiPagePopupWidget_qt(QString("Are you sure you want to exit?"),
     		new UiPageMenuWidget_qt(&popup_model));
 
     confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
+    confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
     confirm_exit_menu->hide();
     confirm_exit_menu->addToPage(page_view);
 

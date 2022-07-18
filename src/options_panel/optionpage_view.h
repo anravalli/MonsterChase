@@ -12,6 +12,11 @@
 
 #include <ui_framework/uipageview_qt.h>
 
+//same as MonsterChaseMainPage
+//* implement PageView with custom color
+//* host graphics like game logo
+//* host menu items via inherited addItem() method
+
 class OptionPageView: public UiPageViewQt {
 public:
 	OptionPageView(UiPageViewQt *parent);

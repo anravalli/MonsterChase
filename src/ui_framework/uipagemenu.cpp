@@ -33,7 +33,7 @@ UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model, 
 	view->show();
 }
 
-UiPageMenu::UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenu *view, int start_index):
+UiPageMenu::UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenuWidget *view, int start_index):
         actions(actions), view(view)
 {
 	last_item_index = this->actions.size()-1;
@@ -75,7 +75,7 @@ void UiPageMenu::select_next_item(bool released)
         current_item_idx++;
     view->selectionChanged(current_item_idx);
     if(released)
-        key_outo_repeat.stop();
+        key_auto_repeat.stop();
 }
 
 void UiPageMenu::select_previous_item(bool released)
@@ -87,7 +87,7 @@ void UiPageMenu::select_previous_item(bool released)
 	view->selectionChanged(current_item_idx);
 
 	if(released)
-		key_outo_repeat.stop();
+		key_auto_repeat.stop();
 }
 
 void UiPageMenu::show_selcted_item(bool released)

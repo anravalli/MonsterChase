@@ -42,6 +42,7 @@ SOURCES += main.cpp\
     editor/level_models.cpp \
     options_panel/optionpage_controller.cpp \
     options_panel/optionpage_view.cpp \
+    options_panel/optionsmenu.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
     player.cpp \

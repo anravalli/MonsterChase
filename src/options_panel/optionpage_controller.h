@@ -8,8 +8,11 @@
 #ifndef SRC_OPTIONS_PANEL_OPTIONPAGE_CONTROLLER_H_
 #define SRC_OPTIONS_PANEL_OPTIONPAGE_CONTROLLER_H_
 
+#include <vector>
 #include <ui_framework/uipagecontroller.h>
 #include <ui_framework/uipagemenu.h>
+
+class OptionItem;
 
 class OptionPageController: public UiPageController
 {
@@ -21,6 +24,8 @@ public:
 	bool handleKey(int key, bool released) override;
 
 private:
+	vector<OptionItem> model;
+
 	UiPageMenu *active_menu;
 	UiPageMenu *options_menu;
 	UiPageMenu *confirm_exit_menu;
@@ -30,6 +35,8 @@ private:
 
 	void open_confirm_popup();
 	void close_confirm_popup();
+
+	QJsonDocument &load_options(QString file_path);
 
 	void change_screen_resolution();
 	void set_fullscreen();
