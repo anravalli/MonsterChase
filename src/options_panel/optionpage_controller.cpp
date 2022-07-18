@@ -7,6 +7,7 @@
 
 #include "optionpage_controller.h"
 #include "optionpage_view.h"
+#include "optionsmenu.h"
 
 OptionPageController::OptionPageController(UiPageController *parent):
 	UiPageController(parent)
@@ -15,30 +16,61 @@ OptionPageController::OptionPageController(UiPageController *parent):
 	is_saved = true;
 	initPageView<OptionPageView>();
 
-	vector<QString> model = {"Screen Resolution","Fullscreen","Sounds", "APPLY", "EXIT"};
-	vector<function<void()>> actions;
 
-	actions.push_back([this]{
-		this->change_screen_resolution();
-	});
+	model.push_back(
+			OptionItem(
+					"Screen Resolution",
+					{"800x600","1024x768","1280x960"},
+					0,
+					0,
+					[this]{	this->change_screen_resolution(); }
+			)
+	);
 
-	actions.push_back([this]{
-		this->set_fullscreen();
-	});
+	model.push_back(
+			OptionItem(
+					"Fullscreen",
+					{"yes", "not"},
+					1,
+					1,
+					[this]{this->set_fullscreen();}
+			)
+	);
 
-	actions.push_back([this]{
-		this->set_sounds();
-	});
+	model.push_back(
+			OptionItem(
+					"Sound",
+					{"on","off"},
+					0,
+					0,
+					[this]{this->set_sounds();}
+			)
+	);
 
-	actions.push_back([this]{
-		this->apply_settings();
-	});
+	model.push_back(
+			OptionItem(
+					"APPLY",
+					{},
+					-1,
+					-1,
+					[this]{this->apply_settings();}
+			)
+	);
 
-	actions.push_back([this]{
-		this->open_confirm_popup();
-	});
+	model.push_back(
+			OptionItem(
+					"EXIT",
+					{},
+					-1,
+					-1,
+					[this]{this->open_confirm_popup();}
+			)
+	);
 
-	options_menu = new UiPageMenu(actions, model);
+	options_menu = new OptionsMenu(&model);
+	options_menu->setPos(GameConfig::playground_width/2,
+	    		GameConfig::playground_width/2+100);
+	options_menu->setAlignement(align_center);
 
 	vector<QString> popup_model = {"apply", "discard"};
 	vector<function<void()>> popup_actions;
@@ -55,6 +87,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 			new UiPageMenuWidget_qt(&popup_model));
 
 	confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
+	confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
 	confirm_exit_menu->hide();
 	confirm_exit_menu->addToPage(page_view);
 
@@ -90,10 +123,14 @@ bool OptionPageController::handleKey(int key, bool released)
 
     bool ret = false;
     switch(key){
-    case Qt::Key_Up:
     case Qt::Key_W:
     case Qt::Key_S:
+    case Qt::Key_A:
+    case Qt::Key_D:
+    case Qt::Key_Up:
     case Qt::Key_Down:
+    case Qt::Key_Left:
+    case Qt::Key_Right:
     case Qt::Key_Enter:
     case Qt::Key_Return:
     	ret = active_menu->handleKey(key, released);
