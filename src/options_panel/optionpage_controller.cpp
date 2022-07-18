@@ -49,7 +49,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 
 	model.push_back(
 			OptionItem(
-					"APPLY",
+					"Apply",
 					{},
 					-1,
 					-1,
@@ -59,7 +59,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 
 	model.push_back(
 			OptionItem(
-					"EXIT",
+					"Back",
 					{},
 					-1,
 					-1,
@@ -111,11 +111,6 @@ void OptionPageController::exit()
     qDebug("OptionPageController::exit()");
     qDebug("is_saved %d", is_saved);
     UiPageController::exit();
-//    if(is_saved)
-//    else{
-//    	//confirm unsaved options;
-//    	is_saved = true;
-//    }
 }
 
 bool OptionPageController::handleKey(int key, bool released)
@@ -180,16 +175,25 @@ void OptionPageController::close_confirm_popup()
 
 void OptionPageController::change_screen_resolution()
 {
+	int idx = options_menu->get_current_item_idx();
+	int val_idx = ((OptionsMenu *)options_menu)->get_current_value_of(idx);
+	qDebug("screen resolution set to %s", model[idx].values[val_idx].toStdString().c_str());
 	is_saved = false;
 }
 
 void OptionPageController::set_fullscreen()
 {
+	int idx = options_menu->get_current_item_idx();
+	int val_idx = ((OptionsMenu *)options_menu)->get_current_value_of(idx);
+	qDebug("fullscreen set to %s", model[idx].values[val_idx].toStdString().c_str());
 	is_saved = false;
 }
 
 void OptionPageController::set_sounds()
 {
+	int idx = options_menu->get_current_item_idx();
+	int val_idx = ((OptionsMenu *)options_menu)->get_current_value_of(idx);
+	qDebug("sound set to %s", model[idx].values[val_idx].toStdString().c_str());
 	is_saved = false;
 }
 

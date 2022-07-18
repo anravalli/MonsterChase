@@ -34,21 +34,6 @@ using namespace std;
 
 class UiPageViewQt;
 
-//class UiPageAbstractMenu
-//{
-//public:
-//	virtual void show() = 0;
-//	virtual void hide() = 0;
-//	virtual void activate() = 0;
-//	virtual void deactivate() = 0;
-//
-//	virtual void addToPage(UiPageViewQt* page) = 0;
-//	virtual void selectionChanged(int index) = 0;
-//	virtual void setPos(double x, double y) = 0;
-//	virtual void setAlignement(MenuAlignement a) = 0;
-//};
-
-
 class UiPageMenu: QObject
 {
     Q_OBJECT
@@ -65,16 +50,21 @@ public:
     virtual void deactivate();
     void setAlignement(MenuAlignement a);
 
-    virtual ~UiPageMenu() {};
+	virtual ~UiPageMenu() {	}
+
+	int get_current_item_idx() const
+	{
+		return current_item_idx;
+	}
+
 
 protected:
     void select_next_item(bool released);
     void select_previous_item(bool released);
-    void show_selcted_item(bool released);
+    virtual void run_item_action(bool released);
 
-//private:
     vector<function<void()>> actions;
-//    vector<QString> model;
+
     int current_item_idx = 0;
     int last_item_index = 0;
     QTimer key_auto_repeat;

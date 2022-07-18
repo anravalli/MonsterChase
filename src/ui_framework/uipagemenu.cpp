@@ -56,7 +56,7 @@ bool UiPageMenu::handleKey(int key, bool released){
         break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
-        show_selcted_item(released);
+        run_item_action(released);
         ret = true;
         break;
     case Qt::Key_Exit:
@@ -90,7 +90,7 @@ void UiPageMenu::select_previous_item(bool released)
 		key_auto_repeat.stop();
 }
 
-void UiPageMenu::show_selcted_item(bool released)
+void UiPageMenu::run_item_action(bool released)
 {
     //qDebug("show_selcted_item - released: %d", released);
     if(released)
