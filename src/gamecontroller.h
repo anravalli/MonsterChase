@@ -29,6 +29,15 @@ class UiPageViewQt;
 class QTimer;
 class PlayTime;
 
+enum MatchType
+{
+	mt_no_match,
+	mt_hunter,
+	mt_survivor,
+	mt_the_dark_hunt,
+	mt_alone_in_the_dark
+};
+
 class GameController : public UiPageController
 {
     Q_OBJECT
@@ -38,16 +47,29 @@ public:
     void show() override;
     void exit() override;
 
+
 public slots:
     void gameStep() ;
     void start();
+
+	MatchType get_match_type() const
+	{
+		return match_type;
+	}
+
+	void set_match_type(MatchType matchType)
+	{
+		match_type = matchType;
+	}
 
 protected:
     bool handleKey(int key, bool released) override;
 
 private:
-    QTimer* timer;
-    PlayTime* ptime;
+    QTimer* timer = nullptr;
+    PlayTime* ptime = nullptr;
+
+    MatchType match_type = mt_hunter;
 
     bool is_paused; //temporary: this "state variable" has to be changed to a "real" state
 
