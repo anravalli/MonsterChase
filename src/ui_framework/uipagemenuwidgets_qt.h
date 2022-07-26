@@ -102,6 +102,16 @@ public:
 	virtual void addToPage(UiPageViewQt* page) override final;
 
 	virtual ~UiMenuItemWidget_qt();
+
+	virtual void set_label(QString new_label) override
+	{
+		this->_label->setText(new_label);
+	}
+
+	virtual QString get_label() override
+	{
+		return this->_label->text();
+	}
 protected:
 	QGraphicsSimpleTextItem *_label;
 
@@ -118,6 +128,18 @@ public:
 	void previous();
 	int get_current();
 	void set_current(unsigned int idx);
+
+	virtual void set_label(QString new_label) override
+	{
+		Q_UNUSED(new_label)
+		return;
+	}
+
+	virtual QString get_label() override
+	{
+		return this->_values[current_idx];
+	}
+
 private:
 	vector<QString> _values;
 	unsigned int current_idx = 0;

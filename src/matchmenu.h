@@ -31,9 +31,10 @@ public:
 		return menu_items[item_idx]->get_label();
 	}
 
-	virtual QString set_item_label(int item_idx, QString new_label) override final
+	virtual void set_item_label(int item_idx, QString new_label) override final
 	{
-		return menu_items[item_idx]->set_label(new_label);
+		menu_items[item_idx]->set_label(new_label);
+		return;
 	}
 
 	void next_value_for(unsigned int idx)
@@ -139,15 +140,15 @@ public:
 	public slots:
 		void on_player_name_changed(QString new_name)
 		{
-			qDebug("new_name: %s", new_name.toStdString());
+			qDebug("new_name: %s", new_name.toStdString().c_str());
 			int name_item_idx = 1;
-			view->set_item_label(name_item_idx, new_name); //TODO: needs override
+			view->set_item_label(name_item_idx, QString("Player: ")+new_name); //TODO: needs override
 		}
 		void on_match_type_changed(QString new_match)
 		{
-			qDebug("new_match: %s", new_match.toStdString());
+			qDebug("new_match: %s", new_match.toStdString().c_str());
 			int match_item_idx = 2;
-			view->set_item_label(match_item_idx, new_match);
+			view->set_item_label(match_item_idx, QString("Match Type: ")+new_match);
 		}
 	private:
 };
