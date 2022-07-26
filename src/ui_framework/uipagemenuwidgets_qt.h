@@ -40,6 +40,30 @@ enum MenuAlignement {
 	align_right
 };
 
+class UiAbstractMenuItemWidget
+{
+public:
+	virtual ~UiAbstractMenuItemWidget() = 0;
+
+	virtual void setPos(double x, double y) = 0;
+	virtual void moveBy(double x, double y) = 0;
+	virtual double height();
+	virtual double width();
+	virtual QPointF pos();
+	virtual QPointF center_anchor();
+
+	virtual void show() = 0;
+	virtual void hide() = 0;
+	virtual void addToPage(UiPageViewQt* page) = 0;
+
+	virtual void set_label(QString new_label){Q_UNUSED(new_label);return;};
+	virtual QString get_label(){return QString("");};
+protected:
+	QPointF _pos;
+	double _height;
+	double _width;
+};
+
 //required for decoration
 class UiPageAbstractMenuWidget
 {
@@ -58,27 +82,11 @@ public:
 	virtual double height() = 0;
 	virtual double width() = 0;
 	virtual QPointF pos() = 0;
-};
 
-class UiAbstractMenuItemWidget
-{
-public:
-	virtual ~UiAbstractMenuItemWidget() = 0;
-
-	virtual void setPos(double x, double y) = 0;
-	virtual void moveBy(double x, double y) = 0;
-	virtual double height();
-	virtual double width();
-	virtual QPointF pos();
-	virtual QPointF center_anchor();
-
-	virtual void show() = 0;
-	virtual void hide() = 0;
-	virtual void addToPage(UiPageViewQt* page) = 0;
-protected:
-	QPointF _pos;
-	double _height;
-	double _width;
+	virtual void set_item_label(int item_idx, QString new_label){Q_UNUSED(item_idx); Q_UNUSED(new_label);return;};
+	virtual QString get_item_label(int item_idx){Q_UNUSED(item_idx); return QString("");};
+	virtual void set_item_label(UiAbstractMenuItemWidget *item, QString new_label){Q_UNUSED(item); Q_UNUSED(new_label); return;};
+	virtual QString get_item_label(UiAbstractMenuItemWidget *item){return item->get_label();};
 };
 
 class UiMenuItemWidget_qt: public UiAbstractMenuItemWidget
@@ -204,8 +212,13 @@ public:
 	virtual double width() override final;
 	virtual QPointF pos() override final;
 
+	UiPageMenuWidget_qt* get_inner_menu() {
+		return menu;
+	}
+
 private:
     double item_vertical_spacing_factor = 1.5;
+protected:
 	QGraphicsSimpleTextItem *info;
 	QGraphicsRectItem *drop;
 	UiPageMenuWidget_qt *menu;

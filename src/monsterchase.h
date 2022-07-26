@@ -77,7 +77,7 @@ private:
     UiPageMenu *populate_player_selection_menu();
 
     void open_popup(UiPageMenu *popup);
-    void back_to_main_menu();
+    void back_to_menu(UiPageMenu *menu);
 
     void open_level_editor();
     void open_options_panel();

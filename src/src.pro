@@ -81,6 +81,7 @@ HEADERS  += monsterchase.h \
     gameworld.h \
     gameviews.h \
     gameconfig.h \
+    matchmenu.h \
     ui_framework/uipagecontroller.h \
     ui_framework/uipagemenu.h \
     ui_framework/uipagemenuwidgets_qt.h \

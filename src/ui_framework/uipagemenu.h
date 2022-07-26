@@ -34,7 +34,7 @@ using namespace std;
 
 class UiPageViewQt;
 
-class UiPageMenu: QObject
+class UiPageMenu: public QObject
 {
     Q_OBJECT
 public:
@@ -57,6 +57,9 @@ public:
 		return current_item_idx;
 	}
 
+	void set_actions(const vector<function<void()> > &actions) {
+		this->actions = actions;
+	}
 
 protected:
     void select_next_item(bool released);

@@ -26,6 +26,7 @@ HEADERS += \
     ../src/ui_framework/uipageview_qt.h \
     ../src/ui_framework/uipagemenu.h \
     ../src/ui_framework/uipagemenuwidgets_qt.h \
+    ../src/matchmenu.h \
     ../src/editor/level_editor.h \
     ../src/editor/editor_ui.h
 
