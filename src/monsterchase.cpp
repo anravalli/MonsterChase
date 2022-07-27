@@ -281,7 +281,7 @@ bool MonsterChase::handleKey(int key, bool released)
 			qDebug("<<< updating player or match");
 			int i = current_menu->get_current_item_idx();
 			//((PopupSelectionMenuWidget_qt *)current_menu)->select_prev(i); //TODO: to be implemented
-			((MatchPlayerSelectionMenu *)((UiPagePopupWidget_qt *)current_menu)->get_inner_menu())->previous_value_for(i);
+			((MatchPlayerSelectionMenu *)current_menu)->previous_value_for(i);
 		}
 		ret = true;
 		break;
@@ -292,7 +292,7 @@ bool MonsterChase::handleKey(int key, bool released)
 			qDebug(">>> updating player or match");
 			int i = current_menu->get_current_item_idx();
 			//((PopupSelectionMenuWidget_qt *)current_menu)->select_next(i);  //TODO: to be implemented
-			((MatchPlayerSelectionMenu *)((UiPagePopupWidget_qt *)current_menu)->get_inner_menu())->next_value_for(i);
+			((MatchPlayerSelectionMenu *)current_menu)->next_value_for(i);
 			//((UiPagePopupWidget_qt *)current_menu)->get_inner_menu();
 
 		}

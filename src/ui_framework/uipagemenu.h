@@ -59,6 +59,7 @@ public:
 
 	void set_actions(const vector<function<void()> > &actions) {
 		this->actions = actions;
+		this->last_item_index = this->actions.size()-1;
 	}
 
 protected:

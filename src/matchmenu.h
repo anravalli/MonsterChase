@@ -86,12 +86,12 @@ public:
 	PopupSelectionMenuWidget_qt(QString info, UiPageMenuWidget_qt *menu):
 		UiPagePopupWidget_qt(info, menu)
 	{
-		qDebug("menu: %d", menu);
+		qDebug("menu: %p", menu);
 	}
 
 	void select_prev_for(int idx)
 	{
-		qDebug("menu: %d", this->menu);
+		qDebug("menu: %p", this->menu);
 		((SelectionMenuWidget_qt *)this->menu)->previous_value_for(idx);
 	}
 
