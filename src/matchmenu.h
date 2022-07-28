@@ -31,10 +31,10 @@ public:
 		return menu_items[item_idx]->get_label();
 	}
 
-	virtual void set_item_label(int item_idx, QString new_label) override final
+	virtual double set_item_label(int item_idx, QString new_label) override final
 	{
 		menu_items[item_idx]->set_label(new_label);
-		return;
+		return menu_items[item_idx]->width();
 	}
 
 	void next_value_for(unsigned int idx)
@@ -43,6 +43,7 @@ public:
 		if(item != nullptr)
 		{
 			item->next();
+			update_and_realign(item->width());
 		}
 		return;
 	}
@@ -53,8 +54,18 @@ public:
 		if(item != nullptr)
 		{
 			item->previous();
+			update_and_realign(item->width());
 		}
 		return;
+	}
+
+	void update_and_realign(double item_width)
+	{
+		qDebug("SelectionMenuWidget_qt::update_and_realign");
+		qDebug("+++ item_width: %f > this->menu_width: %f", item_width, this->menu_width);
+		if (item_width > this->menu_width)	this->menu_width = item_width;
+		if (item_width != this->menu_width)	this->alignCenter();
+
 	}
 
 	int get_current_value_of(unsigned int idx)
@@ -142,13 +153,17 @@ public:
 		{
 			qDebug("new_name: %s", new_name.toStdString().c_str());
 			int name_item_idx = 1;
-			view->set_item_label(name_item_idx, QString("Player: ")+new_name); //TODO: needs override
+			view->set_item_label(name_item_idx, QString("Player: ")+new_name);
+			this->setAlignement(align_center);
 		}
 		void on_match_type_changed(QString new_match)
 		{
 			qDebug("new_match: %s", new_match.toStdString().c_str());
 			int match_item_idx = 2;
 			view->set_item_label(match_item_idx, QString("Match Type: ")+new_match);
+
+
+			this->setAlignement(align_center);
 		}
 	private:
 };
@@ -157,11 +172,15 @@ class MatchMenuWidget_qt: public UiPageMenuWidget_qt
 {
 public:
 	MatchMenuWidget_qt(vector<QString> *model): UiPageMenuWidget_qt(model){}
-	virtual void set_item_label(int item_idx, QString new_label) override final
+	virtual double set_item_label(int item_idx, QString new_label) override final
 	{
 		menu_items[item_idx]->set_label(new_label);
-		return;
-	};
+		double new_item_width =  menu_items[item_idx]->width();
+		if(new_item_width > menu_width)
+			selection_box->grow_by(new_item_width - menu_width);
+		return 0;
+	}
+
 };
 
 

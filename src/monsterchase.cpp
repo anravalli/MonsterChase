@@ -120,6 +120,8 @@ UiPageMenu *MonsterChase::populate_match_selection_menu()
 
 		std::cout << "item #"<< menu->get_current_item_idx() << " \"" << new_match.toStdString() <<"\" (" << v << ") selected" << std::endl;
 
+		//menu->setAlignement(align_center);
+
 		emit menu->match_changed(new_match);
 		this->game_controller->set_match_type((MatchType)v);
 		//back
@@ -157,6 +159,7 @@ UiPageMenu *MonsterChase::populate_player_selection_menu()
 		int v = ((SelectionMenuWidget_qt *)(popup_view->get_inner_menu()))->get_current_value_of(i);
 
 		std::cout << "item #"<< menu->get_current_item_idx() << " \"" << new_name.toStdString() <<"\" (" << v << ") selected" << std::endl;
+		//menu->setAlignement(align_center);
 
 		emit menu->name_changed(new_name);
 		//back
@@ -170,7 +173,7 @@ UiPageMenu *MonsterChase::populate_player_selection_menu()
 	menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
 	menu->hide();
 	menu->addToPage(page_view);
-	//menu->setAlignement(align_center);
+	menu->setAlignement(align_center);
 
 	return menu;
 }

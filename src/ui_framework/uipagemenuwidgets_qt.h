@@ -83,9 +83,9 @@ public:
 	virtual double width() = 0;
 	virtual QPointF pos() = 0;
 
-	virtual void set_item_label(int item_idx, QString new_label){Q_UNUSED(item_idx); Q_UNUSED(new_label);return;};
+	virtual double set_item_label(int item_idx, QString new_label){Q_UNUSED(item_idx); Q_UNUSED(new_label);return 0;};
 	virtual QString get_item_label(int item_idx){Q_UNUSED(item_idx); return QString("");};
-	virtual void set_item_label(UiAbstractMenuItemWidget *item, QString new_label){Q_UNUSED(item); Q_UNUSED(new_label); return;};
+	virtual double set_item_label(UiAbstractMenuItemWidget *item, QString new_label){Q_UNUSED(item); Q_UNUSED(new_label); return 0;};
 	virtual QString get_item_label(UiAbstractMenuItemWidget *item){return item->get_label();};
 };
 
@@ -106,6 +106,7 @@ public:
 	virtual void set_label(QString new_label) override
 	{
 		this->_label->setText(new_label);
+		this->_width = this->_label->boundingRect().width();
 	}
 
 	virtual QString get_label() override
@@ -129,11 +130,12 @@ public:
 	int get_current();
 	void set_current(unsigned int idx);
 
-	virtual void set_label(QString new_label) override
-	{
-		Q_UNUSED(new_label)
-		return;
-	}
+//	virtual void set_label(QString new_label) override
+//	{
+//		this->_label->setText(new_label);
+//		this->_width = this->_label->boundingRect().width();
+//		return;
+//	}
 
 	virtual QString get_label() override
 	{
