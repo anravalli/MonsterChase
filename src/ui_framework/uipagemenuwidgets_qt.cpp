@@ -380,8 +380,7 @@ void UiPageMenuItemSelectioBoxWidget_qt::resetToPos(double new_x, double new_y)
 void UiPageMenuItemSelectioBoxWidget_qt::grow_by(double dw)
 {
 	x = selection_box->pos().x() - dw/2;
-	y = selection_box->pos().y();
-	selection_box->setPos(x,y);
+	selection_box->moveBy(-dw/2,0);
 	QRectF r = selection_box->rect();
 	r.setWidth(r.width() + dw);
 	selection_box->setRect(r);
@@ -390,12 +389,7 @@ void UiPageMenuItemSelectioBoxWidget_qt::grow_by(double dw)
 
 void UiPageMenuItemSelectioBoxWidget_qt::selectItemAt(int index,
 		double spacing) {
-	//qDebug("UiPageMenuItemSelectioBoxWidget_qt - selectItemAt(%d,%f)", index,spacing);
-	//qDebug("+++ pos(x,y): %.02f, %.02f", x,y);
-	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
-
 	selection_box->setPos(x, y + inner_height * spacing * index);
-	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
 }
 
 void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
