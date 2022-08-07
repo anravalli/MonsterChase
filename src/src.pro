@@ -43,6 +43,8 @@ SOURCES += main.cpp\
     options_panel/optionpage_controller.cpp \
     options_panel/optionpage_view.cpp \
     options_panel/optionsmenu.cpp \
+    hiscore_panel/hiscorepage_controller.cpp \
+    hiscore_panel/hiscorepage_view.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
     player.cpp \

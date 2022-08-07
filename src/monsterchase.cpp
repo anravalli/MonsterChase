@@ -25,9 +25,10 @@
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
 #include "gamecontroller.h"
-#include "options_panel/optionpage_controller.h"
 
+#include "options_panel/optionpage_controller.h"
 #include "matchmenu.h"
+#include "hiscore_panel/hiscorepage_controller.h"
 
 #include <QGraphicsPixmapItem>
 /*
@@ -43,11 +44,14 @@ MonsterChase::MonsterChase():
     qDebug("------- BASE MENU -------");
     base_menu = populate_base_menu();
 
+    qDebug("------- MATCH MENU -------");
+    match_menu = populate_match_menu();
+
     qDebug("------- OPTION MENU -------");
     options_panel = new OptionPageController(this);
 
-    qDebug("------- MATCH MENU -------");
-    match_menu = populate_match_menu();
+    qDebug("------- HIGH SCORE PAGE -------");
+    hiscore_panel = new HighScorePageController(this);
 
     qDebug("------- EXIT MENU -------");
     confirm_exit_menu = populate_confirm_exit_menu();
@@ -379,6 +383,10 @@ void MonsterChase::open_options_panel()
 
 void MonsterChase::open_high_score_page()
 {
+	this->page_view->hide();
+	QApplication::instance()->removeEventFilter(this);
+	hiscore_panel->show();
+
 }
 
 

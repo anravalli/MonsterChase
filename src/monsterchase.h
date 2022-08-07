@@ -36,6 +36,7 @@ namespace LevelEditor{
 class LevelEditor;
 }
 class OptionPageController;
+class HighScorePageController;
 class GameController;
 
 class MonsterChase : public UiPageController
@@ -69,6 +70,7 @@ private:
 
     LevelEditor::LevelEditor *level_editor;
     OptionPageController *options_panel;
+    HighScorePageController *hiscore_panel;
 
     UiPageMenu *populate_base_menu();
     UiPageMenu *populate_match_menu();
