@@ -22,24 +22,11 @@ public:
 	bool handleKey(int key, bool released) override;
 
 private:
-//	vector<OptionItem> model;
+	vector<vector<QString>> high_scores[4];
+//	vector<vector<QString>> hunter_score_moc;
+//	vector<vector<QString>> survivor_score_moc;
+//	vector<vector<QString>> other_score_moc;
 
-//	UiPageMenu *active_menu;
-//	UiPageMenu *options_menu;
-//	UiPageMenu *confirm_exit_menu;
-	QGraphicsPixmapItem *logo;
-
-//	bool is_saved;
-//
-//	void open_confirm_popup();
-//	void close_confirm_popup();
-//
-//	QJsonDocument &load_options(QString file_path);
-//
-//	void change_screen_resolution();
-//	void set_fullscreen();
-//	void set_sounds();
-//	void apply_settings();
 };
 
 #endif /* SRC_HISCORE_PANEL_OPTIONPAGE_CONTROLLER_H_ */

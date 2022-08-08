@@ -58,9 +58,10 @@ public:
 protected:
     virtual void setUpView() override;
 public:
-    void update_score_table(vector<vector<QString>> data);
+    void update_score_table(vector<vector<QString>> *data);
     int next_table();
     int previous_table();
+    void activate_exit_button(bool active);
 private:
     UiMenuItemMultiValWidget_qt *table_selector = nullptr;
     UiMenuItemWidget_qt *exit_button = nullptr;

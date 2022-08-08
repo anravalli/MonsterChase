@@ -113,6 +113,13 @@ public:
 	{
 		return this->_label->text();
 	}
+	virtual void set_font_size(unsigned int size)
+	{
+		QFont f = this->_label->font();
+		f.setPointSize(size);
+		this->_label->setFont(f);
+		return;
+	}
 protected:
 	QGraphicsSimpleTextItem *_label;
 
