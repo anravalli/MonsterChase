@@ -58,7 +58,8 @@ SOURCES += \
         ../src/gameworld.cpp \
         ../src/gamecontroller.cpp \
         ../src/gameconfig.cpp \
-        ../src/gameviews.cpp
+        ../src/gameviews.cpp \
+        ../src/matchmenu.cpp \
 
 FORMS += \
     ../src/editor/editor.ui
