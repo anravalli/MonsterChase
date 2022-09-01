@@ -43,6 +43,9 @@ SOURCES += main.cpp\
     options_panel/optionpage_controller.cpp \
     options_panel/optionpage_view.cpp \
     options_panel/optionsmenu.cpp \
+    hiscore_panel/hiscorepage_controller.cpp \
+    hiscore_panel/hiscorepage_view.cpp \
+    matchmenu.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
     player.cpp \
@@ -81,6 +84,7 @@ HEADERS  += monsterchase.h \
     gameworld.h \
     gameviews.h \
     gameconfig.h \
+    matchmenu.h \
     ui_framework/uipagecontroller.h \
     ui_framework/uipagemenu.h \
     ui_framework/uipagemenuwidgets_qt.h \

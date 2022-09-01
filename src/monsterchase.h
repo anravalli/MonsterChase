@@ -36,6 +36,8 @@ namespace LevelEditor{
 class LevelEditor;
 }
 class OptionPageController;
+class HighScorePageController;
+class GameController;
 
 class MonsterChase : public UiPageController
 {
@@ -56,16 +58,28 @@ protected:
     void show_selcted_item(bool released);
 
 private:
+    GameController *game_controller = nullptr;
+
     UiPageMenu *current_menu;
     UiPageMenu *base_menu;
+    UiPageMenu *match_menu;
+    UiPageMenu *match_selection_menu;
+    UiPageMenu *player_selection_menu;
     UiPageMenu *confirm_exit_menu;
     QGraphicsPixmapItem *logo;
 
     LevelEditor::LevelEditor *level_editor;
     OptionPageController *options_panel;
+    HighScorePageController *hiscore_panel;
 
-    void open_exit_popup();
-    void close_exit_popup();
+    UiPageMenu *populate_base_menu();
+    UiPageMenu *populate_match_menu();
+    UiPageMenu *populate_confirm_exit_menu();
+    UiPageMenu *populate_match_selection_menu();
+    UiPageMenu *populate_player_selection_menu();
+
+    void open_popup(UiPageMenu *popup);
+    void back_to_menu(UiPageMenu *menu);
 
     void open_level_editor();
     void open_options_panel();

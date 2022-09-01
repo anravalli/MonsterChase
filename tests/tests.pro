@@ -26,6 +26,7 @@ HEADERS += \
     ../src/ui_framework/uipageview_qt.h \
     ../src/ui_framework/uipagemenu.h \
     ../src/ui_framework/uipagemenuwidgets_qt.h \
+    ../src/matchmenu.h \
     ../src/editor/level_editor.h \
     ../src/editor/editor_ui.h
 
@@ -37,6 +38,8 @@ SOURCES += \
         ../src/options_panel/optionpage_controller.cpp \
         ../src/options_panel/optionpage_view.cpp \
         ../src/options_panel/optionsmenu.cpp \
+        ../src/hiscore_panel/hiscorepage_controller.cpp \
+        ../src/hiscore_panel/hiscorepage_view.cpp \
         ../src/ui_framework/uipagemenu.cpp \
         ../src/ui_framework/uipagemenuwidgets_qt.cpp \
         ../src/ui_framework/uiviewitems_qt.cpp \
@@ -55,7 +58,8 @@ SOURCES += \
         ../src/gameworld.cpp \
         ../src/gamecontroller.cpp \
         ../src/gameconfig.cpp \
-        ../src/gameviews.cpp
+        ../src/gameviews.cpp \
+        ../src/matchmenu.cpp \
 
 FORMS += \
     ../src/editor/editor.ui
