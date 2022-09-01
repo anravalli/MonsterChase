@@ -133,6 +133,8 @@ void UiPageMenuWidget_qt::setPos(double x, double y)
 
 void UiPageMenuWidget_qt::moveBy(double dx, double dy)
 {
+	menu_item_base_x += dx;
+	menu_item_base_y += dy;
 	for(auto item: menu_items)
 	{
 		item->moveBy(dx, dy);
@@ -182,10 +184,13 @@ void UiPageMenuWidget_qt::alignLeft()
 }
 void UiPageMenuWidget_qt::alignCenter()
 {
+	qDebug("UiPageMenuWidget_qt::alignCenter");
 	double dx = 0;
 	for(auto item: menu_items)
 	{
 		dx = (menu_item_base_x + menu_width/2 - item->center_anchor().x());
+		qDebug("dx = (menu_item_base_x (%f) + menu_width/2 (%f) - item->center_anchor().x() (%f)): %f",
+				menu_item_base_x, menu_width/2, item->center_anchor().x(), dx);
 		item->moveBy(dx, 0);
 	}
 }
@@ -211,6 +216,7 @@ QPointF UiPageMenuWidget_qt::pos()
 UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *menu):
 		menu(menu)
 {
+	qDebug("UiPagePopupWidget_qt::UiPagePopupWidget_qt");
 	QFont font("Helvetica",14,QFont::Bold);
 	double border_width = 15;
 
@@ -229,9 +235,10 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 			base_pos_y-(info_w+border_width*2)/2+info_h);
 	this->info->hide();
 
-//	qDebug("base_pos: %f, %f", base_pos_x, base_pos_y);
-//	qDebug("info_w: %f; info_h %f", info_w, info_h);
-//	qDebug("drop pos: %f, %f", base_pos_x-((info_w+30)/2), base_pos_y-(info_w+30)/2);
+	qDebug("\t +++ base_pos: %f, %f", base_pos_x, base_pos_y);
+	qDebug("\t +++ info->x(): %f; base_pos_x-info_w/2 %f", this->info->x(), base_pos_x-info_w/2);
+	qDebug("\t +++ info_w: %f; info_h %f", info_w, info_h);
+	qDebug("\t +++ drop pos: %f, %f", base_pos_x-((info_w+border_width*2)/2), base_pos_y-(info_w+border_width*2)/2);
 	this->drop = new QGraphicsRectItem(
 			base_pos_x-((info_w+border_width*2)/2),
 			base_pos_y-(info_w+border_width*2)/2,
@@ -242,6 +249,7 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 	this->drop->setPen(QPen(QBrush(QColor(0xFF,0xD7,0xD7,0xFF)), 2, Qt::PenStyle::SolidLine));
 	this->drop->hide();
 
+	qDebug("\t +++ menu pos: %f, %f", this->info->x()+info_w/2-this->menu->width()/2, this->info->y()+50);
 	this->menu->setPos(this->info->x()+info_w/2-this->menu->width()/2, this->info->y()+50);
 	this->menu->hide();
 }
@@ -372,8 +380,7 @@ void UiPageMenuItemSelectioBoxWidget_qt::resetToPos(double new_x, double new_y)
 void UiPageMenuItemSelectioBoxWidget_qt::grow_by(double dw)
 {
 	x = selection_box->pos().x() - dw/2;
-	y = selection_box->pos().y();
-	selection_box->setPos(x,y);
+	selection_box->moveBy(-dw/2,0);
 	QRectF r = selection_box->rect();
 	r.setWidth(r.width() + dw);
 	selection_box->setRect(r);
@@ -382,12 +389,7 @@ void UiPageMenuItemSelectioBoxWidget_qt::grow_by(double dw)
 
 void UiPageMenuItemSelectioBoxWidget_qt::selectItemAt(int index,
 		double spacing) {
-	//qDebug("UiPageMenuItemSelectioBoxWidget_qt - selectItemAt(%d,%f)", index,spacing);
-	//qDebug("+++ pos(x,y): %.02f, %.02f", x,y);
-	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
-
 	selection_box->setPos(x, y + inner_height * spacing * index);
-	//qDebug("+++ selection_box->pos (x,y): %.02f, %.02f", selection_box->x(),selection_box->y());
 }
 
 void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
@@ -459,7 +461,7 @@ UiMenuItemMultiValWidget_qt::UiMenuItemMultiValWidget_qt(vector<QString> values)
 		}
 	}
 	set_current(idx_max);
-	this->_width = _label->boundingRect().width();
+
 }
 
 UiMenuItemMultiValWidget_qt::~UiMenuItemMultiValWidget_qt()
@@ -498,5 +500,6 @@ void UiMenuItemMultiValWidget_qt::set_current(unsigned int idx)
 	if (idx == _values.size()-1)
 		post_label = "  ";
 	_label->setText(pre_label + _values[current_idx] + post_label);
+	this->_width = _label->boundingRect().width();
 }
 

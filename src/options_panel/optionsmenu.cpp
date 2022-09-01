@@ -231,7 +231,7 @@ void OptionsMenu::select_next_value(bool released)
     ((OptionMenuWidget_qt *)view)->next_value_for(current_item_idx);
     if(released)
     {
-        key_auto_repeat.stop();
+        //key_auto_repeat.stop();
         actions[current_item_idx]();
     }
 }
@@ -243,7 +243,7 @@ void OptionsMenu::select_previous_value(bool released)
     ((OptionMenuWidget_qt *)view)->previous_value_for(current_item_idx);
     if(released)
     {
-    	key_auto_repeat.stop();
+    	//key_auto_repeat.stop();
     	actions[current_item_idx]();
     }
 }

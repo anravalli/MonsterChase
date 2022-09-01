@@ -30,6 +30,12 @@
 #define FRAMERATE 50
 #define UPDATE_PERIOD 1000/FRAMERATE
 
+const char *match_type_tostr(MatchType mt)
+{
+	static const char *mt_strings[] = {"no match", "hunter", "survivor", "the dark hunt", "alone in the dark"};
+	return mt_strings[mt];
+}
+
 
 GameController::GameController(UiPageController *parent):
     UiPageController(parent), is_paused(true)
@@ -62,11 +68,20 @@ void GameController::show(){
 
 void GameController::start(){
     addPlayTime(); //test
-
-    GameWorld::instance().start();
-    timer->start(UPDATE_PERIOD);
-
-    is_paused = false;
+    qDebug("Starting match: %s",match_type_tostr(match_type));
+    switch(match_type)
+    {
+    case mt_hunter:
+    case mt_survivor:
+    case mt_the_dark_hunt:
+    case mt_alone_in_the_dark:
+		GameWorld::instance().start();
+		timer->start(UPDATE_PERIOD);
+		is_paused = false;
+		break;
+    default:
+    	break;
+    }
 }
 
 void GameController::exit(){
