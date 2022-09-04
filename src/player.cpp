@@ -81,9 +81,9 @@ void Player::computeState(){
     cstate->move();
 }
 
-void Player::collisionWithMonster(){
+void Player::collisionWithMonster(Monster::Monster *m){
     PlayerSm* cstate = pstates[model.state];
-    cstate->collisionWithMonster();
+    cstate->collisionWithMonster(m);
 }
 
 void Player::checkCollisionsWithMonsters(){
@@ -96,7 +96,7 @@ void Player::checkCollisionsWithMonsters(){
             if(i.height()<i.width())
                 step = i.height();
             cstate->moveBy(-step,-step);
-            cstate->collisionWithMonster();
+            cstate->collisionWithMonster(m);
         }
     }
 
