@@ -24,12 +24,16 @@
 #ifndef PLAYERSM_H
 #define PLAYERSM_H
 
+namespace Monster {
+class Monster;
+}
+
 class PlayerSm {
 public:
     virtual void move() = 0;
     virtual void updateEnergy() = 0;
     virtual void toggleRage() = 0;
-    virtual void collisionWithMonster() = 0;
+    virtual void collisionWithMonster(Monster::Monster *m) = 0;
     virtual void enter() {}
     virtual void exit() {}
     virtual ~PlayerSm();
@@ -49,7 +53,7 @@ public:
 
     virtual void move() override ;
 
-    virtual void collisionWithMonster() override ;
+    virtual void collisionWithMonster(Monster::Monster *m) override ;
 
     virtual void toggleRage() override;
     virtual ~PlayerNormal() override;
@@ -74,7 +78,8 @@ public:
 
     virtual void updateEnergy() override ;
 
-    virtual void collisionWithMonster() override {
+    virtual void collisionWithMonster(Monster::Monster *m) override {
+    	Q_UNUSED(m)
         return;
     }
 private:
@@ -89,7 +94,7 @@ public:
 
     virtual void move() override;
     virtual void toggleRage() override ;
-    virtual void collisionWithMonster() override;
+    virtual void collisionWithMonster(Monster::Monster *m) override;
 
     virtual ~PlayerOnRage() override {}
 private:
@@ -103,7 +108,7 @@ public:
     virtual void move() override {}
     virtual void updateEnergy() override {}
     virtual void toggleRage() override {}
-    virtual void collisionWithMonster() override { }
+    virtual void collisionWithMonster(Monster::Monster *m) override {Q_UNUSED(m)}
     virtual ~PlayerDead() override;
 private:
 };

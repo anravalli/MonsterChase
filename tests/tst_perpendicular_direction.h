@@ -34,7 +34,12 @@ protected:
         0, //target_x
         0, //target_y
         0, //target direction
-        0  //curent_speed
+        0,  //curent_speed
+		100, //health
+		10, //score_points
+		100, //death_score_bonus
+		10, //damage_inflicted_per_hit
+		10 //damage_suffered_per_hit
     };
 
     //void check

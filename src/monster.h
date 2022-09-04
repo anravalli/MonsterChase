@@ -76,6 +76,12 @@ class MonsterSm;
         double target_y;
         double target_direction;
         int curent_speed;
+
+        int health;
+        int score_point;
+        int death_score_bonus;
+        int damage_inflicted_per_hit;
+        int damage_suffered_per_hit;
     } ;
 
     class Monster;
@@ -98,6 +104,8 @@ class MonsterSm;
 
         void update();
         int id();
+        int hit_suffered(); //return score points
+        int hit_inflicted(); //return score points
 
         virtual ~Monster();
 
@@ -117,7 +125,12 @@ class MonsterSm;
             0, //target_x
             0, //target_y
             0, //target direction
-            0  //curent_speed
+            0,  //curent_speed
+			100, //health
+			10, //score_points
+			100, //death_score_bonus
+			10, //damage_inflicted_per_hit
+			10 //damage_suffered_per_hit
         };
 
     private:

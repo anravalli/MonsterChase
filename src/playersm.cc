@@ -21,12 +21,9 @@
 
 
 #include "playersm.h"
+#include "monster.h"
 
 #include <math.h>
-
-#define DAMAGE 10
-#define HIT 10
-
 
 PlayerSm::~PlayerSm(){}
 
@@ -68,8 +65,8 @@ void PlayerNormal::move() {
     moveBy(step,step);
 }
 
-void PlayerNormal::collisionWithMonster() {
-    _model->energy=_model->energy-DAMAGE;
+void PlayerNormal::collisionWithMonster(Monster::Monster *m) {
+    _model->energy=_model->energy - m->hit_inflicted();
     if(_model->energy < 0){
         _model->energy = 0;
         _model->state = dead;
@@ -122,8 +119,9 @@ void PlayerOnRage::move() {
 void PlayerOnRage::toggleRage() {
     _model->state=normal;
 }
-void PlayerOnRage::collisionWithMonster() {
-    _model->score=_model->score+HIT;
+void PlayerOnRage::collisionWithMonster(Monster::Monster *m)  {
+	int score_points = m->hit_suffered();
+    _model->score=_model->score+score_points;
 }
 
 //Player state Dead

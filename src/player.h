@@ -91,7 +91,7 @@ public:
 
     PlayerEnergyGauge* getEnergyGauge();
     PlayerStates getRageStatus();
-    void collisionWithMonster();
+    void collisionWithMonster(Monster::Monster *m);
 
     QRectF collisionBox() const;
 

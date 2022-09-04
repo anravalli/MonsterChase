@@ -127,4 +127,27 @@ namespace Monster{
         delete monster_view;
     }
 
+    int Monster::hit_suffered()
+    {
+    	int score_points = model.score_point;
+    	model.health -= model.damage_suffered_per_hit;
+    	if (model.health <= 0)
+    	{
+    		model.health = 0;
+    		score_points = model.death_score_bonus;
+    		//model.state = MonsterStates::dead; //missing dead state
+    		//by now let it become a ghost :-)
+    		model.death_score_bonus = 0;
+    		model.damage_inflicted_per_hit = 0;
+    		qDebug("monster %d is dead", model.id);
+    	}
+    	qDebug("monster healt is now %d", model.health);
+    	return score_points;
+    }
+
+	int Monster::hit_inflicted()
+	{
+		return model.damage_inflicted_per_hit;
+	}
+
 } //namescpace Monster

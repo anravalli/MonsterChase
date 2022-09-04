@@ -69,7 +69,8 @@ TEST_F(Collisions, debouncing)
         if(i.height()<i.width())
             step = i.height();
         cstate->moveBy(-step,-step);
-        cstate->collisionWithMonster();
+        //a stubbed monster for testing purpose needs to be added
+        //cstate->collisionWithMonster(m);
     }
 
     cout << "model x (after collision): " << model->pos_x << endl;
