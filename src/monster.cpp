@@ -129,8 +129,17 @@ namespace Monster{
 
     int Monster::hit_suffered()
     {
+    	static unsigned short cool_down = 0;
+    	if (cool_down > 0) {
+    		cool_down++;
+    		if(cool_down == 13)	cool_down = 0;
+    		return 0;
+    	}
+
     	int score_points = model.score_point;
     	model.health -= model.damage_suffered_per_hit;
+    	cool_down++;
+
     	if (model.health <= 0)
     	{
     		model.health = 0;

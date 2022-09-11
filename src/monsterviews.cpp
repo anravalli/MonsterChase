@@ -241,7 +241,7 @@ void MonsterEnergyGouge::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    double normalized_health = model->health / 100;
+    double normalized_health = model->health / 100.0;
     int gouge_width = 50 * normalized_health;
     QColor gouge_color(Qt::green);
     if(normalized_health <= 0.25)

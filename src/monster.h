@@ -131,7 +131,7 @@ class MonsterSm;
 				100, //health
 				10, //score_points
 				100, //death_score_bonus
-				10, //damage_inflicted_per_hit
+				5, //damage_inflicted_per_hit
 				10, //damage_suffered_per_hit
 				false
         };
