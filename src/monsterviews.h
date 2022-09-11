@@ -34,6 +34,7 @@ namespace Monster {
 class MonsterShape;
 class MonsterSight;
 class MonsterView;
+class MonsterEnergyGouge;
 
 MonsterView *monsterViewFactory(MonsterType type, MonsterModel* model);
 
@@ -59,6 +60,7 @@ protected:
     MonsterModel* model;
     MonsterShape* shape=nullptr;
     MonsterSight* sight=nullptr;
+    MonsterEnergyGouge *energy_gouge=nullptr;
 };
 
 
@@ -87,6 +89,31 @@ public:
 
 private:
     MonsterModel* model;
+};
+
+
+class MonsterEnergyGouge : public QGraphicsItem
+{
+public:
+	MonsterEnergyGouge(MonsterModel* m)
+        :model(m){}
+
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
+
+	bool isVisibilityToggle() const {
+		return visibility_toggle;
+	}
+
+	void setVisibilityToggle(bool visibilityToggle = false) {
+		visibility_toggle = visibilityToggle;
+	}
+
+private:
+    MonsterModel* model;
+    QRectF bbox;
+    bool visibility_toggle = false;
 };
 
 class MonsterTriangularShape: public MonsterShape{

@@ -331,7 +331,6 @@ BehaviorStatus PlayerProximityChecker::exec()
     BehaviorStatus status = fail;
     Player* p = GameWorld::instance().getPlayer();
     QRectF pbox = p->collisionBox();
-    PlayerStates prage = p->getRageStatus();
 
     Monster::Monster* this_monster = nullptr;
     std::vector<Monster::Monster*> monsters = GameWorld::instance().getMonsters();
@@ -341,13 +340,13 @@ BehaviorStatus PlayerProximityChecker::exec()
 
     QRectF i = this_monster->warningBox().intersected(pbox);
     if (not i.isEmpty()){
-        status = shouldFlee(pbox.center(), prage);
+        status = fineCheck(pbox.center());
     }
 
     return status;
 }
 
-BehaviorStatus PlayerProximityChecker::shouldFlee(QPointF pc, int ps)
+BehaviorStatus PlayerProximityChecker::fineCheck(QPointF pc)
 {
     BehaviorStatus ret = fail;
 
@@ -357,6 +356,7 @@ BehaviorStatus PlayerProximityChecker::shouldFlee(QPointF pc, int ps)
     double dy = pc.y() - _model->pos_y;
 
     double p_dist = sqrt(dx*dx + dy*dy);
+
 #if DEBUG
     double p_dir = atan2(dy, dx);
     //qudrant adjutment
@@ -369,10 +369,12 @@ BehaviorStatus PlayerProximityChecker::shouldFlee(QPointF pc, int ps)
     double sight_down = TORAD((_model->direction-40));
 
 #endif
-    if (p_dist <= 100 and ps == PlayerStates::on_rage){
-        _model->target_x = -pc.x();
-        _model->target_y = -pc.y();
-        ret = success;
+
+    if (p_dist <= 100){
+		_model->target_x = -pc.x();
+		_model->target_y = -pc.y();
+		ret = success;
     }
+
     return ret;
 }

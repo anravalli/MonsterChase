@@ -191,7 +191,7 @@ public:
     BehaviorStatus exec() override;
 private:
     int _entity_size;
-    BehaviorStatus shouldFlee(QPointF pc, int ps);
+    BehaviorStatus fineCheck(QPointF pc);
 };
 
 #endif // BEHAVIORS_H

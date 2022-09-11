@@ -82,6 +82,8 @@ class MonsterSm;
         int death_score_bonus;
         int damage_inflicted_per_hit;
         int damage_suffered_per_hit;
+
+        bool health_gouge_visible;
     } ;
 
     class Monster;
@@ -113,24 +115,25 @@ class MonsterSm;
         Monster();
 
         MonsterModel model = {
-            0, //id
-            MonsterType::Blinky,   //type
-            MonsterStates::patrol, //state
-            MonsterSubStates::move,//sub_state
-            200, //pos_x
-            200, //pos_y
-            200, //prevpos_x
-            200, //prev_pos_y
-            0, //direction
-            0, //target_x
-            0, //target_y
-            0, //target direction
-            0,  //curent_speed
-			100, //health
-			10, //score_points
-			100, //death_score_bonus
-			10, //damage_inflicted_per_hit
-			10 //damage_suffered_per_hit
+        		0, //id
+				MonsterType::Blinky,   //type
+				MonsterStates::patrol, //state
+				MonsterSubStates::move,//sub_state
+				200, //pos_x
+				200, //pos_y
+				200, //prevpos_x
+				200, //prev_pos_y
+				0, //direction
+				0, //target_x
+				0, //target_y
+				0, //target direction
+				0,  //curent_speed
+				100, //health
+				10, //score_points
+				100, //death_score_bonus
+				10, //damage_inflicted_per_hit
+				10, //damage_suffered_per_hit
+				false
         };
 
     private:

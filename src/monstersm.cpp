@@ -184,9 +184,12 @@ MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, BasicBehavior *rot
 
 void MonsterPatrolFreeze::tick(){
 
+	_model->health_gouge_visible = false;
+
     _in_position = (BehaviorStatus::running != _rotate->exec());
 
     if (BehaviorStatus::success == _player_scanner->exec()){
+    	_model->health_gouge_visible = true;
         if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage)
             _model->state=flee;
         else
@@ -194,10 +197,13 @@ void MonsterPatrolFreeze::tick(){
         exit();
     }
 
-    if (BehaviorStatus::success == _player_proximity_checker->exec()){
-        _model->state=flee;
-        exit();
-    }
+	if (BehaviorStatus::success == _player_proximity_checker->exec()){
+		_model->health_gouge_visible |= true;
+		if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+			_model->state=flee;
+			exit();
+		}
+	}
 
     if( (_freeze_time <= 0 and _in_position) ){
         _freeze_time=25;
@@ -247,6 +253,7 @@ MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, B
 }
 
 void MonsterPatrolMove::tick(){
+	_model->health_gouge_visible = false;
 
     if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
@@ -262,9 +269,8 @@ void MonsterPatrolMove::tick(){
         exit();
     }
 
-    //also player rage should be considered here to set correct status
-    bool player_seen_on_rage = false;
     if (BehaviorStatus::success == _player_scanner->exec()){
+    	_model->health_gouge_visible = true;
         if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
             _model->state=MonsterStates::flee;
             _model->sub_state = MonsterSubStates::route;
@@ -274,15 +280,19 @@ void MonsterPatrolMove::tick(){
         exit();
     }
 
-    if (BehaviorStatus::success == _player_proximity_checker->exec()
-            or player_seen_on_rage ){
-        _model->state=MonsterStates::flee;
-        _model->sub_state = MonsterSubStates::route;
-        exit();
+    if (BehaviorStatus::success == _player_proximity_checker->exec()){
+    	_model->health_gouge_visible |= true;
+
+    	if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+    		_model->state=MonsterStates::flee;
+    		_model->sub_state = MonsterSubStates::route;
+    		exit();
+    	}
     }
 
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
+
 
     return;
 }
@@ -321,7 +331,11 @@ MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, B
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
+//REMINDER :no state exit implemented even if used
+//NOTE: rotation is aborted in Patrol state
 void MonsterAttackMove::tick(){
+	//reset energy gouge visibility: it will be set later by behaviors
+	_model->health_gouge_visible = false;
 
     if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
@@ -332,29 +346,39 @@ void MonsterAttackMove::tick(){
         _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
+
     if (BehaviorStatus::success == _player_checker->exec()){
         _model->sub_state=MonsterSubStates::freeze;
         exit();
     }
 
-    if (BehaviorStatus::success != _player_scanner->exec()){
-        _model->state=MonsterStates::patrol;
-        exit();
+    if (BehaviorStatus::success == _player_scanner->exec()){
+    	_model->health_gouge_visible = true;
+
+    	if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
+    		_model->state=MonsterStates::flee;
+    		_model->sub_state = MonsterSubStates::route;
+    		exit();
+    	}
     }
-    else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
-        _model->state=MonsterStates::flee;
-        _model->sub_state = MonsterSubStates::route;
-        exit();
+    else{
+    	_model->state=MonsterStates::patrol;
+    	exit();
     }
 
     if (BehaviorStatus::success == _player_proximity_checker->exec()){
-        _model->state=MonsterStates::flee;
-        _model->sub_state = MonsterSubStates::route;
-        exit();
+    	_model->health_gouge_visible |= true;
+
+    	if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+    		_model->state=MonsterStates::flee;
+    		_model->sub_state = MonsterSubStates::route;
+    		exit();
+    	}
     }
 
     if (BehaviorStatus::success != _rotation_status)
         _rotation_status = _rotate->exec();
+
     return;
 }
 
@@ -379,23 +403,32 @@ MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, BasicBehavior *rot
 }
 
 void MonsterAttackFreeze::tick(){
+	_model->health_gouge_visible = false;
 
     _in_position = (BehaviorStatus::running != _rotate->exec());
 
-    if (BehaviorStatus::success != _player_scanner->exec()){
-        _model->state=MonsterStates::patrol;
-        exit();
+    if (BehaviorStatus::success == _player_scanner->exec()){
+    	_model->health_gouge_visible = true;
+
+    	if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
+    		_model->state=MonsterStates::flee;
+    		_model->sub_state = MonsterSubStates::route;
+    		exit();
+    	}
     }
-    else if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage) {
-        _model->state=MonsterStates::flee;
-        _model->sub_state = MonsterSubStates::route;
-        exit();
+    else{
+    	_model->state=MonsterStates::patrol;
+    	exit();
     }
 
     if (BehaviorStatus::success == _player_proximity_checker->exec()){
-        _model->state=MonsterStates::flee;
-        _model->sub_state = MonsterSubStates::route;
-        exit();
+    	_model->health_gouge_visible |= true;
+
+    	if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+    		_model->state=MonsterStates::flee;
+    		_model->sub_state = MonsterSubStates::route;
+    		exit();
+    	}
     }
 
     if( (_freeze_time <= 0 and _in_position) ){
@@ -437,7 +470,11 @@ MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, Basic
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
 }
 
+//REMINDER: no state exit() implemented even if used
+//NOTE: rotation is aborted in Patrol state
 void MonsterFleeMove::tick(){
+
+	_model->health_gouge_visible = true;
 
     if (BehaviorStatus::running != _move->exec()){
         _model->sub_state = MonsterSubStates::route;
@@ -495,32 +532,38 @@ MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
 }
 
 void MonsterFleeFreeze::tick(){
-    _in_position = (BehaviorStatus::running != _rotate->exec());
+	_model->health_gouge_visible = false;
 
-    if (BehaviorStatus::success != _player_proximity_checker->exec()){
-        _model->state=MonsterStates::patrol;;
-        exit();
-    }
+	_in_position = (BehaviorStatus::running != _rotate->exec());
 
-    if (BehaviorStatus::success == _player_scanner->exec()){
-        if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
-            _model->state=MonsterStates::flee;
-            _model->sub_state = MonsterSubStates::route;
-        }
-        else
-            _model->state=MonsterStates::attack;
-        exit();
-    }
+	if (BehaviorStatus::success == _player_proximity_checker->exec()){
+		_model->health_gouge_visible = true;
+		if(GameWorld::instance().getPlayer()->getRageStatus() != PlayerStates::on_rage){
+			_model->state=MonsterStates::patrol;
+			exit();
+		}
+	}
 
-    if( (_freeze_time <= 0 and _in_position) ){
-        _freeze_time=25;
-        _model->sub_state=MonsterSubStates::route;
-        exit();
-    }
-    else if(_freeze_time > 0)
-        _freeze_time--;
+	if (BehaviorStatus::success == _player_scanner->exec()){
+		_model->health_gouge_visible |= true;
+		if(GameWorld::instance().getPlayer()->getRageStatus() == PlayerStates::on_rage){
+			_model->state=MonsterStates::flee;
+			_model->sub_state = MonsterSubStates::route;
+		}
+		else
+			_model->state=MonsterStates::attack;
+		exit();
+	}
 
-    return;
+	if( (_freeze_time <= 0 and _in_position) ){
+		_freeze_time=25;
+		_model->sub_state=MonsterSubStates::route;
+		exit();
+	}
+	else if(_freeze_time > 0)
+		_freeze_time--;
+
+	return;
 }
 
 void MonsterFleeFreeze::exit() {

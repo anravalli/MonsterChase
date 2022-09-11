@@ -55,6 +55,7 @@ MonsterView *monsterViewFactory(MonsterType type, MonsterModel* model)
         monster->sight = new MonsterSight(model);
         break;
     }
+    monster->energy_gouge = new MonsterEnergyGouge(model);
 
     return monster;
 }
@@ -65,6 +66,7 @@ void MonsterView::addToPage(UiPageViewQt* page)
     //the order we add the items to the scene affects the z-order
     page->addItem(this->shape);
     page->addItem(this->sight);
+    page->addItem(this->energy_gouge);
     return;
 }
 
@@ -78,12 +80,14 @@ void MonsterView::hide()
 {
     shape->hide();
     sight->hide();
+    energy_gouge->hide();
 }
 
 void MonsterView::setPosition(double x, double y)
 {
     shape->setPos(x,y);
     sight->setPos(x,y);
+    energy_gouge->setPos(x,y);
 }
 
 void MonsterView::setRotation(double direction)
@@ -98,18 +102,39 @@ void MonsterView::update()
     setRotation(model->direction);
     shape->update();
     sight->update();
+    if(model->health_gouge_visible and not energy_gouge->isVisibilityToggle()){
+    	energy_gouge->show();
+    	energy_gouge->setVisibilityToggle(true);
+    }
+    else if(not model->health_gouge_visible and energy_gouge->isVisibilityToggle()){
+    	energy_gouge->hide();
+    	energy_gouge->setVisibilityToggle(false);
+    }
+
+    if(energy_gouge->isVisibilityToggle())
+    	energy_gouge->update();
 }
 
 void MonsterView::updateGeometry(double x, double y, double scale, double direction)
 {
-    Q_UNUSED(scale);
+	Q_UNUSED(scale);
 
-    shape->setPos(x,y);
-    sight->setPos(x,y);
-    shape->setRotation(direction);
-    sight->setRotation(direction+90);
-    shape->update();
-    sight->update();
+	shape->setPos(x,y);
+	sight->setPos(x,y);
+	energy_gouge->setPos(x,y);
+
+	shape->setRotation(direction);
+	sight->setRotation(direction+90);
+	shape->update();
+	sight->update();
+
+	if(model->health_gouge_visible)
+	{
+		energy_gouge->show();
+		energy_gouge->update();
+	}
+	else
+		energy_gouge->hide();
 }
 
 MonsterView::MonsterView(MonsterModel* model):
@@ -124,6 +149,7 @@ MonsterView::~MonsterView()
     // they belongs to
     delete shape;
     delete sight;
+    delete energy_gouge;
 }
 
 MonsterShape::MonsterShape(MonsterModel* m)
@@ -203,6 +229,33 @@ void MonsterSight::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 #endif
     painter->setBrush(QBrush(QColor(250,255,0,50)));
     painter->drawEllipse(-100,-100,200,200);
+}
+
+QRectF MonsterEnergyGouge::boundingRect() const
+{
+	return bbox;
+}
+
+void MonsterEnergyGouge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+    double normalized_health = model->health / 100;
+    int gouge_width = 50 * normalized_health;
+    QColor gouge_color(Qt::green);
+    if(normalized_health <= 0.25)
+    	gouge_color = Qt::red;
+    bbox = QRectF(-25, -30, gouge_width, 5);
+
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(Qt::darkGray);
+    painter->drawRect(-25, -27, gouge_width, 5);
+    painter->setPen(QPen(Qt::black, 1));
+    painter->setBrush(gouge_color);
+    painter->drawRect(bbox);
+    painter->setPen(Qt::NoPen);
+
 }
 
 }
