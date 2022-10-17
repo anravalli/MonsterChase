@@ -67,11 +67,12 @@ void PlayerNormal::move() {
 
 void PlayerNormal::collisionWithMonster(Monster::Monster *m) {
     _model->energy=_model->energy - m->hit_inflicted();
-    if(_model->energy < 0){
+    if(_model->energy <= 0){
         _model->energy = 0;
         _model->state = dead;
     }
-    _model->state = on_damage;
+    else
+    	_model->state = on_damage;
 }
 
 void PlayerNormal::toggleRage() {}
