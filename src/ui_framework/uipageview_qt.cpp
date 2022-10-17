@@ -100,6 +100,12 @@ void UiPageViewQt::addItem(QGraphicsItem *item)
     scene->addItem(item);
 }
 
+void UiPageViewQt::removeItem(QGraphicsItem *item)
+{
+    scene->removeItem(item);
+}
+
+
 void UiPageViewQt::setUpView()
 {
     view->setBackgroundBrush(QColor(Qt::darkGray));

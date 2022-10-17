@@ -64,6 +64,7 @@ void GameWorld::deInitLevel()
 	for (auto m: monsters)
 		delete m;
 	monsters.clear();
+
 	delete arena;
 }
 

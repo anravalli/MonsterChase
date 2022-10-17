@@ -120,6 +120,13 @@ Arena::Arena(QString fname, double brick_width):
     connect(timer, SIGNAL(timeout()), this, SLOT(showNextBrick()));
 }
 
+Arena::~Arena(){
+	for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
+		Brick* b = map[0][brick_count];
+		if(b != nullptr) delete b;
+	}
+}
+
 void Arena::show(){
     timer->start(1);
 }
@@ -148,6 +155,17 @@ void Arena::addToPage(UiPageViewQt* page)
     for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
         Brick* b = map[0][brick_count];
         if(b != nullptr) page->addItem(b);
+    }
+
+}
+
+void Arena::removeFromPage(UiPageViewQt* page)
+{
+    //Brick objects are just view items, as of now,
+    //so let's just add them to the page directly.
+    for(int brick_count = 0; brick_count<MAP_WIDTH*MAP_HEIGHT; brick_count++){
+        Brick* b = map[0][brick_count];
+        if(b != nullptr) page->removeItem(b);
     }
 
 }

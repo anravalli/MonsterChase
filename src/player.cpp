@@ -50,11 +50,19 @@ void Player::show(){
 void Player::hide(){
     shape->hide();
 }
+
 void Player::addToPage(UiPageViewQt* page)
 {
     page->addItem(this->shape);
     page->addItem(this->score);
     page->addItem(this->energy_gauge);
+}
+
+void Player::removeFromPage(UiPageViewQt* page)
+{
+    page->removeItem(this->shape);
+    page->removeItem(this->score);
+    page->removeItem(this->energy_gauge);
 }
 
 void Player::setEnergyGaugePos(int x, int y){
@@ -187,6 +195,8 @@ PlayerStates Player::getRageStatus(){
 
 Player::~Player(){
     delete pstates[normal];
+    delete pstates[rage_available];
+    delete pstates[on_damage];
     delete pstates[on_rage];
     delete pstates[dead];
     //TODO: check wether the QGraphicsItems are deleted by the QGraphicsScene

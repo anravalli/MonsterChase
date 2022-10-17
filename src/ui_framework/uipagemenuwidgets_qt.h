@@ -55,6 +55,7 @@ public:
 	virtual void show() = 0;
 	virtual void hide() = 0;
 	virtual void addToPage(UiPageViewQt* page) = 0;
+	virtual void removeFromPage(UiPageViewQt* page) = 0;
 
 	virtual void set_label(QString new_label){Q_UNUSED(new_label);return;};
 	virtual QString get_label(){return QString("");};
@@ -76,6 +77,7 @@ public:
 	virtual void deactivate() = 0;
 
 	virtual void addToPage(UiPageViewQt* page) = 0;
+	virtual void removeFromPage(UiPageViewQt* page) = 0;
 	virtual void selectionChanged(int index) = 0;
 	virtual void setPos(double x, double y) = 0;
 	virtual void setAlignement(MenuAlignement a) = 0;
@@ -100,6 +102,7 @@ public:
 	virtual void show() override final;
 	virtual void hide() override final;
 	virtual void addToPage(UiPageViewQt* page) override final;
+	virtual void removeFromPage(UiPageViewQt* page)  override final;
 
 	virtual ~UiMenuItemWidget_qt();
 
@@ -166,6 +169,7 @@ public:
 	void resetToPos(double new_x, double new_y);
 	void selectItemAt(int index, double spacing = 1);
 	void addToPage(UiPageViewQt* page);
+	void removeFromPage(UiPageViewQt* page);
 
 	void grow_by(double dw);
 
@@ -194,6 +198,7 @@ public:
 	virtual void deactivate() override final;
 
     virtual void addToPage(UiPageViewQt* page) override final;
+    virtual void removeFromPage(UiPageViewQt* page) override final;
     virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
 	virtual void setAlignement(MenuAlignement a) override final;
@@ -235,6 +240,7 @@ public:
 	virtual void deactivate() override final;
 
 	virtual void addToPage(UiPageViewQt* page) override final;
+    virtual void removeFromPage(UiPageViewQt* page) override final;
 	virtual void selectionChanged(int index) override final;
 	virtual void setPos(double x, double y) override final;
 	virtual void setAlignement(MenuAlignement a) override final;

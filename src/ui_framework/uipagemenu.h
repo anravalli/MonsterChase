@@ -42,6 +42,7 @@ public:
     UiPageMenu(vector<function<void()>> actions, vector<QString> model, int start_index = 0);
     UiPageMenu(vector<function<void()>> actions, UiPageAbstractMenuWidget *view, int start_index = 0);
     virtual void addToPage(UiPageViewQt* page);
+    virtual void removeFromPage(UiPageViewQt* page);
     virtual bool handleKey(int key, bool released);
     virtual void setPos(double x, double y);
     virtual void show();

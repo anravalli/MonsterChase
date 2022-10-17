@@ -53,6 +53,12 @@ public:
 		values->addToPage(page);
 	}
 
+	virtual void removeFromPage(UiPageViewQt* page) override final
+	{
+		name->removeFromPage(page);
+		values->removeFromPage(page);
+	}
+
 	virtual QPointF center_anchor()  override final
 	{
 		double anchor_x = this->_pos.x()+this->name->width() + item_spacing/2;

@@ -104,6 +104,10 @@ void UiPageMenu::addToPage(UiPageViewQt* page)
    view->addToPage(page);
 }
 
+void UiPageMenu::removeFromPage(UiPageViewQt* page)
+{
+   view->removeFromPage(page);
+}
 
 
 

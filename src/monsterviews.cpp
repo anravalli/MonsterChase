@@ -70,6 +70,16 @@ void MonsterView::addToPage(UiPageViewQt* page)
     return;
 }
 
+void MonsterView::removeFromPage(UiPageViewQt* page)
+{
+    //adding views to scene
+    //the order we add the items to the scene affects the z-order
+    page->removeItem(this->shape);
+    page->removeItem(this->sight);
+    page->removeItem(this->energy_gouge);
+    return;
+}
+
 void MonsterView::show()
 {
     shape->show();

@@ -84,6 +84,7 @@ public:
     void show() override;
     void hide() override;
     virtual void addToPage(UiPageViewQt* page) override;
+    virtual void removeFromPage(UiPageViewQt* page) override;
 
     void setEnergyGaugePos(int x, int y);
 

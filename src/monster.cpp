@@ -67,6 +67,11 @@ namespace Monster{
         monster_view->addToPage(page);
     }
 
+    void Monster::removeFromPage(UiPageViewQt* page)
+    {
+    	monster_view->removeFromPage(page);
+    }
+
     void Monster::show(){
         monster_view->show();
     }

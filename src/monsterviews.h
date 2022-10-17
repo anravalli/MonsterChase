@@ -55,6 +55,7 @@ public:
 
 
     void addToPage(UiPageViewQt* page);
+    void removeFromPage(UiPageViewQt* page);
 
 protected:
     MonsterModel* model;

@@ -112,6 +112,13 @@ void UiPageMenuWidget_qt::addToPage(UiPageViewQt* page)
 		item->addToPage(page);
 }
 
+void UiPageMenuWidget_qt::removeFromPage(UiPageViewQt* page)
+{
+	selection_box->removeFromPage(page);
+	for(auto item: menu_items)
+		item->removeFromPage(page);
+}
+
 void UiPageMenuWidget_qt::selectionChanged(int index)
 {
 	selection_box->selectItemAt(index, item_vertical_spacing_factor);
@@ -268,6 +275,13 @@ void UiPagePopupWidget_qt::addToPage(UiPageViewQt* page)
 	menu->addToPage(page);
 }
 
+void UiPagePopupWidget_qt::removeFromPage(UiPageViewQt* page)
+{
+	page->removeItem(drop);
+	page->removeItem(info);
+	menu->addToPage(page);
+}
+
 void UiPagePopupWidget_qt::show()
 {
 	drop->show();
@@ -397,6 +411,11 @@ void UiPageMenuItemSelectioBoxWidget_qt::addToPage(UiPageViewQt* page)
 	page->addItem(selection_box);
 }
 
+void UiPageMenuItemSelectioBoxWidget_qt::removeFromPage(UiPageViewQt* page)
+{
+	page->removeItem(selection_box);
+}
+
 UiMenuItemWidget_qt::UiMenuItemWidget_qt(QString label)
 {
 	_label = new QGraphicsSimpleTextItem();
@@ -441,6 +460,12 @@ void UiMenuItemWidget_qt::addToPage(UiPageViewQt *page)
 {
 	page->addItem(this->_label);
 }
+
+void UiMenuItemWidget_qt::removeFromPage(UiPageViewQt *page)
+{
+	page->removeItem(this->_label);
+}
+
 
 UiMenuItemWidget_qt::~UiMenuItemWidget_qt()
 {

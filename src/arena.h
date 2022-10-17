@@ -62,11 +62,13 @@ signals:
 public:
     Arena(double brick_width);
     Arena(QString fname, double brick_width);
+    virtual ~Arena();
 
     void show() override;
     void showAll();
     void hide() override;
     virtual void addToPage(UiPageViewQt* page) override;
+    virtual void removeFromPage(UiPageViewQt* page) override;
     bool mapComplete();
 
     virtual Brick *getBrick(std::pair<int, int> idx);

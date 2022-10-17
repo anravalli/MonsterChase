@@ -8,6 +8,7 @@ class GameEntityI
 public:
     virtual ~GameEntityI() {};
     virtual void addToPage(UiPageViewQt* page) = 0;
+    virtual void removeFromPage(UiPageViewQt* page) = 0;
     virtual void show() = 0;
     virtual void hide() = 0;
 };

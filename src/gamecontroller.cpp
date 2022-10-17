@@ -92,7 +92,17 @@ void GameController::start(){
 //for game states: start here
 void GameController::exit(){
 	qDebug("GameController::exit()");
+
+	GameWorld::instance().getArena()->removeFromPage(page_view);
+	GameWorld::instance().getPlayer()->removeFromPage(page_view);
+	for(auto m: GameWorld::instance().getMonsters())
+		m->removeFromPage(page_view);
+	page_view->removeItem(ptime);
 	GameWorld::instance().deInitLevel();
+
+	pause_menu->hide();
+	pause_menu->removeFromPage(page_view);
+	if(match_end_menu) match_end_menu->hide();
 	UiPageController::exit();
 }
 
@@ -134,7 +144,6 @@ void GameController::togglePause(){
 //destructor currently unused
 GameController::~GameController()
 {
-	GameWorld::instance().deInitLevel();
 	delete page_view;
     delete ptime;
     delete timer;
