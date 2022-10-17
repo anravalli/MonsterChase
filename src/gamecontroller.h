@@ -28,6 +28,7 @@
 class UiPageViewQt;
 class QTimer;
 class PlayTime;
+class UiPageMenu;
 
 enum MatchType
 {
@@ -37,6 +38,24 @@ enum MatchType
 	mt_the_dark_hunt,
 	mt_alone_in_the_dark
 };
+
+enum MatchState
+{
+	ms_running,
+	ms_pused,
+	ms_ended,
+	ms_aborted
+};
+
+struct MatchData
+{
+	int play_time;
+	QString player_profile;
+
+};
+
+//we need a Match object encapsulating all the match characteristics like match score, play time, player profile, match type and map
+//the Match object could be in three different state: running, paused, terminated
 
 class GameController : public UiPageController
 {
@@ -68,12 +87,21 @@ protected:
 private:
     QTimer* timer = nullptr;
     PlayTime* ptime = nullptr;
-
+    UiPageMenu *current_menu = nullptr;
+    UiPageMenu *pause_menu = nullptr;
+    UiPageMenu *match_end_menu = nullptr;
     MatchType match_type = mt_hunter;
 
     bool is_paused; //temporary: this "state variable" has to be changed to a "real" state
 
+    void initMatch();
     void addPlayTime();
+    void checkMatchRules();
+    void macthEnded(bool gameover);
+    UiPageMenu *create_match_ended_popup(int score, int energy, int play_time,
+    		int final_score, QString message);
+    UiPageMenu *create_pause_menu();
+    void togglePause();
 
 signals:
 

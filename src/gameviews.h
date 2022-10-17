@@ -40,6 +40,8 @@ public:
     PlayTime(unsigned short framerate);
 
     void increase();
+    int getPlayTime(){return time;};
+
 
 private:
     QColor color;

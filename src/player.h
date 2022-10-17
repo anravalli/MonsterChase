@@ -89,6 +89,10 @@ public:
 
     void setScorePos(int x, int y);
 
+    int getScore(){return model.score;};
+    double getEnergy(){return model.energy;};
+    bool isDead(){return model.state==PlayerStates::dead ? true : false;};
+
     PlayerEnergyGauge* getEnergyGauge();
     PlayerStates getRageStatus();
     void collisionWithMonster(Monster::Monster *m);

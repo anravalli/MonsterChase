@@ -45,6 +45,7 @@ public:
     static GameWorld& instance();
 
     void initLevel(QString map);
+    void deInitLevel();
     void nextFrame();
 
     std::vector<Monster::Monster*> getMonsters();

@@ -58,6 +58,15 @@ void GameWorld::initLevel(QString map)
     addMonsters();
 }
 
+void GameWorld::deInitLevel()
+{
+	delete player;
+	for (auto m: monsters)
+		delete m;
+	monsters.clear();
+	delete arena;
+}
+
 void GameWorld::addPlayer()
 {
     player = new Player();
