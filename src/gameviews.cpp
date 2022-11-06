@@ -33,21 +33,15 @@ void GamePage::setUpView()
     view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
 }
 
-PlayTime::PlayTime(const unsigned short framerate)
-    :color(255,127,127), frame_max(framerate), frame_counter(framerate)
+PlayTime::PlayTime()
+    :color(255,127,127)
 {
     QFont font("Helvetica",14,QFont::Bold);
     this->setFont(font);
     this->setPen(QPen(color));
 }
 
-void PlayTime::increase(){
-    if(!frame_counter){
-        frame_counter=frame_max;
-        time++;
-    }
-    else
-        frame_counter--;
+void PlayTime::setTime(int time){
     this->setText(QString::asprintf("%04d", time));
     return;
 }

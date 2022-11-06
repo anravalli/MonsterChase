@@ -31,6 +31,8 @@
 #define PLAYGROUND_VIEW_WIDTH PLAYGROUND_WIDTH + PLAYGROUND_VIEW_EXTRA_WIDTH
 #define PLAYGROUND_VIEW_HEIGHT PLAYGROUND_HEIGHT + PLAYGROUND_VIEW_EXTRA_HEIGHT
 
+#define FRAMERATE 50
+#define TICK_PER_SECOND 1000
 
 double GameConfig::playground_width = PLAYGROUND_WIDTH;
 double GameConfig::playground_height = PLAYGROUND_HEIGHT;
@@ -42,3 +44,6 @@ double GameConfig::playground_view_width = GameConfig::playground_width
         + GameConfig::playground_view_extra_width;
 double GameConfig::playground_view_height = GameConfig::playground_height
         + GameConfig::playground_view_extra_height;
+
+double GameConfig::framerate = FRAMERATE;
+double GameConfig::game_update_period = TICK_PER_SECOND/FRAMERATE;

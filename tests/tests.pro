@@ -28,7 +28,10 @@ HEADERS += \
     ../src/ui_framework/uipagemenuwidgets_qt.h \
     ../src/matchmenu.h \
     ../src/editor/level_editor.h \
-    ../src/editor/editor_ui.h
+    ../src/editor/editor_ui.h \
+    ../src/match.h \
+    ../src/match_sm.h \
+    ../src/matchendmenu.h
 
 SOURCES += \
         main.cpp \
@@ -60,6 +63,8 @@ SOURCES += \
         ../src/gameconfig.cpp \
         ../src/gameviews.cpp \
         ../src/matchmenu.cpp \
+        ../src/match.cpp \
+        ../src/match_sm.cpp
 
 FORMS += \
     ../src/editor/editor.ui

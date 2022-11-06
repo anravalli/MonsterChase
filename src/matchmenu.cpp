@@ -30,15 +30,18 @@ MatchMenu::MatchMenu(vector<function<void()> > actions,
 		UiPageMenu(actions, view, 0) {
 }
 
-void MatchMenu::on_match_type_changed(QString new_match) {
-	qDebug("new_match: %s", new_match.toStdString().c_str());
+void MatchMenu::on_match_type_changed(MatchType new_match) {
+	qDebug("new_match: %d", new_match);
+	match_type = new_match;
 	int match_item_idx = 2;
-	view->set_item_label(match_item_idx, QString("Match Type: ") + new_match);
+	QString type(match_type_tostr(new_match));
+	view->set_item_label(match_item_idx, QString("Match Type: ") + type);
 	this->setAlignement(align_center);
 }
 
 void MatchMenu::on_player_name_changed(QString new_name) {
 	qDebug("new_name: %s", new_name.toStdString().c_str());
+	profile = new_name;
 	int name_item_idx = 1;
 	view->set_item_label(name_item_idx, QString("Player: ") + new_name);
 	this->setAlignement(align_center);

@@ -22,37 +22,14 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+#include "match.h"
+#include "match_sm.h"
 #include <ui_framework/uipagecontroller.h>
 
 class UiPageViewQt;
 class QTimer;
 class PlayTime;
 class UiPageMenu;
-
-enum MatchType
-{
-	mt_no_match,
-	mt_hunter,
-	mt_survivor,
-	mt_the_dark_hunt,
-	mt_alone_in_the_dark
-};
-
-enum MatchState
-{
-	ms_running,
-	ms_pused,
-	ms_ended,
-	ms_aborted
-};
-
-struct MatchData
-{
-	int play_time;
-	QString player_profile;
-
-};
 
 //we need a Match object encapsulating all the match characteristics like match score, play time, player profile, match type and map
 //the Match object could be in three different state: running, paused, terminated
@@ -65,21 +42,15 @@ public:
     ~GameController() override;
     void show() override;
     void exit() override;
-
+    UiPageMenu * pause_menu();
+    UiPageMenu * end_menu();
+    Match *match();
+    void set_match(Match *match);
+    void change_match_state(MatchStateE next_state);
 
 public slots:
-    void gameStep() ;
+    void gameStep();
     void start();
-
-	MatchType get_match_type() const
-	{
-		return match_type;
-	}
-
-	void set_match_type(MatchType matchType)
-	{
-		match_type = matchType;
-	}
 
 protected:
     bool handleKey(int key, bool released) override;
@@ -87,24 +58,35 @@ protected:
 private:
     QTimer* timer = nullptr;
     PlayTime* ptime = nullptr;
-    UiPageMenu *current_menu = nullptr;
-    UiPageMenu *pause_menu = nullptr;
-    UiPageMenu *match_end_menu = nullptr;
-    MatchType match_type = mt_hunter;
 
-    bool is_paused; //temporary: this "state variable" has to be changed to a "real" state
+    UiPageMenu *m_pause_menu = nullptr;
+    UiPageMenu *m_end_menu = nullptr;
+    Match *m_match;
+    MatchState *match_states[4] = {0};
+    MatchStateE current_state = ms_running;
+    MatchType match_type = mt_hunter; //TO BE REVIEWED
 
     void initMatch();
     void addPlayTime();
-    void checkMatchRules();
-    void macthEnded(bool gameover);
-    UiPageMenu *create_match_ended_popup(int score, int energy, int play_time,
-    		int final_score, QString message);
+
+    UiPageMenu *create_match_ended_popup();
     UiPageMenu *create_pause_menu();
-    void togglePause();
 
 signals:
 
 };
+
+inline UiPageMenu *GameController::pause_menu(){
+	return m_pause_menu;
+};
+
+inline Match *GameController::match(){
+	return m_match;
+}
+
+inline void GameController::set_match(Match *match)
+{
+	m_match = match;
+}
 
 #endif // GAME_H

@@ -26,6 +26,7 @@
 
 #include <ui_framework/uipagemenu.h>
 #include <ui_framework/uipagemenuwidgets_qt.h>
+#include "match.h"
 
 class SelectionMenuWidget_qt: public UiPageMenuWidget_qt
 {
@@ -72,7 +73,7 @@ public:
 	void previous_value_for(unsigned int idx);
 signals:
 	void name_changed(QString new_name);
-	void match_changed(QString new_match);
+	void match_changed(MatchType new_match);
 };
 
 
@@ -86,8 +87,19 @@ public:
 	virtual ~MatchMenu(){};
 public slots:
 	void on_player_name_changed(QString new_name);
-	void on_match_type_changed(QString new_match);
+	void on_match_type_changed(MatchType new_match);
+
+	MatchType get_match_type() const {
+		return match_type;
+	}
+
+	const QString& get_profile() const {
+		return profile;
+	}
+
 private:
+	QString profile = "no name";
+	MatchType match_type = mt_no_match;
 };
 
 class MatchMenuWidget_qt: public UiPageMenuWidget_qt

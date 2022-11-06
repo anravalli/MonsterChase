@@ -29,6 +29,7 @@
 #include "options_panel/optionpage_controller.h"
 #include "matchmenu.h"
 #include "hiscore_panel/hiscorepage_controller.h"
+#include "match.h"
 
 #include <QGraphicsPixmapItem>
 /*
@@ -119,15 +120,14 @@ UiPageMenu *MonsterChase::populate_match_selection_menu()
 
 	popup_actions.push_back([this, menu, popup_view]{
 		int i = menu->get_current_item_idx();
-		QString new_match = (popup_view->get_inner_menu())->get_item_label(i);
-		int v = ((SelectionMenuWidget_qt *)(popup_view->get_inner_menu()))->get_current_value_of(i);
+		//QString new_match = (popup_view->get_inner_menu())->get_item_label(i);
+		int new_match = ((SelectionMenuWidget_qt *)(popup_view->get_inner_menu()))->get_current_value_of(i);
 
-		std::cout << "item #"<< menu->get_current_item_idx() << " \"" << new_match.toStdString() <<"\" (" << v << ") selected" << std::endl;
+		std::cout << "item #"<< menu->get_current_item_idx() << " \"" << match_type_tostr((MatchType)new_match) <<"\" (" << new_match << ") selected" << std::endl;
 
 		//menu->setAlignement(align_center);
 
-		emit menu->match_changed(new_match);
-		this->game_controller->set_match_type((MatchType)v);
+		emit menu->match_changed((MatchType)new_match);
 		//back
 		back_to_menu(match_menu);
 		return;
@@ -193,10 +193,16 @@ UiPageMenu *MonsterChase::populate_match_menu()
 	//This array of function objects to the menu controller to implement the actions associated to each menu entry
 	vector<function<void()>> actions;
 
+	auto view = new MatchMenuWidget_qt(&model);
+	auto menu = new MatchMenu(actions, view);
+
 	//Start Match action: start the match
-	actions.push_back([this]{
+	actions.push_back([this, menu]{
 		this->page_view->hide();
 		QApplication::instance()->removeEventFilter(this);
+
+		auto new_match = matchFactory(menu->get_match_type(), menu->get_profile());
+		this->game_controller->set_match(new_match);
 		this->game_controller->show();
 	});
 
@@ -218,15 +224,13 @@ UiPageMenu *MonsterChase::populate_match_menu()
 		this->back_to_menu(this->base_menu);
 		this->current_menu->show();
 	});
-
-	auto view = new MatchMenuWidget_qt(&model);
-	auto menu = new MatchMenu(actions, view);
+	menu->set_actions(actions);
 
 	//TODO: check connection
 	connect((MatchPlayerSelectionMenu *)player_selection_menu, SIGNAL(name_changed(QString)),
 			menu, SLOT(on_player_name_changed(QString)));
-	connect((MatchPlayerSelectionMenu *)match_selection_menu, &MatchPlayerSelectionMenu::match_changed,
-			menu, &MatchMenu::on_match_type_changed);
+	connect((MatchPlayerSelectionMenu *)match_selection_menu, SIGNAL(match_changed(MatchType)),
+			menu, SLOT(on_match_type_changed(MatchType)));
 
 
 	menu->setPos(GameConfig::playground_width/2,

@@ -37,17 +37,11 @@ protected:
 class PlayTime : public QGraphicsSimpleTextItem
 {
 public:
-    PlayTime(unsigned short framerate);
-
-    void increase();
-    int getPlayTime(){return time;};
-
+    PlayTime();
+    void setTime(int time);
 
 private:
     QColor color;
-    int time=0;
-    unsigned short frame_max;
-    int frame_counter;
 };
 
 #endif // GAMEVIEWS_H

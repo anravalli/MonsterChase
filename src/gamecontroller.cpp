@@ -26,34 +26,30 @@
 #include "arena.h"
 #include "player.h"
 #include "monster.h"
-
 #include <ui_framework/uipagemenu.h>
-
-#define FRAMERATE 50
-#define UPDATE_PERIOD 1000/FRAMERATE
-
-const char *match_type_tostr(MatchType mt)
-{
-	static const char *mt_strings[] = {"no match", "hunter", "survivor", "the dark hunt", "alone in the dark"};
-	return mt_strings[mt];
-}
-
+#include "matchendmenu.h"
 
 GameController::GameController(UiPageController *parent):
-    UiPageController(parent), is_paused(true)
+    UiPageController(parent)
 {
     initPageView<GamePage>();
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(gameStep()));
 
-    pause_menu = create_pause_menu();
+    m_pause_menu = create_pause_menu();
+
+    match_states[ms_running] = MatchStateFactory(ms_running, this);
+    match_states[ms_pused] = MatchStateFactory(ms_pused, this);
+    match_states[ms_ended] = MatchStateFactory(ms_ended, this);
+    match_states[ms_aborted] = MatchStateFactory(ms_aborted, this);
+
+    current_state = ms_aborted;
 }
 
 //TODO: removeFromPage() needed
 void GameController::initMatch(){
-	QString map = ":/resources/map.txt";
-	GameWorld::instance().initLevel(map);
+	GameWorld::instance().initLevel(m_match->getMapName());
 
 	Arena* arena = GameWorld::instance().getArena();
 	arena->addToPage(page_view);
@@ -62,10 +58,11 @@ void GameController::initMatch(){
 	GameWorld::instance().getPlayer()->addToPage(page_view);
 	for(auto m: GameWorld::instance().getMonsters())
 		m->addToPage(page_view);
-	pause_menu->addToPage(page_view);
+	m_pause_menu->addToPage(page_view);
 }
 
 void GameController::show(){
+	//start a new match
 	initMatch();
     UiPageController::show();
     GameWorld::instance().getArena()->show();
@@ -73,26 +70,15 @@ void GameController::show(){
 
 void GameController::start(){
     addPlayTime(); //test
-    qDebug("Starting match: %s",match_type_tostr(match_type));
-    switch(match_type)
-    {
-    case mt_hunter:
-    case mt_survivor:
-    case mt_the_dark_hunt:
-    case mt_alone_in_the_dark:
-		GameWorld::instance().start();
-		timer->start(UPDATE_PERIOD);
-		is_paused = false;
-		break;
-    default:
-    	break;
-    }
+    change_match_state(ms_running);
+	GameWorld::instance().start();
+	timer->start(GameConfig::game_update_period);
 }
 
 //for game states: start here
 void GameController::exit(){
 	qDebug("GameController::exit()");
-
+	timer->stop();
 	GameWorld::instance().getArena()->removeFromPage(page_view);
 	GameWorld::instance().getPlayer()->removeFromPage(page_view);
 	for(auto m: GameWorld::instance().getMonsters())
@@ -100,19 +86,52 @@ void GameController::exit(){
 	page_view->removeItem(ptime);
 	GameWorld::instance().deInitLevel();
 
-	pause_menu->hide();
-	pause_menu->removeFromPage(page_view);
-	if(match_end_menu) match_end_menu->hide();
+	m_pause_menu->hide();
+	m_pause_menu->removeFromPage(page_view);
+	if(m_end_menu) m_end_menu->hide();
 	UiPageController::exit();
 }
 
+//destructor currently unused
+GameController::~GameController()
+{
+	delete page_view;
+    delete ptime;
+    delete timer;
+    delete m_pause_menu;
+    if(m_end_menu)
+    	delete m_end_menu;
+}
+
+void GameController::addPlayTime(){
+    ptime = new PlayTime();
+    ptime->setPos(-GameConfig::playground_border_width/2,
+                  -GameConfig::playground_border_height*0.6);
+    page_view->addItem(ptime);
+}
+
+
+void GameController::gameStep(){
+    match_states[current_state]->next();
+    ptime->setTime(m_match->getPlayTime());
+}
+
+bool GameController::handleKey(int key, bool released){
+    return match_states[current_state]->handleKey(key, released);
+}
+
+void GameController::change_match_state(MatchStateE next_state){
+	match_states[current_state]->exit();
+	current_state = next_state;
+	match_states[current_state]->enter();
+}
 
 UiPageMenu *GameController::create_pause_menu()
 {
 	vector<QString> popup_model = {"yes", "not"};
 	vector<function<void()>> popup_actions;
 	popup_actions.push_back([this]{this->exit();});
-	popup_actions.push_back([this]{this->togglePause();});
+	popup_actions.push_back([this]{this->change_match_state(ms_running);});
 
 	auto *popup_view = new UiPagePopupWidget_qt(QString("Do you want to leave the match?"),
 			new UiPageMenuWidget_qt(&popup_model));
@@ -124,70 +143,13 @@ UiPageMenu *GameController::create_pause_menu()
 	return popup_menu;
 }
 
-void GameController::togglePause(){
-    qDebug("GameController::togglePause()");
-    qDebug("is_paused %d", is_paused);
-    if(is_paused){
-    	timer->start();
-    	is_paused = false;
-    	current_menu = nullptr;
-    	pause_menu->hide();
-    }
-    else{
-    	timer->stop();
-    	is_paused = true;
-    	current_menu = pause_menu;
-    	pause_menu->show();
-    }
-}
-
-//destructor currently unused
-GameController::~GameController()
-{
-	delete page_view;
-    delete ptime;
-    delete timer;
-    delete pause_menu;
-    if(match_end_menu)
-    	delete match_end_menu;
-}
-
-void GameController::addPlayTime(){
-    ptime = new PlayTime(FRAMERATE);
-    ptime->setPos(-GameConfig::playground_border_width/2,
-                  -GameConfig::playground_border_height*0.6);
-    page_view->addItem(ptime);
-}
-
-class MatchEndPopup: public UiPageMenu
-{
-public:
-	MatchEndPopup(vector<function<void()>> actions, UiPageAbstractMenuWidget *view, int start_index):
-		UiPageMenu(actions, view, start_index){}
-
-	virtual bool handleKey(int key, bool released) override final {
-	    bool ret = false;
-	    switch(key){
-	    case Qt::Key_Enter:
-	    case Qt::Key_Return:
-	        run_item_action(released);
-	        ret = true;
-	        break;
-	    default:
-	        break;
-	    }
-	    return ret;
-	}
-};
-
-UiPageMenu *GameController::create_match_ended_popup(int score, int energy, int play_time,
-		int final_score, QString message)
+UiPageMenu *GameController::create_match_ended_popup()
 {
 	//temporary using a standard popup menu
-	QString s_score = QString::asprintf("score: %d", score);
-	QString s_energy = QString::asprintf("energy: %d", energy);
-	QString s_play_time = QString::asprintf("time: %d", play_time);
-	QString s_final_score = QString::asprintf("final match score: %d", final_score);
+	QString s_score = QString::asprintf("score: %d", m_match->getPlayerScore());
+	QString s_energy = QString::asprintf("energy: %d", m_match->getPlayerEnergy());
+	QString s_play_time = QString::asprintf("time: %d", m_match->getPlayTime());
+	QString s_final_score = QString::asprintf("final match score: %d", m_match->compute_match_score());
 
 	vector<QString> popup_model = {s_score, s_energy, s_play_time, s_final_score, "close"};
 	vector<function<void()>> popup_actions;
@@ -195,7 +157,7 @@ UiPageMenu *GameController::create_match_ended_popup(int score, int energy, int 
 		popup_actions.push_back([this]{return;});
 	popup_actions.push_back([this]{this->exit();});
 
-	auto *popup_view = new UiPagePopupWidget_qt(message,
+	auto *popup_view = new UiPagePopupWidget_qt(m_match->get_match_completion_prompt(),
 			new UiPageMenuWidget_qt(&popup_model));
 
 	auto popup_menu = new MatchEndPopup(popup_actions, popup_view, popup_model.size()-1);
@@ -205,85 +167,10 @@ UiPageMenu *GameController::create_match_ended_popup(int score, int energy, int 
 	return popup_menu;
 }
 
-void GameController::macthEnded(bool gameover){
-	int score = GameWorld::instance().getPlayer()->getScore();
-	int energy = GameWorld::instance().getPlayer()->getEnergy();
-	int play_time = ptime->getPlayTime();
-	int final_score = 0;
-	QString message;
-	if(!gameover){
-		final_score = score + energy*10 - play_time/100;
-		message = "You WIN!!!";
-	}
-	else{
-		final_score = score;
-		message = "GAME OVER!";
-	}
-	match_end_menu = create_match_ended_popup(score, energy, play_time, final_score, message);
-	current_menu = match_end_menu;
-}
+UiPageMenu *GameController::end_menu(){
+	if(m_end_menu == nullptr)
+		m_end_menu = create_match_ended_popup();
+	return m_end_menu;
+};
 
-void GameController::checkMatchRules(){
-	if(GameWorld::instance().getPlayer()->isDead()){
-		//you loose!
-		//remove player
-		//stop play time
-		//keep monster
-		//bleur screen
-		is_paused = true; //FIXME need a state
-		timer->stop(); //FIXME player destruction not managed
-		macthEnded(true);
-	}
-	if(GameWorld::instance().getMonsters().empty()){
-		//you win!
-		is_paused = true; //FIXME need a state
-		timer->stop();
-		macthEnded(false);
-	}
-
-}
-void GameController::gameStep(){
-#ifdef  DEBUG
-    QTime t = QTime::currentTime();
-    qDebug("iteration %s", t.toString().toStdString().c_str());
-    qDebug("-> elapsed %d", e.elapsed());
-#endif
-    if(!is_paused)
-    	checkMatchRules();
-    ptime->increase();
-    GameWorld::instance().nextFrame();
-}
-
-bool GameController::handleKey(int key, bool released){
-    bool ret = false;
-
-    switch(key){
-    case Qt::Key_Space:
-    case Qt::Key_D:
-    case Qt::Key_Right:
-    case Qt::Key_A:
-    case Qt::Key_Left:
-    case Qt::Key_Up:
-    case Qt::Key_W:
-    case Qt::Key_S:
-    case Qt::Key_Down:
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        if(!is_paused)
-        	ret = GameWorld::instance().getPlayer()->handleKey(key, released);
-        else{
-        	assert(current_menu);
-        	ret = current_menu->handleKey(key, released);
-        }
-        break;
-    case Qt::Key_Exit:
-    case Qt::Key_Escape:
-        if (released) togglePause();
-        ret = true;
-        break;
-    default:
-        break;
-    }
-    return ret;
-}
 

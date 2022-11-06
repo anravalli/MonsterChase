@@ -59,6 +59,8 @@ SOURCES += main.cpp\
     gameworld.cpp \
     gameviews.cpp \
     gameconfig.cpp \
+    match.cpp \
+    match_sm.cpp \
     ui_framework/uipagecontroller.cpp \
     ui_framework/uipagemenu.cpp \
     ui_framework/uipagemenuwidgets_qt.cpp \
@@ -85,6 +87,9 @@ HEADERS  += monsterchase.h \
     gameviews.h \
     gameconfig.h \
     matchmenu.h \
+    match.h \
+    match_sm.h \
+    matchendmenu.h \
     ui_framework/uipagecontroller.h \
     ui_framework/uipagemenu.h \
     ui_framework/uipagemenuwidgets_qt.h \

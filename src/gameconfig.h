@@ -35,6 +35,9 @@ public:
     static double playground_view_width;
     static double playground_view_height;
 
+    static double framerate;
+    static double game_update_period;
+
 };
 
 #endif // GAMECONFIG_H
