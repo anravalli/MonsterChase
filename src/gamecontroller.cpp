@@ -88,7 +88,11 @@ void GameController::exit(){
 
 	m_pause_menu->hide();
 	m_pause_menu->removeFromPage(page_view);
-	if(m_end_menu) m_end_menu->hide();
+	if(m_end_menu) {
+		m_end_menu->hide();
+		delete m_end_menu;
+		m_end_menu = nullptr;
+	}
 	UiPageController::exit();
 }
 
@@ -99,8 +103,10 @@ GameController::~GameController()
     delete ptime;
     delete timer;
     delete m_pause_menu;
-    if(m_end_menu)
+    if(m_end_menu){
     	delete m_end_menu;
+        m_end_menu = nullptr;
+    }
 }
 
 void GameController::addPlayTime(){
