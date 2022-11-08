@@ -63,14 +63,17 @@ void UiPageMenuWidget_qt::append_item(UiAbstractMenuItemWidget *item)
 {
 	qDebug("UiPageMenuWidget_qt::append_item");
 	menu_items.push_back(item);
-	int offset = (menu_items.size()-1) * item->height()*item_vertical_spacing_factor;
+	int offset = (menu_items.size()-1) * item->height()*item_vertical_spacing_factor; //first item has zero offset
 
 	double item_witdh = item->width();
 	menu_width = menu_width > item_witdh ? menu_width : item_witdh;
 
 	item->setPos(menu_item_base_x, menu_item_base_y+offset);
 
-	menu_height += offset;
+	if(menu_height == 0)
+		menu_height = item->height();
+	else
+		menu_height += offset;
 }
 
 
@@ -279,7 +282,7 @@ void UiPagePopupWidget_qt::removeFromPage(UiPageViewQt* page)
 {
 	page->removeItem(drop);
 	page->removeItem(info);
-	menu->addToPage(page);
+	menu->removeFromPage(page);
 }
 
 void UiPagePopupWidget_qt::show()
