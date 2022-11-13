@@ -87,7 +87,7 @@ OptionPageController::OptionPageController(UiPageController *parent):
 			new UiPageMenuWidget_qt(&popup_model));
 
 	confirm_exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
-	confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	confirm_exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	confirm_exit_menu->hide();
 	confirm_exit_menu->addToPage(page_view);
 

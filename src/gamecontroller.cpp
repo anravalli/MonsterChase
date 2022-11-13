@@ -143,7 +143,7 @@ UiPageMenu *GameController::create_pause_menu()
 			new UiPageMenuWidget_qt(&popup_model));
 
 	auto popup_menu = new UiPageMenu(popup_actions, popup_view, 1);
-	popup_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	popup_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	popup_menu->hide();
 
 	return popup_menu;
@@ -167,9 +167,9 @@ UiPageMenu *GameController::create_match_ended_popup()
 			new UiPageMenuWidget_qt(&popup_model));
 
 	auto popup_menu = new MatchEndPopup(popup_actions, popup_view, popup_model.size()-1);
-	popup_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	popup_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	popup_menu->addToPage(page_view);
-
+	popup_menu->hide();
 	return popup_menu;
 }
 

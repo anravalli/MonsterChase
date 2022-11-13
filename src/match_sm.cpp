@@ -151,7 +151,7 @@ public:
 
 	virtual void enter() override final {
 		GameWorld::instance().getPlayer()->hide();
-		m_controller->end_menu();
+		m_controller->end_menu()->show();
 	}
 
 	virtual void exit() override final {

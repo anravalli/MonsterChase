@@ -63,17 +63,14 @@ void UiPageMenuWidget_qt::append_item(UiAbstractMenuItemWidget *item)
 {
 	qDebug("UiPageMenuWidget_qt::append_item");
 	menu_items.push_back(item);
-	int offset = (menu_items.size()-1) * item->height()*item_vertical_spacing_factor; //first item has zero offset
+	int offset = item->height() * (menu_items.size()-1) * item_vertical_spacing_factor; //first item has zero offset
 
 	double item_witdh = item->width();
 	menu_width = menu_width > item_witdh ? menu_width : item_witdh;
 
 	item->setPos(menu_item_base_x, menu_item_base_y+offset);
 
-	if(menu_height == 0)
-		menu_height = item->height();
-	else
-		menu_height += offset;
+	menu_height = item->height() + offset;
 }
 
 
@@ -232,6 +229,7 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 
 	double base_pos_x = 0;
 	double base_pos_y = 0;
+	//qDebug("\t +++ base_pos: %f, %f", base_pos_x, base_pos_y);
 
 	this->info = new QGraphicsSimpleTextItem(info);
 	this->info->setFont(font);
@@ -240,27 +238,32 @@ UiPagePopupWidget_qt::UiPagePopupWidget_qt(QString info, UiPageMenuWidget_qt *me
 
 	double info_w = this->info->boundingRect().width();
 	double info_h = this->info->boundingRect().height();
+	double info_pos_x = base_pos_x-info_w/2;
+	double info_pos_y = base_pos_y;
+	double menu_separator_height = info_h*1.5;
+	//qDebug("\t +++ info_w: %f; info_h %f", info_w, info_h);
+	//qDebug("\t +++ info_pos_x: %f; info_pos_y: %f", info_pos_x, info_pos_y);
 
-	this->info->setPos(base_pos_x-info_w/2,
-			base_pos_y-(info_w+border_width*2)/2+info_h);
+	double drop_pos_x = info_pos_x-border_width;
+	double drop_pos_y = info_pos_y-border_width;
+	double drop_width = info_w+border_width*2;
+	double drop_height = info_h + menu_separator_height + menu->height() + border_width*2; //fixme hard coded offset!
+	//qDebug("\t +++ drop pos: %f, %f", drop_pos_x, drop_pos_y);
+
+	double menu_pos_x = base_pos_x-this->menu->width()/2;
+	double menu_pos_y = info_pos_y+info_h+menu_separator_height;
+	//qDebug("\t +++ menu pos: %f, %f", menu_pos_x, menu_pos_y);
+
+	this->info->setPos(info_pos_x, info_pos_y);
 	this->info->hide();
 
-	qDebug("\t +++ base_pos: %f, %f", base_pos_x, base_pos_y);
-	qDebug("\t +++ info->x(): %f; base_pos_x-info_w/2 %f", this->info->x(), base_pos_x-info_w/2);
-	qDebug("\t +++ info_w: %f; info_h %f", info_w, info_h);
-	qDebug("\t +++ drop pos: %f, %f", base_pos_x-((info_w+border_width*2)/2), base_pos_y-(info_w+border_width*2)/2);
-	this->drop = new QGraphicsRectItem(
-			base_pos_x-((info_w+border_width*2)/2),
-			base_pos_y-(info_w+border_width*2)/2,
-			info_w+border_width*2,
-			info_h * item_vertical_spacing_factor * 4
-			);
+
+	this->drop = new QGraphicsRectItem(drop_pos_x, drop_pos_y, drop_width, drop_height);
 	this->drop->setBrush(QBrush(QColor(0xD7,0xD7,0xD7,0x80)));
 	this->drop->setPen(QPen(QBrush(QColor(0xFF,0xD7,0xD7,0xFF)), 2, Qt::PenStyle::SolidLine));
 	this->drop->hide();
 
-	qDebug("\t +++ menu pos: %f, %f", this->info->x()+info_w/2-this->menu->width()/2, this->info->y()+50);
-	this->menu->setPos(this->info->x()+info_w/2-this->menu->width()/2, this->info->y()+50);
+	this->menu->setPos(menu_pos_x, menu_pos_y);
 	this->menu->hide();
 }
 

@@ -137,7 +137,7 @@ UiPageMenu *MonsterChase::populate_match_selection_menu()
 	});
 	menu->set_actions(popup_actions);
 
-	menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	menu->hide();
 	menu->addToPage(page_view);
 	menu->setAlignement(align_center);
@@ -174,7 +174,7 @@ UiPageMenu *MonsterChase::populate_player_selection_menu()
 	});
 	menu->set_actions(popup_actions);
 
-	menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	menu->hide();
 	menu->addToPage(page_view);
 	menu->setAlignement(align_center);
@@ -255,7 +255,7 @@ UiPageMenu *MonsterChase::populate_confirm_exit_menu()
 			new UiPageMenuWidget_qt(&popup_model));
 
 	auto exit_menu = new UiPageMenu(popup_actions, popup_view, 1);
-	exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/2);
+	exit_menu->setPos(GameConfig::playground_width/2, GameConfig::playground_height/3);
 	exit_menu->hide();
 	exit_menu->addToPage(page_view);
 
