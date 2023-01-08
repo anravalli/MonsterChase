@@ -28,6 +28,7 @@
 class MonsterChase;
 class GameWorld;
 class Player;
+class Animation;
 
 class QGraphicsItem;
 
@@ -39,7 +40,8 @@ class MonsterSm;
     enum MonsterStates {
         patrol,
         attack,
-        flee
+        flee,
+        dead
     } ;
 
     enum MonsterSubStates {
@@ -84,6 +86,8 @@ class MonsterSm;
         int damage_suffered_per_hit;
 
         bool health_gouge_visible;
+
+        Animation *current_animation;
     } ;
 
     class Monster;
@@ -110,6 +114,9 @@ class MonsterSm;
         int hit_suffered(); //return score points
         int hit_inflicted(); //return score points
 
+        MonsterStates getState(){return model.state;}
+        bool isAlive();
+
         virtual ~Monster();
 
     protected:
@@ -134,12 +141,13 @@ class MonsterSm;
 				100, //death_score_bonus
 				5, //damage_inflicted_per_hit
 				10, //damage_suffered_per_hit
-				false
+				false, //health_gouge_visible
+				nullptr //current_animation
         };
 
     private:
 
-        MonsterSm* mstates[3]={nullptr,nullptr,nullptr};
+        MonsterSm* mstates[4]={nullptr,nullptr,nullptr,nullptr};
         MonsterView *monster_view;
         QRectF* _sight_box;
         QRectF* _warning_box;

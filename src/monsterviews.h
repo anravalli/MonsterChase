@@ -49,7 +49,6 @@ public:
     void show();
     void hide();
     void update();
-    void updateGeometry(double x, double y, double scale, double direction);
     void setPosition(double x, double y);
     void setRotation(double dir);
 
@@ -73,8 +72,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
 protected:
-    MonsterShape(){}
-    QColor color[3];
+    MonsterShape(): model(nullptr){}
+    QColor color[4];
     MonsterModel* model;
 };
 

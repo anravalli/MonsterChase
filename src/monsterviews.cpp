@@ -21,6 +21,7 @@
 
 #include <ui_framework/uipageview_qt.h>
 #include "monsterviews.h"
+#include "animations.h"
 
 #define VIEW_DEBUG 0
 
@@ -95,56 +96,52 @@ void MonsterView::hide()
 
 void MonsterView::setPosition(double x, double y)
 {
-    shape->setPos(x,y);
+    //apply animation
+    QPointF anim = model->current_animation->getAnimationPos();
+    shape->setPos(x+anim.x(),y+anim.y());
     sight->setPos(x,y);
     energy_gouge->setPos(x,y);
 }
 
 void MonsterView::setRotation(double direction)
 {
-    shape->setRotation(direction);
+    //apply animation
+    double anim = model->current_animation->getAnimationRotation();
+    shape->setRotation(direction+anim);
     sight->setRotation(direction+90);
 }
 
 void MonsterView::update()
 {
+    //update animation
+    model->current_animation->update();
+
     setPosition(model->pos_x,model->pos_y);
     setRotation(model->direction);
-    shape->update();
-    sight->update();
-    if(model->health_gouge_visible and not energy_gouge->isVisibilityToggle()){
-    	energy_gouge->show();
-    	energy_gouge->setVisibilityToggle(true);
-    }
-    else if(not model->health_gouge_visible and energy_gouge->isVisibilityToggle()){
+
+    //apply animation
+    double scale_anim =  model->current_animation->getAnimationScale();
+    shape->setScale(scale_anim);
+
+    if(model->state == MonsterStates::dead) {
+        sight->hide();
     	energy_gouge->hide();
-    	energy_gouge->setVisibilityToggle(false);
     }
+    else {
+    	sight->update();
+    	if(model->health_gouge_visible and not energy_gouge->isVisibilityToggle()){
+    		energy_gouge->show();
+    		energy_gouge->setVisibilityToggle(true);
+    	}
+    	else if(not model->health_gouge_visible and energy_gouge->isVisibilityToggle()){
+    		energy_gouge->hide();
+    		energy_gouge->setVisibilityToggle(false);
+    	}
 
-    if(energy_gouge->isVisibilityToggle())
-    	energy_gouge->update();
-}
-
-void MonsterView::updateGeometry(double x, double y, double scale, double direction)
-{
-	Q_UNUSED(scale);
-
-	shape->setPos(x,y);
-	sight->setPos(x,y);
-	energy_gouge->setPos(x,y);
-
-	shape->setRotation(direction);
-	sight->setRotation(direction+90);
-	shape->update();
-	sight->update();
-
-	if(model->health_gouge_visible)
-	{
-		energy_gouge->show();
-		energy_gouge->update();
-	}
-	else
-		energy_gouge->hide();
+        if(energy_gouge->isVisibilityToggle())
+    	    energy_gouge->update();
+    }
+    shape->update();
 }
 
 MonsterView::MonsterView(MonsterModel* model):
@@ -167,6 +164,7 @@ MonsterShape::MonsterShape(MonsterModel* m)
     color[patrol] = QColor(0,127,127);
     color[attack] = QColor(255,50,127);
     color[flee] = QColor(0,127,255);
+    color[dead] = QColor(127,127,127);
     model = m;
 }
 
@@ -194,6 +192,7 @@ MonsterTriangularShape::MonsterTriangularShape(MonsterModel *m)
     color[patrol] = QColor(125,0,127);
     color[attack] = QColor(255,50,127);
     color[flee] = QColor(0,127,255);
+    color[dead] = QColor(125,127,127);
     model = m;
 }
 

@@ -22,6 +22,7 @@
 #include "monstersm.h"
 #include "gameworld.h"
 #include "player.h"
+#include "animations.h"
 
 namespace Monster{
 
@@ -50,6 +51,9 @@ MonsterSm* MonsterStateFactory::stateFactory(MonsterStates state, MonsterType mo
         break;
     case flee:
         new_state = fleeFactory(monster, model);
+        break;
+    case dead:
+        new_state = deadFactory(monster, model);
         break;
     }
     return new_state;
@@ -154,6 +158,14 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
     flee_state->sstates[MonsterSubStates::move] = new MonsterFleeMove(model,mover,rotator);
     flee_state->sstates[MonsterSubStates::freeze] = new MonsterFleeFreeze(model,freeze_rotator);
     return  flee_state;
+
+}
+
+MonsterSm* MonsterStateFactory::deadFactory(MonsterType monster, MonsterModel* model)
+{
+    MonsterSm* dead_state = new MonsterDead(model);
+
+    return  dead_state;
 
 }
 
@@ -468,6 +480,8 @@ MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, Basic
     _walls_checker = new WallsCollisionChecker(model, monster_size);
     _player_checker = new EntitiesCollisionChecker(model, monster_size);
     _player_proximity_checker = new PlayerProximityChecker(model, monster_size);
+
+    _player_scanner = nullptr;
 }
 
 //REMINDER: no state exit() implemented even if used
@@ -573,6 +587,23 @@ void MonsterFleeFreeze::exit() {
 MonsterFleeFreeze::~MonsterFleeFreeze() {
     delete _player_proximity_checker;
     delete _rotate;
+}
+
+
+/*
+ * Monster Dead State
+ */
+MonsterDead::MonsterDead(MonsterModel *model): MonsterSm(model) {
+	this->dead_animation = new DeathAnimation(1);
+}
+
+MonsterDead::~MonsterDead() {
+	delete this->dead_animation;
+}
+
+void MonsterDead::enter() {
+	this->_model->current_animation = this->dead_animation;
+	this->dead_animation->start();
 }
 
 }

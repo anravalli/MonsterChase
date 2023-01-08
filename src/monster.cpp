@@ -25,6 +25,7 @@
 #include "gameworld.h"
 #include "player.h"
 #include "arena.h"
+#include "animations.h"
 
 #include <assert.h>
 
@@ -47,6 +48,7 @@ namespace Monster{
         monster->mstates[patrol] = MonsterStateFactory::stateFactory(patrol,type,&(monster->model));
         monster->mstates[attack] =  MonsterStateFactory::stateFactory(attack,type,&(monster->model));
         monster->mstates[flee] =  MonsterStateFactory::stateFactory(flee,type,&(monster->model));
+        monster->mstates[dead] =  MonsterStateFactory::stateFactory(dead,type,&(monster->model));
 
         //default state is "patrol" so let's init the "current_speed" accordingly
         monster->model.curent_speed = monster->mstates[patrol]->move_speed;
@@ -60,6 +62,12 @@ namespace Monster{
 
         _sight_box = new QRectF(-65, -165, 130, 150);
         _warning_box = new QRectF(-100,-100,200,200);
+
+        monster_view = nullptr;
+        previus_state = patrol;
+
+        //set a defoult "empty" animation;
+        model.current_animation = new Animation();
     }
 
     void Monster::addToPage(UiPageViewQt* page)
@@ -81,6 +89,8 @@ namespace Monster{
     }
 
     void Monster::update(){
+
+        //if(model.health<=0) return;
 
         // state->enter() is executed at the N+1 step while the exit() is executed
         // inside the N step (when state is changed)
@@ -125,6 +135,7 @@ namespace Monster{
         delete mstates[patrol];
         delete mstates[attack];
         delete mstates[flee];
+        delete mstates[dead];
 
         delete _sight_box;
         delete _warning_box;
@@ -149,8 +160,7 @@ namespace Monster{
     	{
     		model.health = 0;
     		score_points = model.death_score_bonus;
-    		//model.state = MonsterStates::dead; //missing dead state
-    		//by now let it become a ghost :-)
+    		model.state = MonsterStates::dead;
     		model.death_score_bonus = 0;
     		model.damage_inflicted_per_hit = 0;
     		qDebug("monster %d is dead", model.id);
@@ -162,6 +172,12 @@ namespace Monster{
 	int Monster::hit_inflicted()
 	{
 		return model.damage_inflicted_per_hit;
+	}
+
+	bool Monster::isAlive()
+	{
+		return not (model.state == MonsterStates::dead and
+				model.current_animation->getState() == anim_completed);
 	}
 
 } //namescpace Monster

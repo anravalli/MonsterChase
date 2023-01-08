@@ -47,8 +47,16 @@ void GameWorld::start()
 void GameWorld::nextFrame()
 {
     player->update();
-    for (auto m: monsters)
-        m->update();
+    for(auto it = monsters.begin(); it != monsters.end();){
+        auto m = *it;
+        if(m->isAlive()){
+            m->update();
+            it++;
+            continue;
+        }
+        delete m;
+        it = monsters.erase(it);
+    }
 }
 
 void GameWorld::initLevel(QString map)
