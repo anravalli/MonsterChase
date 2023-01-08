@@ -65,7 +65,8 @@ SOURCES += main.cpp\
     ui_framework/uipagemenu.cpp \
     ui_framework/uipagemenuwidgets_qt.cpp \
     ui_framework/uipageview_qt.cpp \
-    ui_framework/uiviewitems_qt.cpp
+    ui_framework/uiviewitems_qt.cpp \
+    animations.cpp
 
 HEADERS  += monsterchase.h \
 	monsterchase_mainpage.h \
@@ -94,7 +95,8 @@ HEADERS  += monsterchase.h \
     ui_framework/uipagemenu.h \
     ui_framework/uipagemenuwidgets_qt.h \
     ui_framework/uipageview_qt.h \
-    ui_framework/uiviewitems_qt.h
+    ui_framework/uiviewitems_qt.h \
+    animations.h
 
 RESOURCES += \
     ../monsterchase.qrc 
