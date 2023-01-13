@@ -35,12 +35,12 @@ void Animation::reset() {
 	this->frame_index = 0;
 }
 
-DeathAnimation::DeathAnimation(unsigned short duration) {
+MonsterDeathAnimation::MonsterDeathAnimation(unsigned short duration) {
 	this->duration = duration;
 	this->frame_number = duration * GameConfig::framerate;
 }
 
-void DeathAnimation::update() {
+void MonsterDeathAnimation::update() {
 	if(this->state == anim_running) {
 		this->frame_index++;
 		this->rotation += this->rotation_step;
@@ -61,3 +61,30 @@ void Animation::start() {
 void Animation::pause() {
 	this->state = anim_paused;
 }
+
+PlayerDeathAnimation::PlayerDeathAnimation(unsigned short duration) {
+	this->duration = duration;
+	this->frame_number = duration * GameConfig::framerate;
+}
+
+void PlayerDeathAnimation::update() {
+}
+
+
+PlayerDamageAnimation::PlayerDamageAnimation(unsigned short duration) {
+	this->duration = duration;
+	this->frame_number = duration * GameConfig::framerate;
+}
+
+void PlayerDamageAnimation::update() {
+	if(this->state == anim_running) {
+		if(blink_delay>0){
+			blink_delay--;
+		} else {
+			color_idx = 1-color_idx;
+			blink_delay = 10;
+		}
+	}
+}
+
+

@@ -28,9 +28,9 @@
 #define DEF_ENERGY 50
 #define MIN_ENERGY 0
 #define MAX_ENERGY 100
-#define BLINK_DELAY 10
 
 class PlayerSm;
+class Animation;
 
 namespace Monster {
 class Monster;
@@ -64,6 +64,7 @@ struct PlayerModel{
     double pos_y;
     bool direction[4];
     int score;
+    Animation *current_animation;
 } ;
 
 class PlayerScore;
@@ -110,7 +111,8 @@ private:
         100, //pos_x
         100, //pos_y
         {false,false,false,false}, //direction
-        0 // score
+        0, // score
+		nullptr
     };
     PlayerShape* shape;
     PlayerEnergyGauge* energy_gauge;

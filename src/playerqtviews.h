@@ -41,10 +41,8 @@ protected:
 private:
     QColor color[2];
     int color_idx=0;
-    int blink_delay=BLINK_DELAY;
     PlayerModel* model;
 
-    int blink();
 };
 
 class PlayerEnergyGauge : public QGraphicsItem

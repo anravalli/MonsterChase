@@ -22,6 +22,7 @@
 
 #include "playersm.h"
 #include "monster.h"
+#include "animations.h"
 
 #include <math.h>
 
@@ -84,7 +85,19 @@ void PlayerRageAvailable::toggleRage() {
     _model->state=on_rage;
 }
 
+
 //Player state On Damage (substate)
+PlayerOnDamage::PlayerOnDamage(PlayerModel* model): PlayerNormal(model){
+	damage_animation = new PlayerDamageAnimation(1);
+}
+
+void PlayerOnDamage::enter() {
+	_model->current_animation = damage_animation;
+}
+
+void PlayerOnDamage::exit() {
+	damage_animation->reset();
+}
 
 void PlayerOnDamage::updateEnergy() {
     //PlayerNormal::updateEnergy();
@@ -93,6 +106,10 @@ void PlayerOnDamage::updateEnergy() {
         _model->state=normal;
         no_damage_counter=100;
     }
+}
+
+PlayerOnDamage::~PlayerOnDamage() {
+	delete damage_animation;
 }
 
 //Player state On Rage
@@ -129,6 +146,13 @@ void PlayerOnRage::collisionWithMonster(Monster::Monster *m)  {
 
 PlayerDead::PlayerDead(PlayerModel* model) {
     _model=model;
+    death_animation = new PlayerDeathAnimation(1);
 }
 
-PlayerDead::~PlayerDead() {}
+void PlayerDead::enter() {
+	_model->current_animation = death_animation;
+}
+
+PlayerDead::~PlayerDead() {
+	delete death_animation;
+}

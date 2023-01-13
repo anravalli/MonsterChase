@@ -20,7 +20,7 @@
 */
 
 #include "playerqtviews.h"
-
+#include "animations.h"
 // Player Score view
 
 PlayerScore::PlayerScore(PlayerModel* m)
@@ -74,7 +74,7 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         color_idx = 0;
         break;
     case on_damage:
-        blink();
+    	color_idx = ((PlayerDamageAnimation*)model->current_animation)->getColorIndex();
         break;
     default:
         break;
@@ -85,17 +85,6 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setPen(QPen(Qt::black, 1));
     painter->setBrush(QBrush(color[color_idx]));
     painter->drawEllipse(-15, -15, 30, 30);
-}
-
-int PlayerShape::blink()
-{
-    if(blink_delay>0){
-        blink_delay--;
-    } else {
-        color_idx = 1-color_idx;
-        blink_delay = BLINK_DELAY;
-    }
-    return 0;
 }
 
 // Player Score view

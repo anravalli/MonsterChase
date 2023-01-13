@@ -594,7 +594,7 @@ MonsterFleeFreeze::~MonsterFleeFreeze() {
  * Monster Dead State
  */
 MonsterDead::MonsterDead(MonsterModel *model): MonsterSm(model) {
-	this->dead_animation = new DeathAnimation(1);
+	this->dead_animation = new MonsterDeathAnimation(1);
 }
 
 MonsterDead::~MonsterDead() {

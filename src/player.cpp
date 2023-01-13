@@ -26,6 +26,7 @@
 #include "gameworld.h"
 #include "monster.h"
 #include "arena.h"
+#include "animations.h"
 
 #include "algorithms.h"
 
@@ -35,6 +36,8 @@ Player::Player()
     shape = new PlayerShape(&model);
     energy_gauge = new PlayerEnergyGauge(&model);
     score = new PlayerScore(&model);
+
+    model.current_animation = new Animation();
 
     //init state machine
     pstates[normal] = new PlayerNormal(&model);

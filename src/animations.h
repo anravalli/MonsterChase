@@ -55,9 +55,9 @@ protected:
 
 };
 
-class DeathAnimation: public Animation {
+class MonsterDeathAnimation: public Animation {
 public:
-	DeathAnimation(unsigned short duration);
+	MonsterDeathAnimation(unsigned short duration);
 	virtual void update() override;
 private:
 	unsigned short frame_number;
@@ -65,5 +65,31 @@ private:
 	unsigned short scale_frame_counter = scale_sub_rate;
 	double rotation_step = 10;
 };
+
+class PlayerDeathAnimation: public Animation {
+public:
+	PlayerDeathAnimation(unsigned short duration);
+	virtual void update() override;
+private:
+	unsigned short frame_number;
+	unsigned short scale_sub_rate = 5;
+	unsigned short scale_frame_counter = scale_sub_rate;
+	double rotation_step = 10;
+};
+
+
+class PlayerDamageAnimation: public Animation {
+public:
+	PlayerDamageAnimation(unsigned short duration);
+	virtual void update() override;
+	unsigned short getColorIndex(){return color_idx;};
+private:
+	unsigned short frame_number;
+	unsigned short blink_delay = 10;
+	unsigned short colors[2] = {0,1};
+	unsigned short color_idx = 0;
+};
+
+
 
 #endif /* SRC_ANIMATIONS_H_ */

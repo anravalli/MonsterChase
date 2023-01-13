@@ -73,8 +73,10 @@ public:
 
 class PlayerOnDamage: public PlayerNormal {
 public:
-    PlayerOnDamage(PlayerModel* model)
-        :PlayerNormal(model){}
+    PlayerOnDamage(PlayerModel* model);
+
+    virtual void enter() override final;
+    virtual void exit() override final;
 
     virtual void updateEnergy() override ;
 
@@ -82,8 +84,11 @@ public:
     	Q_UNUSED(m)
         return;
     }
+    virtual ~PlayerOnDamage();
+
 private:
     int no_damage_counter = 100;
+    Animation *damage_animation;
 };
 
 class PlayerOnRage: public PlayerSm {
@@ -96,7 +101,7 @@ public:
     virtual void toggleRage() override ;
     virtual void collisionWithMonster(Monster::Monster *m) override;
 
-    virtual ~PlayerOnRage() override {}
+    virtual ~PlayerOnRage() {};
 private:
 
 };
@@ -105,12 +110,15 @@ class PlayerDead: public PlayerSm {
 public:
     PlayerDead(PlayerModel* model);
 
+    virtual void enter() override final;
+
     virtual void move() override {}
     virtual void updateEnergy() override {}
     virtual void toggleRage() override {}
     virtual void collisionWithMonster(Monster::Monster *m) override {Q_UNUSED(m)}
-    virtual ~PlayerDead() override;
+    virtual ~PlayerDead();
 private:
+    Animation *death_animation;
 };
 
 #endif // PLAYERSM_H
