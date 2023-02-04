@@ -53,17 +53,17 @@ public:
 
     virtual ~MonsterSm();
 protected:
-    MonsterSm(MonsterModel* model)
-        :_model(model){}
+    MonsterSm(MonsterModel* model);
     MonsterSm* sstates[3]={nullptr,nullptr,nullptr};
-    MonsterModel* _model;
+    MonsterModel* _model = nullptr;
+    Animation *_animation = nullptr;
 };
 
 class MonsterPatrol: public MonsterSm {
 public:
     MonsterPatrol(MonsterModel* model);
 
-    virtual void tick();
+    virtual void tick() override;
     virtual ~MonsterPatrol(){}
 
 private:
@@ -74,7 +74,7 @@ class MonsterAttack: public MonsterSm {
 public:
     MonsterAttack(MonsterModel* model)
         :MonsterSm(model){}
-    virtual void tick();
+    virtual void tick() override;
 private:
 };
 
@@ -83,7 +83,7 @@ public:
     MonsterFlee(MonsterModel* model)
         :MonsterSm(model){}
 
-    virtual void tick();
+    virtual void tick() override;
     virtual ~MonsterFlee(){}
 private:
 };
@@ -96,7 +96,6 @@ public:
 	virtual void tick() override {};
 	virtual ~MonsterDead();
 private:
-	Animation *dead_animation;
 
 };
 

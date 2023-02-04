@@ -64,10 +64,8 @@ namespace Monster{
         _warning_box = new QRectF(-100,-100,200,200);
 
         monster_view = nullptr;
-        previus_state = patrol;
+        previus_state = dead;
 
-        //set a defoult "empty" animation;
-        model.current_animation = new Animation();
     }
 
     void Monster::addToPage(UiPageViewQt* page)

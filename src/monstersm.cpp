@@ -26,14 +26,20 @@
 
 namespace Monster{
 
+MonsterSm::MonsterSm(MonsterModel* model):_model(model){
+	this->_animation = new Animation();
+}
+
 MonsterSm::~MonsterSm()
 {
-
+	qDebug("MonsterSm::~MonsterSm - _animation: %p", _animation);
+	delete _animation;
 }
 
 void MonsterSm::enter()
 {
     this->_model->curent_speed = this->move_speed;
+    this->_model->current_animation = this->_animation;
 }
 
 /*
@@ -163,6 +169,7 @@ MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* m
 
 MonsterSm* MonsterStateFactory::deadFactory(MonsterType monster, MonsterModel* model)
 {
+	Q_UNUSED(monster)
     MonsterSm* dead_state = new MonsterDead(model);
 
     return  dead_state;
@@ -594,16 +601,18 @@ MonsterFleeFreeze::~MonsterFleeFreeze() {
  * Monster Dead State
  */
 MonsterDead::MonsterDead(MonsterModel *model): MonsterSm(model) {
-	this->dead_animation = new MonsterDeathAnimation(1);
+	auto tmp = this->_animation;
+	this->_animation = new MonsterDeathAnimation(1);
+	delete tmp;
 }
 
 MonsterDead::~MonsterDead() {
-	delete this->dead_animation;
+	qDebug("MonsterDead::~MonsterDead");
 }
 
 void MonsterDead::enter() {
-	this->_model->current_animation = this->dead_animation;
-	this->dead_animation->start();
+	this->_model->current_animation = this->_animation;
+	this->_animation->start();
 }
 
 }

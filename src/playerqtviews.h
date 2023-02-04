@@ -40,7 +40,7 @@ protected:
 
 private:
     QColor color[2];
-    int color_idx=0;
+    unsigned short color_idx=0;
     PlayerModel* model;
 
 };

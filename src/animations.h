@@ -70,6 +70,7 @@ class PlayerDeathAnimation: public Animation {
 public:
 	PlayerDeathAnimation(unsigned short duration);
 	virtual void update() override;
+	virtual ~PlayerDeathAnimation(){};
 private:
 	unsigned short frame_number;
 	unsigned short scale_sub_rate = 5;
@@ -83,6 +84,7 @@ public:
 	PlayerDamageAnimation(unsigned short duration);
 	virtual void update() override;
 	unsigned short getColorIndex(){return color_idx;};
+	virtual ~PlayerDamageAnimation(){};
 private:
 	unsigned short frame_number;
 	unsigned short blink_delay = 10;

@@ -37,14 +37,14 @@ Player::Player()
     energy_gauge = new PlayerEnergyGauge(&model);
     score = new PlayerScore(&model);
 
-    model.current_animation = new Animation();
-
     //init state machine
     pstates[normal] = new PlayerNormal(&model);
     pstates[rage_available] = new PlayerRageAvailable(&model);
     pstates[on_rage] = new PlayerOnRage(&model);
     pstates[on_damage] = new PlayerOnDamage(&model);
     pstates[dead] = new PlayerDead(&model);
+
+    pstates[current_state]->enter();
 }
 
 void Player::show(){
@@ -87,9 +87,15 @@ void Player::update(){
 }
 
 void Player::computeState(){
-    PlayerSm* cstate = pstates[model.state];
+	PlayerSm* cstate = pstates[model.state];
+	if(current_state != model.state){
+		pstates[current_state]->exit();
+		cstate->enter();
+	}
+
     cstate->updateEnergy();
     cstate->move();
+    model.current_animation->update();
 }
 
 void Player::collisionWithMonster(Monster::Monster *m){

@@ -64,7 +64,8 @@ SOURCES += \
         ../src/gameviews.cpp \
         ../src/matchmenu.cpp \
         ../src/match.cpp \
-        ../src/match_sm.cpp
+        ../src/match_sm.cpp \
+        ../src/animations.cpp
 
 FORMS += \
     ../src/editor/editor.ui

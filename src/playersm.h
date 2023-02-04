@@ -40,7 +40,8 @@ public:
 protected:
     int _max_speed;
     double _max_speed_45;
-    PlayerModel* _model;
+    PlayerModel* _model = nullptr;
+    Animation *_animation = nullptr;
 public:
     void moveBy(double step_x, double step_y);
 };
@@ -88,7 +89,6 @@ public:
 
 private:
     int no_damage_counter = 100;
-    Animation *damage_animation;
 };
 
 class PlayerOnRage: public PlayerSm {

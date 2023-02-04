@@ -118,6 +118,7 @@ private:
     PlayerEnergyGauge* energy_gauge;
     PlayerScore* score;
     PlayerSm* pstates[5]={nullptr,nullptr,nullptr,nullptr,nullptr};
+    PlayerStates current_state=dead;
 
     void move();
 

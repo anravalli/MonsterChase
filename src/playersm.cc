@@ -46,7 +46,7 @@ PlayerNormal::PlayerNormal(PlayerModel* model) {
     _model=model;
     _max_speed = 3;
     _max_speed_45 = _max_speed/sqrt(2);
-
+    _animation = new Animation();
 }
 
 void PlayerNormal::updateEnergy() {
@@ -77,7 +77,12 @@ void PlayerNormal::collisionWithMonster(Monster::Monster *m) {
 }
 
 void PlayerNormal::toggleRage() {}
-PlayerNormal::~PlayerNormal(){}
+
+PlayerNormal::~PlayerNormal(){
+	assert(_animation);
+	delete _animation;
+	_animation = nullptr;
+}
 
 //Player state Rage Available (substate)
 
@@ -88,15 +93,17 @@ void PlayerRageAvailable::toggleRage() {
 
 //Player state On Damage (substate)
 PlayerOnDamage::PlayerOnDamage(PlayerModel* model): PlayerNormal(model){
-	damage_animation = new PlayerDamageAnimation(1);
+	delete _animation;
+	_animation = new PlayerDamageAnimation(1);
 }
 
 void PlayerOnDamage::enter() {
-	_model->current_animation = damage_animation;
+	_model->current_animation = _animation;
+	_animation->start();
 }
 
 void PlayerOnDamage::exit() {
-	damage_animation->reset();
+	_animation->reset();
 }
 
 void PlayerOnDamage::updateEnergy() {
@@ -109,7 +116,7 @@ void PlayerOnDamage::updateEnergy() {
 }
 
 PlayerOnDamage::~PlayerOnDamage() {
-	delete damage_animation;
+
 }
 
 //Player state On Rage
@@ -146,13 +153,14 @@ void PlayerOnRage::collisionWithMonster(Monster::Monster *m)  {
 
 PlayerDead::PlayerDead(PlayerModel* model) {
     _model=model;
-    death_animation = new PlayerDeathAnimation(1);
+    _animation = new PlayerDeathAnimation(1);
 }
 
 void PlayerDead::enter() {
-	_model->current_animation = death_animation;
+	_model->current_animation = _animation;
+	_animation->start();
 }
 
 PlayerDead::~PlayerDead() {
-	delete death_animation;
+	delete _animation;
 }
