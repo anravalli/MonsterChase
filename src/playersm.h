@@ -34,7 +34,7 @@ public:
     virtual void updateEnergy() = 0;
     virtual void toggleRage() = 0;
     virtual void collisionWithMonster(Monster::Monster *m) = 0;
-    virtual void enter() {}
+    virtual void enter();
     virtual void exit() {}
     virtual ~PlayerSm();
 protected:

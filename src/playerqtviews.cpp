@@ -59,6 +59,11 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
+    double scale_anim =  model->current_animation->getAnimationScale();
+    this->setScale(scale_anim);
+    double alpha_anim =  model->current_animation->getAnimationAlpha();
+    this->setOpacity(alpha_anim);
+
     switch(model->state){
     case on_rage:
 #ifdef  DEBUG
@@ -74,8 +79,9 @@ void PlayerShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         color_idx = 0;
         break;
     case on_damage:
-    	color_idx = ((PlayerDamageAnimation*)model->current_animation)->getColorIndex();
+    	color_idx = static_cast<PlayerDamageAnimation*>(model->current_animation)->getColorIndex();
         break;
+    case dead:
     default:
         break;
     }

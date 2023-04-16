@@ -28,6 +28,10 @@
 
 PlayerSm::~PlayerSm(){}
 
+void PlayerSm::enter() {
+	_model->current_animation = _animation;
+}
+
 void PlayerSm::moveBy(double step_x, double step_y){
     if(_model->direction[player_up])
         _model->pos_y=_model->pos_y-step_y;
@@ -153,7 +157,7 @@ void PlayerOnRage::collisionWithMonster(Monster::Monster *m)  {
 
 PlayerDead::PlayerDead(PlayerModel* model) {
     _model=model;
-    _animation = new PlayerDeathAnimation(1);
+    _animation = new PlayerDeathAnimation(2);
 }
 
 void PlayerDead::enter() {

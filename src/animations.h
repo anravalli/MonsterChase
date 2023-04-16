@@ -29,15 +29,16 @@ public:
 	unsigned short getAnimationFrameIdx() const;
 	void setAnimationFrameIdx(unsigned short frame);
 	AnimationState getState() const;
-	void reset();
-	void start();
-	void pause();
+	virtual void reset();
+	virtual void start();
+	virtual void pause();
 
 //	virtual void *getAnimationFrame(); TODO manage sprite animation
-	double getAnimationScale(){return scale;}
+	virtual double getAnimationScale(){return scale;}
+	virtual double getAnimationAlpha(){return alpha;}
 //	virtual QColor getAnimationColor(); TODO manage color animation
-	QPointF getAnimationPos(){return position;}
-	double getAnimationRotation(){return rotation;}
+	virtual QPointF getAnimationPos(){return position;}
+	virtual double getAnimationRotation(){return rotation;}
 
 	virtual void update(){};
 
@@ -51,6 +52,7 @@ protected:
 
 	double rotation = 0.0;
 	double scale = 1.0;
+	double alpha = 1.0;
 	QPointF position = {0.0, 0.0};
 
 };
@@ -70,12 +72,12 @@ class PlayerDeathAnimation: public Animation {
 public:
 	PlayerDeathAnimation(unsigned short duration);
 	virtual void update() override;
+	virtual void reset() override;
 	virtual ~PlayerDeathAnimation(){};
 private:
 	unsigned short frame_number;
-	unsigned short scale_sub_rate = 5;
-	unsigned short scale_frame_counter = scale_sub_rate;
-	double rotation_step = 10;
+
+	unsigned short frame_duration = 0;
 };
 
 
@@ -83,6 +85,7 @@ class PlayerDamageAnimation: public Animation {
 public:
 	PlayerDamageAnimation(unsigned short duration);
 	virtual void update() override;
+	virtual void reset() override;
 	unsigned short getColorIndex(){return color_idx;};
 	virtual ~PlayerDamageAnimation(){};
 private:

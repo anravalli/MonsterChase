@@ -93,7 +93,7 @@ public:
 
     int getScore(){return model.score;};
     double getEnergy(){return model.energy;};
-    bool isDead(){return model.state==PlayerStates::dead ? true : false;};
+    bool isDead();
 
     PlayerEnergyGauge* getEnergyGauge();
     PlayerStates getRageStatus();

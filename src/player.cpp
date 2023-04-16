@@ -90,6 +90,7 @@ void Player::computeState(){
 	PlayerSm* cstate = pstates[model.state];
 	if(current_state != model.state){
 		pstates[current_state]->exit();
+		current_state = model.state;
 		cstate->enter();
 	}
 
@@ -212,4 +213,9 @@ Player::~Player(){
     // they belongs to
     delete shape;
     delete energy_gauge;
+}
+
+bool Player::isDead() {
+	return (model.state==PlayerStates::dead &&
+			model.current_animation->getState() == AnimationState::anim_completed);
 }

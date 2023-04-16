@@ -35,6 +35,14 @@ void Animation::reset() {
 	this->frame_index = 0;
 }
 
+void Animation::start() {
+	this->state = anim_running;
+}
+
+void Animation::pause() {
+	this->state = anim_paused;
+}
+
 MonsterDeathAnimation::MonsterDeathAnimation(unsigned short duration) {
 	this->duration = duration;
 	this->frame_number = duration * GameConfig::framerate;
@@ -49,17 +57,9 @@ void MonsterDeathAnimation::update() {
 			this->scale -= 0.1;
 			this->scale_frame_counter = this->scale_sub_rate;
 		}
+		if(this->frame_index >= this->frame_number)
+			this->state = anim_completed;
 	}
-	if(this->frame_index >= this->frame_number)
-		this->state = anim_completed;
-}
-
-void Animation::start() {
-	this->state = anim_running;
-}
-
-void Animation::pause() {
-	this->state = anim_paused;
 }
 
 PlayerDeathAnimation::PlayerDeathAnimation(unsigned short duration) {
@@ -68,8 +68,30 @@ PlayerDeathAnimation::PlayerDeathAnimation(unsigned short duration) {
 }
 
 void PlayerDeathAnimation::update() {
+	static unsigned short next_frame = 0;
+	static unsigned short frame_counter = 0;
+	static double alpha_decay = 0.01;
+	static double scale_rise = 0.2;
+	static unsigned short factor = 1;
+	if(this->state == anim_running) {
+		if(frame_counter == next_frame){
+			next_frame += 5;
+			alpha -= alpha_decay*factor;
+			scale += scale_rise/factor;
+			factor++;
+		}
+		frame_counter++;
+		if(frame_counter >= frame_number){
+			state = anim_completed;
+		}
+	}
+	return;
 }
 
+void PlayerDeathAnimation::reset() {
+	frame_index = 0;
+	Animation::reset();
+}
 
 PlayerDamageAnimation::PlayerDamageAnimation(unsigned short duration) {
 	this->duration = duration;
@@ -87,4 +109,9 @@ void PlayerDamageAnimation::update() {
 	}
 }
 
+void PlayerDamageAnimation::reset() {
+	color_idx=0;
+	blink_delay = 10;
+	Animation::reset();
+}
 
