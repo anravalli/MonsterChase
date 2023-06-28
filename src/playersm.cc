@@ -129,6 +129,7 @@ PlayerOnRage::PlayerOnRage(PlayerModel* model) {
     _model=model;
     _max_speed = 5;
     _max_speed_45 = _max_speed/sqrt(2);
+    _animation = new Animation();
 }
 
 void PlayerOnRage::updateEnergy() {
