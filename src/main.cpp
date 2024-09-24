@@ -22,6 +22,8 @@
 #include "monsterchase.h"
 #include <QApplication>
 
+#include <QGraphicsPixmapItem>
+
 #include <ui_framework/uipageview_qt.h>
 
 /*
@@ -34,7 +36,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     MonsterChase game;
-
     game.show();
 
     return a.exec();

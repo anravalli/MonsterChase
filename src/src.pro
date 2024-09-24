@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,9 +28,10 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050000    # disables all the APIs depr
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
-QMAKE_CXXFLAGS += -O0 -std=c++11 -g
+QMAKE_CXXFLAGS += -O0 -std=c++11 -g -L ../ext_libs/ -l QtMixer
 
-INCLUDEPATH += .
+INCLUDEPATH += . \
+	../ext_libs/QtMixer/
 #	options_panel \
 #	level_editor
 

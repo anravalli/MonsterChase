@@ -31,7 +31,6 @@
 #include "hiscore_panel/hiscorepage_controller.h"
 #include "match.h"
 
-#include <QGraphicsPixmapItem>
 /*
  * Here we will build all the game objects responsible for the
  * game business logic, including the UI pages and game controllers.
@@ -59,6 +58,7 @@ MonsterChase::MonsterChase():
 
     current_menu = base_menu;
     current_menu->addToPage(page_view);
+
 }
 
 UiPageMenu *MonsterChase::populate_base_menu()
@@ -393,4 +393,7 @@ void MonsterChase::open_high_score_page()
 
 }
 
-
+void MonsterChase::setMixer(QMixerStream *global_mixer) {
+	mixer = global_mixer;
+	AudioServer
+}
