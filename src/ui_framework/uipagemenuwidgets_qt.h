@@ -223,6 +223,9 @@ protected:
     virtual void alignRight();
     virtual void alignLeft();
     virtual void alignCenter();
+
+private:
+    int pli_beep = 0;
 };
 
 /*

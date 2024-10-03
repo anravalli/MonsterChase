@@ -393,7 +393,3 @@ void MonsterChase::open_high_score_page()
 
 }
 
-void MonsterChase::setMixer(QMixerStream *global_mixer) {
-	mixer = global_mixer;
-	AudioServer
-}

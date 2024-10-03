@@ -4,5 +4,7 @@
         <file>resources/map.txt</file>
         <file>resources/textured-stainless-steel-sheet.jpg</file>
         <file>resources/monster_chase_logo.png</file>
+        <file>resources/audio/MainTheme.wav</file>
+        <file>resources/audio/beep.wav</file>
     </qresource>
 </RCC>

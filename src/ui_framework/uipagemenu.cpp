@@ -22,7 +22,6 @@
 #include "uipagemenu.h"
 #include "uipageview_qt.h"
 
-
 UiPageMenu::UiPageMenu(vector<function<void()>> actions, vector<QString> model, int start_index):
         actions(actions)
 {

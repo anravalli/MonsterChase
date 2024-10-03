@@ -28,7 +28,8 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050000    # disables all the APIs depr
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
-QMAKE_CXXFLAGS += -O0 -std=c++11 -g -L ../ext_libs/ -l QtMixer
+QMAKE_CXXFLAGS += -O0 -std=c++11 -g 
+LIBS += ../ext_libs/libQtMixer.so.2
 
 INCLUDEPATH += . \
 	../ext_libs/QtMixer/
@@ -46,6 +47,7 @@ SOURCES += main.cpp\
     options_panel/optionsmenu.cpp \
     hiscore_panel/hiscorepage_controller.cpp \
     hiscore_panel/hiscorepage_view.cpp \
+    audio_server/AudioServer.cpp \
     matchmenu.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
@@ -75,6 +77,7 @@ HEADERS  += monsterchase.h \
     editor/level_editor.h \
     editor/editor_ui.h \
     editor/level_models.h \
+    audio_server/AudioServer.h \
     game_entity.h \
     gamecontroller.h \
     player.h \

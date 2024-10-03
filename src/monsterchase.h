@@ -49,7 +49,6 @@ public:
     virtual void exit() override;
     bool handleKey(int key, bool released) override;
 
-    void setMixer(QMixerStream *global_mixer);
 
 public slots:
     virtual void editor_closed();
@@ -68,10 +67,9 @@ private:
     UiPageMenu *match_selection_menu;
     UiPageMenu *player_selection_menu;
     UiPageMenu *confirm_exit_menu;
-    QGraphicsPixmapItem *logo;
+    //QGraphicsPixmapItem *logo;
 
-    //QMixerStream *mixer = nullptr;
-    QMixerStreamHandle main_theme;
+    int pli_main_theme;
 
     LevelEditor::LevelEditor *level_editor;
     OptionPageController *options_panel;

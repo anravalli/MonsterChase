@@ -11,26 +11,59 @@
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
 
-#include "QMixerStream.h"
-
 AudioServer::~AudioServer() {
 	// TODO Auto-generated destructor stub
 }
 
-void AudioServer::play(const std::string file) {
-	main_theme = mixer->openStream("../resources/MainTheme.wav");
-	main_theme.setLoops(-1);
-	main_theme.play();
+int AudioServer::addToPlaylist(const QString& fileName) {
+    int current_index = 0;
+    auto it = playlistInfo.find(fileName);
+    if(it == playlistInfo.end()) {
+        current_index = playlist.size();
+        playlistInfo[fileName] = current_index;
+        QMixerStreamHandle tmp = mixer->openStream(fileName);
+        playlist.push_back(tmp);
+    }
+    else
+        current_index = it->second;
+
+    return current_index;
+}
+
+void AudioServer::play(int pl_index, int loops) {
+    playlist[pl_index].setLoops(loops);
+    playlist[pl_index].play();
+}
+
+void AudioServer::stop(int pl_index) {
+    playlist[pl_index].stop();
+}
+
+void AudioServer::removeFromPlaylist(const QString& fileName) {
+    auto it = playlistInfo.find(fileName);
+    if(it != playlistInfo.end()) {
+        playlistInfo.erase(fileName);
+        playlist.erase(playlist.begin() + it->second);
+    }
+}
+
+int AudioServer::getPlaylistIndex(const QString& fileName) {
+    int index = 0;
+    auto it = playlistInfo.find(fileName);
+    if(it != playlistInfo.end()) {
+        index = it->second;
+    }
+    return index;
 }
 
 AudioServer::AudioServer() {
 	const QAudioDeviceInfo &device = QAudioDeviceInfo::defaultOutputDevice();
 	const QAudioFormat &audioFormat = device.preferredFormat();
 
-	QMixerStream mixer(audioFormat);
-	QAudioOutput output(device, audioFormat);
-	output.setVolume(0.5);
-	output.start(&mixer);
+	mixer = new QMixerStream(audioFormat);
+	output = new QAudioOutput(device, audioFormat);
+	output->setVolume(0.5);
+	output->start(mixer);
 
 }
 
