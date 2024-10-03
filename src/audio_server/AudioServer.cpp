@@ -31,8 +31,11 @@ int AudioServer::addToPlaylist(const QString& fileName) {
 }
 
 void AudioServer::play(int pl_index, int loops) {
-    playlist[pl_index].setLoops(loops);
-    playlist[pl_index].play();
+    QMixerStreamHandle handle = playlist[pl_index];
+    if(handle.state()==QtMixer::Playing)
+        handle.stop();
+    handle.setLoops(loops);
+    handle.play();
 }
 
 void AudioServer::stop(int pl_index) {
