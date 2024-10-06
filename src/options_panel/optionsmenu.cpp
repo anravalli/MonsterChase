@@ -7,6 +7,7 @@
 
 #include "optionsmenu.h"
 #include <ui_framework/uipagemenuwidgets_qt.h>
+#include <audio_server/AudioServer.h>
 
 class OptionMenuItemWidget_qt: public UiAbstractMenuItemWidget
 {
@@ -96,6 +97,7 @@ class OptionMenuWidget_qt: public UiPageMenuWidget_qt
 public:
 	OptionMenuWidget_qt(vector<OptionItem> *model)
 	{
+		pli_beep = AudioServer::instance().addToPlaylist(":/resources/audio/beep.wav");
 		for(auto model_item: *model)
 		{
 			UiAbstractMenuItemWidget *item;
@@ -118,6 +120,7 @@ public:
 		{
 			item->next_value();
 		}
+		AudioServer::instance().play(pli_beep);
 		return;
 	}
 
@@ -128,6 +131,7 @@ public:
 		{
 			item->previous_value();
 		}
+		AudioServer::instance().play(pli_beep);
 		return;
 	}
 

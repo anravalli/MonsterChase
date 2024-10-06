@@ -8,6 +8,7 @@
 #include "hiscorepage_view.h"
 #include <ui_framework/uiviewitems_qt.h>
 #include <ui_framework/uipagemenuwidgets_qt.h>
+#include <audio_server/AudioServer.h>
 
 #include <gameconfig.h>
 
@@ -58,6 +59,8 @@ HiscorePageView::HiscorePageView(UiPageViewQt *parent):
 	exit_button->addToPage(this);
 
 	exit_highlight->hide();
+
+	pli_beep = AudioServer::instance().addToPlaylist(":/resources/audio/beep.wav");
 }
 
 HiscorePageView::~HiscorePageView()
@@ -83,6 +86,7 @@ int HiscorePageView::next_table()
 	int next_idx = table_selector->get_current();
 	table_selector->moveBy(GameConfig::playground_width/2-table_selector->center_anchor().x(),0);
 	//qDebug("HiscorePageView: current table: %d", next_idx);
+	AudioServer::instance().play(pli_beep);
 	return next_idx;
 }
 
@@ -92,6 +96,7 @@ int HiscorePageView::previous_table()
 	int prev_idx = table_selector->get_current();
 	table_selector->moveBy(GameConfig::playground_width/2-table_selector->center_anchor().x(),0);
 	//qDebug("HiscorePageView: current table: %d", prev_idx);
+	AudioServer::instance().play(pli_beep);
 	return prev_idx;
 
 }
@@ -102,6 +107,7 @@ void HiscorePageView::activate_exit_button(bool active)
 		exit_highlight->show();
 	else
 		exit_highlight->hide();
+	AudioServer::instance().play(pli_beep);
 }
 /*
  * HighScoreTable_qt definitions

@@ -8,11 +8,13 @@ CONFIG += c++11
 CONFIG -= app_bundle
 CONFIG += thread
 #CONFIG -= qt
-QT += widgets
+QT += widgets multimedia
 CONFIG += qt
 
 QMAKE_CXXFLAGS += -O0 -std=c++11
-
+INCLUDEPATH += . \
+	../ext_libs/QtMixer/
+	
 HEADERS += \
     ../src/arena.h \
     ../src/monster.h \

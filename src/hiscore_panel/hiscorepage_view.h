@@ -67,6 +67,8 @@ private:
     UiMenuItemWidget_qt *exit_button = nullptr;
     UiPageMenuItemSelectioBoxWidget_qt *exit_highlight = nullptr;
     HighScoreTable_qt *hiscore_table = nullptr;
+
+    int pli_beep = 0;
 };
 
 #endif /* SRC_HISCORE_PANEL_OPTIONPAGE_VIEW_H_ */
