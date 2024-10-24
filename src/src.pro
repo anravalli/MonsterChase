@@ -48,6 +48,7 @@ SOURCES += main.cpp\
     hiscore_panel/hiscorepage_controller.cpp \
     hiscore_panel/hiscorepage_view.cpp \
     audio_server/AudioServer.cpp \
+    persistence.cpp \
     matchmenu.cpp \
     gamecontroller.cpp \
     monsterchase.cpp \
@@ -78,6 +79,7 @@ HEADERS  += monsterchase.h \
     editor/editor_ui.h \
     editor/level_models.h \
     audio_server/AudioServer.h \
+    persistence.h \
     game_entity.h \
     gamecontroller.h \
     player.h \

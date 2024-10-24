@@ -1,0 +1,31 @@
+{
+	"configuration": {
+		"video": {
+			"resolution": "800x600",
+			"fullscreen": false		
+		},
+		"sound": {
+			"soundfx": true,
+			"music": true,
+			"volume": 5
+		}
+	},
+	"players": [
+		{
+			"name": "no_name",
+			"last_match": 0
+		}
+	],
+	"high_score":[
+		{
+			"match_type": 0,
+			"records": [
+				{
+					"player": "",
+					"time": 0,
+					"score": 0
+				}
+			]
+		}
+	]
+}
