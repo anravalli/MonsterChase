@@ -48,7 +48,7 @@ QPointF UiAbstractMenuItemWidget::center_anchor()
 
 UiPageMenuWidget_qt::UiPageMenuWidget_qt(vector<QString> *model)
 {
-    pli_beep = AudioServer::instance().addToPlaylist(":/resources/audio/beep.wav");
+    pli_beep = AudioServer::instance().addFx(":/resources/audio/beep.wav");
 
     for(auto model_item: *model)
 	{
@@ -124,7 +124,7 @@ void UiPageMenuWidget_qt::removeFromPage(UiPageViewQt* page)
 
 void UiPageMenuWidget_qt::selectionChanged(int index)
 {
-    AudioServer::instance().play(pli_beep);
+    AudioServer::instance().playFx(pli_beep);
 	selection_box->selectItemAt(index, item_vertical_spacing_factor);
 }
 

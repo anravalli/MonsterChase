@@ -103,7 +103,7 @@ SelectionMenuWidget_qt::SelectionMenuWidget_qt(vector<QString> model) {
 	append_item(item);
 	selection_box = new UiPageMenuItemSelectioBoxWidget_qt(menu_items[0]->pos(),
 			menu_width, menu_items[0]->height());
-	pli_beep = AudioServer::instance().addToPlaylist(":/resources/audio/beep.wav");
+	pli_beep = AudioServer::instance().addFx(":/resources/audio/beep.wav");
 }
 
 QString SelectionMenuWidget_qt::get_item_label(int item_idx) {
@@ -123,7 +123,7 @@ void SelectionMenuWidget_qt::next_value_for(unsigned int idx) {
 		item->next();
 		update_and_realign(item->width());
 	}
-	AudioServer::instance().play(pli_beep);
+	AudioServer::instance().playFx(pli_beep);
 	return;
 }
 
@@ -133,7 +133,7 @@ void SelectionMenuWidget_qt::previous_value_for(unsigned int idx) {
 		item->previous();
 		update_and_realign(item->width());
 	}
-	AudioServer::instance().play(pli_beep);
+	AudioServer::instance().playFx(pli_beep);
 	return;
 }
 

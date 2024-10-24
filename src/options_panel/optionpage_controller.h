@@ -36,8 +36,6 @@ private:
 	void open_confirm_popup();
 	void close_confirm_popup();
 
-	QJsonDocument &load_options(QString file_path);
-
 	void change_screen_resolution();
 	void set_fullscreen();
 	void set_sounds();

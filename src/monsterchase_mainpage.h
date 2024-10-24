@@ -19,16 +19,14 @@ public:
     {
         auto logo = new QGraphicsPixmapItem(QPixmap(":/resources/monster_chase_logo.png"));
         scene->addItem(logo);
-        theme_index = AudioServer::instance().addToPlaylist(":/resources/audio/MainTheme.wav");
     };
 
     virtual void show() final override {
-        AudioServer::instance().play(theme_index, -1);
+    	AudioServer::instance().setMusicScore(":/resources/audio/MainTheme.wav");
         UiPageViewQt::show();
     }
 
     virtual void hide() final override {
-        AudioServer::instance().stop(theme_index);
         UiPageViewQt::hide();
     }
 protected:

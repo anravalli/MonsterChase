@@ -24,20 +24,31 @@ public:
 
 	static AudioServer& instance();
 
-	int addToPlaylist(const QString& fileName);
-	void removeFromPlaylist(const QString& fileName);
-	int getPlaylistIndex(const QString& fileName);
-	void play(int pl_index, int loops = 1);
-	void stop(int pl_index);
+	void setMusicScore(const QString& fileName);
+	int addFx(const QString& fileName);
+	void removeFx(const QString& fileName);
+	int getFxIndex(const QString& fileName);
+	void playFx(int fx_index);
+	void stopFx(int fx_index);
+
+	void enableSounds(bool en);
+	void enableMusic(bool en);
+	void setVolume(unsigned int v);
 
 private:
 	AudioServer();
 
-	std::vector<QMixerStreamHandle> playlist;
-	std::map<QString, int> playlistInfo;
+	QMixerStreamHandle musicScore;
+	QString currentMusicScore = "";
+	std::vector<QMixerStreamHandle> fxPlaylist;
+	std::map<QString, int> fxPlaylistInfo;
 
 	QMixerStream* mixer;
 	QAudioOutput* output;
+
+	bool soundsEnable = true;
+	bool musicEnable = true;
+	int volume = 5; //store in linear scale
 
 };
 
