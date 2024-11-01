@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QJsonObject>
+#include <QJsonArray>
 
 #define PRESISTENCE_FILE_NAME "monsterchase_persistence.json"
 #define PRESISTENCE_DIR_NAME ".config"
@@ -36,18 +37,15 @@ Persistence::Persistence() {
 
 			QByteArray data = persistence_file.readAll();
 
-			// Converti i dati in un QJsonDocument
-			persistence = QJsonDocument::fromJson(data);
+
+			auto doc = QJsonDocument::fromJson(data);
 
 			// Verifica se il JSON è valido
-			if (persistence.isNull()) {
+			if (doc.isNull()) {
 				qWarning() << "persistence is not a valid JSON document";
 			}
-			else if (persistence.isObject()) {
-				QJsonObject obj = persistence.object();
-				configuration = get("configuration", obj);
-				highScores = get("high_score", obj);
-				players = get("players", obj);
+			else if (doc.isObject()) {
+				persistence = doc.object();
 			}
 			persistence_file.close();
 		}
@@ -69,29 +67,70 @@ Persistence::~Persistence() {
 	// TODO Auto-generated destructor stub
 }
 
-QJsonObject Persistence::get(QString item, QJsonObject &node) {
+QJsonObject Persistence::getObject(QString item, QJsonObject &pnode) {
 	qDebug() << "Persistence::get: " << item;
 	QJsonObject obj;
-	qDebug() << "Persistence - node.contains(item)" << node.contains(item);
-	qDebug() << "Persistence - item.isObject()" << node.value(item).isObject();
-	if (node.contains(item) && node.value(item).isObject()) {
-		obj = node.value(item).toObject();
+	qDebug() << "Persistence - node.contains(item)" << pnode.contains(item);
+	qDebug() << "Persistence - item.isObject()" << pnode.value(item).isObject();
+	if (pnode.contains(item) && pnode.value(item).isObject()) {
+		obj = pnode.value(item).toObject();
 	}
 	return obj;
 
 }
 
-QJsonObject Persistence::getConfiguration(QString item) {
+QJsonArray Persistence::getArray(QString item, QJsonObject &pnode) {
+	qDebug() << "Persistence::get: " << item;
+	QJsonArray obj;
+	qDebug() << "Persistence - node.contains(item)" << pnode.contains(item);
+	qDebug() << "Persistence - item.isObject()" << pnode.value(item).isArray();
+	if (pnode.contains(item) && pnode.value(item).isArray()) {
+		obj = pnode.value(item).toArray();
+	}
+	return obj;
+
+}
+
+
+
+QJsonObject Persistence::getConfigurationItem(QString item) {
 	qDebug() << "Persistence::getConfiguration: " << item;
 	QJsonObject obj;
-	obj = get(item, configuration);
+	auto configuration = getObject("configuration", persistence);
+	obj = getObject(item, configuration);
 	return obj;
 }
-void Persistence::setConfiguration(QJsonObject item) {
 
+QJsonObject Persistence::getConfiguration() {
+	return getObject("configuration", persistence);
+}
+
+QJsonArray Persistence::getHighScores() {
+	return getArray("high_score", persistence);
+}
+
+QJsonArray Persistence::getPlayers() {
+	return getArray("players", persistence);
+}
+
+
+void Persistence::setConfiguration(QJsonObject cfg) {
+	persistence["configuration"] = cfg;
+	commit();
+}
+
+void Persistence::setHighScores(QJsonArray hs) {
+	persistence["high_score"] = hs;
+	commit();
+}
+
+void Persistence::setPlayers(QJsonArray players) {
+	persistence["players"] = players;
+	commit();
 }
 
 void Persistence::commit() {
+	qDebug() << "Persistence::commit";
 	QString homeDir = QDir::homePath();
 //	QDir configDir(homeDir + "/.config");
 	QFile file(homeDir + "/" + PRESISTENCE_DIR_NAME + "/" + PRESISTENCE_FILE_NAME);
@@ -99,8 +138,14 @@ void Persistence::commit() {
 		qCritical() << "Connot open \"~/" <<
 				 PRESISTENCE_DIR_NAME "/" PRESISTENCE_FILE_NAME << "\" for wrinting";
 	}
+
+	//update document
+
+	QJsonDocument doc;
+	doc.setObject(persistence);
+
 	// Scrivi il JSON nel file
-	file.write(persistence.toJson());
+	file.write(doc.toJson());
 
 	// Chiudi il file
 	file.close();

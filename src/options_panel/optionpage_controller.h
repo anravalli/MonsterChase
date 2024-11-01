@@ -31,6 +31,9 @@ private:
 	UiPageMenu *confirm_exit_menu;
 	QGraphicsPixmapItem *logo;
 
+	QJsonObject sound_cfg;
+	QJsonObject video_cfg;
+
 	bool is_saved;
 
 	void open_confirm_popup();
@@ -38,8 +41,13 @@ private:
 
 	void change_screen_resolution();
 	void set_fullscreen();
-	void set_sounds();
+	void set_soundsfx();
+	void set_music();
+	void set_volume();
 	void apply_settings();
+	void discard_settings();
+
+	void initModel(); //only to keep the constructor tidier
 };
 
 #endif /* SRC_OPTIONS_PANEL_OPTIONPAGE_CONTROLLER_H_ */

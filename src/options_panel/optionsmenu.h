@@ -19,14 +19,14 @@ public:
 	OptionItem(QString _name, vector<QString> _values,
 			int _default_idx, int _current_idx,
 			function<void()> _action)
-	: name(_name), values(_values),
+	: name(_name), str_values(_values),
 	  default_idx(_default_idx), current_idx(_current_idx),
 	  action(_action)
 	{}
 
 //private:
 	QString name;
-	vector<QString> values ;
+	vector<QString> str_values ;
 	int default_idx;
 	int current_idx;
 	function<void()> action;

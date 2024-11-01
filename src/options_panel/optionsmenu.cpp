@@ -101,8 +101,8 @@ public:
 		for(auto model_item: *model)
 		{
 			UiAbstractMenuItemWidget *item;
-			if(model_item.values.size())
-				item = new OptionMenuItemWidget_qt(model_item.name, model_item.values);
+			if(model_item.str_values.size())
+				item = new OptionMenuItemWidget_qt(model_item.name, model_item.str_values);
 			else
 				item = new UiMenuItemWidget_qt(model_item.name);
 			append_item(item);

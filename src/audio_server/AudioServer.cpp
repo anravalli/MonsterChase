@@ -129,11 +129,11 @@ AudioServer::AudioServer() {
 	output = new QAudioOutput(device, audioFormat);
 
 	//load from config
-	auto sound_cfg = Persistence::instance().getConfiguration("sound");
+	auto sound_cfg = Persistence::instance().getConfigurationItem("sound");
 	int vol = sound_cfg.value("volume").toInt(5);
 	qDebug() << "volume is " << vol;
-	soundsEnable = sound_cfg.value("sfx_enable").toBool(true);
-	musicEnable = sound_cfg.value("music_enable").toBool(true);
+	soundsEnable = sound_cfg.value("soundfx").toBool(true);
+	musicEnable = sound_cfg.value("music").toBool(true);
 	setVolume(vol);
 	output->start(mixer);
 

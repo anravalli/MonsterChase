@@ -10,24 +10,28 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
 class Persistence {
 public:
 	virtual ~Persistence();
 	static Persistence &instance();
 
-	QJsonObject getConfiguration(QString item);
+	QJsonObject getConfigurationItem(QString item);
+	QJsonObject getConfiguration();
+	QJsonArray getHighScores();
+	QJsonArray getPlayers();
 	void setConfiguration(QJsonObject item);
-	void commit();
+	void setHighScores(QJsonArray hs);
+	void setPlayers(QJsonArray players);
 
 private:
 	Persistence();
-	QJsonObject get(QString item, QJsonObject &document);
-	QJsonDocument persistence;
+	void commit();
+	QJsonObject getObject(QString item, QJsonObject &document);
+	QJsonArray getArray(QString item, QJsonObject &pnode);
+	QJsonObject persistence;
 
-	QJsonObject configuration;
-	QJsonObject highScores;
-	QJsonObject players;
 };
 
 #endif /* SRC_PERSISTENCE_H_ */
