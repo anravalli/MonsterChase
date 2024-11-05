@@ -25,8 +25,8 @@
 #include <vector>
 #include <functional>
 #include <QTimer>
-#include <ui_framework/uipagecontroller.h>
-#include <ui_framework/uipagemenu.h>
+#include <lib/ui_framework/uipagecontroller.h>
+#include <lib/ui_framework/uipagemenu.h>
 
 using namespace std;
 

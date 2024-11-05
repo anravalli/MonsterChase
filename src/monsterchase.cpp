@@ -21,15 +21,16 @@
 
 #include <iostream>
 
+#include "lib/persistence.h"
 #include "editor/level_editor.h"
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
-#include "gamecontroller.h"
+#include "base_game/gamecontroller.h"
 
-#include "options_panel/optionpage_controller.h"
-#include "matchmenu.h"
-#include "hiscore_panel/hiscorepage_controller.h"
-#include "match.h"
+#include "options/optionpage_controller.h"
+#include "match/matchmenu.h"
+#include "highscores/hiscorepage_controller.h"
+#include "match/match.h"
 
 /*
  * Here we will build all the game objects responsible for the
@@ -148,7 +149,19 @@ UiPageMenu *MonsterChase::populate_match_selection_menu()
 UiPageMenu *MonsterChase::populate_player_selection_menu()
 {
 
-	vector<QString> popup_model = {"Andrea", "Marco", "[new player]"};
+	//players names shall be read from persistence
+	vector<QString> popup_model;
+	auto players = Persistence::instance().getPlayers();
+	qDebug("number of player: %d", players.size());
+	for(auto o: players){
+		auto player = o.toObject();
+		auto pname = player.value("name").toString();
+		qDebug("player: %s", pname.toStdString().c_str());
+		popup_model.push_back(pname);
+	}
+	popup_model.push_back("[new player]");
+	int num_players = popup_model.size();
+	qDebug("number of player in model: %d", num_players);
 	vector<function<void()>> popup_actions;
 
 	auto *popup_view = new PopupSelectionMenuWidget_qt(QString("Select your player:"),
@@ -156,18 +169,28 @@ UiPageMenu *MonsterChase::populate_player_selection_menu()
 
 	MatchPlayerSelectionMenu * menu = new MatchPlayerSelectionMenu(popup_actions, popup_view, 0);
 
-	popup_actions.push_back([this, menu, popup_view]{
-		std::cout << "menu ptr: "<< menu << std::endl;
-		int i = menu->get_current_item_idx();
-		QString new_name = (popup_view->get_inner_menu())->get_item_label(i);
-		int v = ((SelectionMenuWidget_qt *)(popup_view->get_inner_menu()))->get_current_value_of(i);
+	popup_actions.push_back([this, menu, popup_view, num_players](){
+		static bool edit = false;
+		if(edit){
+			//store new name
+			edit = false;
+		}
+		else {
+			int i = menu->get_current_item_idx();
+			QString new_name = (popup_view->get_inner_menu())->get_item_label(i);
+			int v = ((SelectionMenuWidget_qt *)(popup_view->get_inner_menu()))->get_current_value_of(i);
 
-		std::cout << "item #"<< menu->get_current_item_idx() << " \"" << new_name.toStdString() <<"\" (" << v << ") selected" << std::endl;
-		//menu->setAlignement(align_center);
-
-		emit menu->name_changed(new_name);
+			std::cout << "item #"<< menu->get_current_item_idx() << " \"" << new_name.toStdString() <<"\" (" << v << ") selected" << std::endl;
+			//menu->setAlignement(align_center);
+			if(v == num_players-1){
+				edit = true;
+			}
+			else
+				emit menu->name_changed(new_name);
+		}
 		//back
-		back_to_menu(match_menu);
+		if(!edit)
+			back_to_menu(match_menu);
 	});
 	popup_actions.push_back([this]{
 		back_to_menu(match_menu);

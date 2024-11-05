@@ -5,8 +5,8 @@
  *      Author: andrea
  */
 
-#include "../arena.h"
-#include "../gameconfig.h"
+#include "base_game/arena.h"
+#include "base_game/gameconfig.h"
 #include <editor/editor_ui.h>
 #include <editor/level_editor.h>
 

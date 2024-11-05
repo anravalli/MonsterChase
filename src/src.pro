@@ -37,72 +37,76 @@ INCLUDEPATH += . \
 #	level_editor
 
 SOURCES += main.cpp\
-    algorithms.cpp \
+    audio_server/AudioServer.cpp \
+    base_game/gamecontroller.cpp \
+    base_game/gameworld.cpp \
+    base_game/gameviews.cpp \
+    base_game/gameconfig.cpp \
+    base_game/arena.cpp \
 #    level_editor/*.cpp \
     editor/level_editor.cpp \
     editor/editor_ui.cpp \
     editor/level_models.cpp \
-    options_panel/optionpage_controller.cpp \
-    options_panel/optionpage_view.cpp \
-    options_panel/optionsmenu.cpp \
-    hiscore_panel/hiscorepage_controller.cpp \
-    hiscore_panel/hiscorepage_view.cpp \
-    audio_server/AudioServer.cpp \
-    persistence.cpp \
-    matchmenu.cpp \
-    gamecontroller.cpp \
-    monsterchase.cpp \
-    player.cpp \
-    monster.cpp \
-    arena.cpp \
-    playersm.cc \
-    playerqtviews.cpp \
-    monstersm.cpp \
-    monsterviews.cpp \
-    behaviors.cpp \
-    gameworld.cpp \
-    gameviews.cpp \
-    gameconfig.cpp \
-    match.cpp \
-    match_sm.cpp \
-    ui_framework/uipagecontroller.cpp \
-    ui_framework/uipagemenu.cpp \
-    ui_framework/uipagemenuwidgets_qt.cpp \
-    ui_framework/uipageview_qt.cpp \
-    ui_framework/uiviewitems_qt.cpp \
-    animations.cpp
+    highscores/hiscorepage_controller.cpp \
+    highscores/hiscorepage_view.cpp \
+    lib/algorithms.cpp \
+    lib/behaviors.cpp \
+    lib/ui_framework/uipagecontroller.cpp \
+    lib/ui_framework/uipagemenu.cpp \
+    lib/ui_framework/uipagemenuwidgets_qt.cpp \
+    lib/ui_framework/uipageview_qt.cpp \
+    lib/ui_framework/uiviewitems_qt.cpp \
+    lib/animations.cpp \
+    lib/persistence.cpp \
+    match/matchmenu.cpp \
+    match/match.cpp \
+    match/match_sm.cpp \
+    monsters/monster.cpp \
+    monsters/monstersm.cpp \
+    monsters/monsterviews.cpp \
+    options/optionpage_controller.cpp \
+    options/optionpage_view.cpp \
+    options/optionsmenu.cpp \
+    player/player.cpp \
+    player/playersm.cc \
+    player/playerqtviews.cpp \
+    player_profile/playerprofile.cpp \
+    player_profile/playerprofile_manager.cpp \
+    monsterchase.cpp
 
 HEADERS  += monsterchase.h \
-	monsterchase_mainpage.h \
-    algorithms.h \
+    audio_server/AudioServer.h \
+    base_game/game_entity.h \
+    base_game/gamecontroller.h \
+    base_game/arena.h \
+    base_game/gameworld.h \
+    base_game/gameviews.h \
+    base_game/gameconfig.h \
     editor/level_editor.h \
     editor/editor_ui.h \
     editor/level_models.h \
-    audio_server/AudioServer.h \
-    persistence.h \
-    game_entity.h \
-    gamecontroller.h \
-    player.h \
-    monster.h \
-    arena.h \
-    playersm.h \
-    playerqtviews.h \
-    monstersm.h \
-    monsterviews.h \
-    behaviors.h \
-    gameworld.h \
-    gameviews.h \
-    gameconfig.h \
-    matchmenu.h \
-    match.h \
-    match_sm.h \
-    matchendmenu.h \
-    ui_framework/uipagecontroller.h \
-    ui_framework/uipagemenu.h \
-    ui_framework/uipagemenuwidgets_qt.h \
-    ui_framework/uipageview_qt.h \
-    ui_framework/uiviewitems_qt.h \
-    animations.h
+    lib/algorithms.h \
+    lib/persistence.h \
+    lib/behaviors.h \
+    lib/ui_framework/uipagecontroller.h \
+    lib/ui_framework/uipagemenu.h \
+    lib/ui_framework/uipagemenuwidgets_qt.h \
+    lib/ui_framework/uipageview_qt.h \
+    lib/ui_framework/uiviewitems_qt.h \
+    lib/animations.h \
+    match/matchmenu.h \
+    match/match.h \
+    match/match_sm.h \
+    match/matchendmenu.h \
+    monsters/monster.h \
+    monsters/monstersm.h \
+    monsters/monsterviews.h \
+    player/player.h \
+    player/playersm.h \
+    player/playerqtviews.h \
+    player_profile/playerprofile.h \
+    player_profile/playerprofile_manager.h \
+	monsterchase_mainpage.h
 
 RESOURCES += \
     ../monsterchase.qrc 

@@ -24,7 +24,7 @@
 
 #include <QGraphicsPixmapItem>
 
-#include <ui_framework/uipageview_qt.h>
+#include <lib/ui_framework/uipageview_qt.h>
 
 /*
  * Here we do just unix signal handling,

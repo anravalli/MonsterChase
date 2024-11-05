@@ -1,6 +1,5 @@
-#ifndef EDITOR_H
-#define EDITOR_H
-
+#ifndef GAMEVIEWS_H
+#define GAMEVIEWS_H
 /*
  *	Monster Chase: a testing playground for behaviors trees
  *
@@ -22,35 +21,27 @@
  *	along with Monster Chase.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QObject>
-#include <QWidget>
-#include "lib/ui_framework/uipageview_qt.h"
+#include <QtWidgets>
 
+#include <lib/ui_framework/uipageview_qt.h>
 
-namespace Ui {
-class editor;
-}
-
-class EditorUi : public UiPageViewQt
+class GamePage: public UiPageViewQt
 {
-	Q_OBJECT
 public:
-    explicit EditorUi(UiPageViewQt *parent = nullptr);
-    ~EditorUi();
-
-public slots:
-    void close_editor();
-
-signals:
-	void editor_closed();
-
+    GamePage(UiPageViewQt *parent);
 
 protected:
-    virtual void setUpView() final override;
-
-private:
-    Ui::editor *ui;
-    QWidget ui_host;
+    virtual void setUpView() override;
 };
 
-#endif // EDITOR_H
+class PlayTime : public QGraphicsSimpleTextItem
+{
+public:
+    PlayTime();
+    void setTime(int time);
+
+private:
+    QColor color;
+};
+
+#endif // GAMEVIEWS_H

@@ -10,7 +10,7 @@
 
 #include <QAudioDeviceInfo>
 #include <QAudioOutput>
-#include <persistence.h>
+#include <lib/persistence.h>
 
 AudioServer::~AudioServer() {
 	// TODO Auto-generated destructor stub

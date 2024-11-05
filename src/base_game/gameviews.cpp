@@ -20,42 +20,29 @@
 */
 
 
-#include <editor/editor_ui.h>
 #include <lib/ui_framework/uiviewitems_qt.h>
-#include "ui_editor.h"
+#include "gameviews.h"
 
-EditorUi::EditorUi(UiPageViewQt *parent) :
-	UiPageViewQt(parent),
-	ui(new Ui::editor)
+GamePage::GamePage(UiPageViewQt *parent):
+    UiPageViewQt(parent)
 {
-	ui->setupUi(&ui_host);
-
-	connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(close_editor()));
 }
 
-EditorUi::~EditorUi()
-{
-    delete ui;
-}
-
-void EditorUi::close_editor()
-{
-	qDebug("close editor");
-	ui_host.hide();
-	main_window->layout()->removeWidget(&ui_host);
-	main_window->layout()->addWidget(view);
-
-	hide();
-	emit(editor_closed());
-}
-
-void EditorUi::setUpView()
+void GamePage::setUpView()
 {
     view->setBackgroundBrush(QPixmap(":/resources/textured-stainless-steel-sheet.jpg"));
-    main_window->layout()->removeWidget(view);
-    //main_window->layout()->setMenuBar(new QMenuBar());
-    main_window->layout()->addWidget(&ui_host);
-    ui->horizontalLayout->replaceWidget(ui->map_frame, view);
-    //ui->horizontalLayout->setMenuBar(new QMenuBar());
+}
+
+PlayTime::PlayTime()
+    :color(255,127,127)
+{
+    QFont font("Helvetica",14,QFont::Bold);
+    this->setFont(font);
+    this->setPen(QPen(color));
+}
+
+void PlayTime::setTime(int time){
+    this->setText(QString::asprintf("%04d", time));
+    return;
 }
 
