@@ -21,7 +21,7 @@
 
 #include <iostream>
 
-#include "lib/persistence.h"
+#include "player_profile/playerprofile_manager.h"
 #include "editor/level_editor.h"
 #include "monsterchase.h"
 #include "monsterchase_mainpage.h"
@@ -148,20 +148,20 @@ UiPageMenu *MonsterChase::populate_match_selection_menu()
 
 UiPageMenu *MonsterChase::populate_player_selection_menu()
 {
-
-	//players names shall be read from persistence
+	//get players names from persistence
 	vector<QString> popup_model;
-	auto players = Persistence::instance().getPlayers();
-	qDebug("number of player: %d", players.size());
-	for(auto o: players){
-		auto player = o.toObject();
-		auto pname = player.value("name").toString();
-		qDebug("player: %s", pname.toStdString().c_str());
-		popup_model.push_back(pname);
+	auto players = PlayerProfileManager::instance().getPlayerProfiles();
+	qDebug("number of player: %lu", players.size());
+	for(auto player: players){
+		qDebug("player: %s", player.getName().toStdString().c_str());
+		popup_model.push_back(player.getName());
 	}
+
 	popup_model.push_back("[new player]");
+
 	int num_players = popup_model.size();
 	qDebug("number of player in model: %d", num_players);
+
 	vector<function<void()>> popup_actions;
 
 	auto *popup_view = new PopupSelectionMenuWidget_qt(QString("Select your player:"),
