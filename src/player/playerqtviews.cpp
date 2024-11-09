@@ -20,7 +20,7 @@
 */
 
 #include "playerqtviews.h"
-#include "lib/animations.h"
+#include "player_animations.h"
 // Player Score view
 
 PlayerScore::PlayerScore(PlayerModel* m)

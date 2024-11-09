@@ -21,7 +21,7 @@
 
 #include <lib/ui_framework/uipageview_qt.h>
 #include "monsterviews.h"
-#include "lib/animations.h"
+#include "monsters_animations.h"
 
 #define VIEW_DEBUG 0
 

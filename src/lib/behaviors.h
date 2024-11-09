@@ -23,8 +23,6 @@
 #ifndef BEHAVIORS_H
 #define BEHAVIORS_H
 
-#include "monsters/monster.h"
-
 #include <random>
 #include <functional>
 
@@ -34,164 +32,22 @@ enum BehaviorStatus {
     running
 };
 
-//enum PlayerStates;
-
-class BasicBehavior
+class Behavior
 {
 public:
-    BasicBehavior(Monster::MonsterModel* m): _model(m) {}
     virtual BehaviorStatus exec() = 0;
-    virtual ~BasicBehavior();
+    virtual ~Behavior();
+};
 
+class Sequence: Behavior
+{
+public:
+    BehaviorStatus exec() override;
+    virtual ~Sequence();
 protected:
-    Monster::MonsterModel* _model;
-};
-
-class Sequence: BasicBehavior{
-public:
-    Sequence(Monster::MonsterModel* m);
-    BehaviorStatus exec() override{
-        BehaviorStatus status = success;
-        for (auto c: childs){
-            status = c->exec();
-            if (fail == status)
-                break;
-        };
-        return status;
-    }
-protected:
-    void addChild(BasicBehavior*);
+    void addChild(Behavior* child);
 private:
-    std::vector<BasicBehavior*> childs;
-};
-
-/*
- * Direction selection Behaviors
- */
-class RandomDirection: public BasicBehavior
-{
-public:
-    RandomDirection(Monster::MonsterModel* m);
-    BehaviorStatus exec() override;
-
-private:
-    std::function<int ()> _direction;
-};
-
-class PerpendicularDirection: public  BasicBehavior
-{
-public:
-    PerpendicularDirection(Monster::MonsterModel* m);
-    BehaviorStatus exec() override;
-
-private:
-    std::function<int ()> _clockwise;
-};
-
-
-/*
- * Move Behaviors
- */
-class MoveToTarget: public  BasicBehavior
-{
-public:
-    MoveToTarget(Monster::MonsterModel* m, int speed);
-    BehaviorStatus exec() override;
-
-private:
-    int _speed;
-};
-
-class MoveFixedSteps: public  BasicBehavior
-{
-public:
-    MoveFixedSteps(Monster::MonsterModel* m, int speed, int steps):
-        BasicBehavior(m), _steps(steps), _speed(speed){}
-    BehaviorStatus exec() override;
-
-private:
-    int _steps;
-    int _speed;
-    int _counter = 0;
-};
-
-class MoveRandomSteps: public  BasicBehavior
-{
-public:
-    MoveRandomSteps(Monster::MonsterModel* m):
-        BasicBehavior(m){}
-    BehaviorStatus exec() override;
-
-private:
-    std::function<int ()> _steps_gen;
-    int _steps;
-    int _counter = 0;
-};
-
-/*
- * Rotation Behaviors
- */
-class LinearRotation: public  BasicBehavior
-{
-public:
-    LinearRotation(Monster::MonsterModel* m, int speed):
-        BasicBehavior(m), _speed(speed){}
-    BehaviorStatus exec() override;
-
-private:
-    int _speed;
-    int _counter = 0;
-};
-
-class TronRotation: public  BasicBehavior
-{
-public:
-    TronRotation(Monster::MonsterModel* m):
-        BasicBehavior(m){}
-    BehaviorStatus exec() override;
-};
-
-/*
- * Checking Behaviors
- */
-class WallsCollisionChecker: public  BasicBehavior
-{
-public:
-    WallsCollisionChecker(Monster::MonsterModel* m, int size):
-        BasicBehavior(m), _entity_size(size){}
-    BehaviorStatus exec() override;
-private:
-    int _entity_size;
-};
-
-class EntitiesCollisionChecker: public  BasicBehavior
-{
-public:
-    EntitiesCollisionChecker(Monster::MonsterModel* m, int size):
-        BasicBehavior(m), _entity_size(size){}
-    BehaviorStatus exec() override;
-private:
-    int _entity_size;
-};
-
-class PlayerAtSightChecker: public  BasicBehavior
-{
-public:
-    PlayerAtSightChecker(Monster::MonsterModel* m, int size);
-    BehaviorStatus exec() override;
-private:
-    int _entity_size;
-    BehaviorStatus inRange(QPointF pc);
-};
-
-class PlayerProximityChecker: public  BasicBehavior
-{
-public:
-    PlayerProximityChecker(Monster::MonsterModel* m, int size);
-    BehaviorStatus exec() override;
-private:
-    int _entity_size;
-    BehaviorStatus fineCheck(QPointF pc);
+    std::vector<Behavior*> childs;
 };
 
 #endif // BEHAVIORS_H

@@ -22,7 +22,7 @@
 
 #include "playersm.h"
 #include "monsters/monster.h"
-#include "lib/animations.h"
+#include "player_animations.h"
 
 #include <math.h>
 

@@ -23,7 +23,7 @@
 #define MONSTERSM_H
 
 #include "monster.h"
-#include "lib/behaviors.h"
+#include "monsters_behaviors.h"
 
 class Animation;
 
@@ -101,7 +101,7 @@ private:
 
 class MonsterPatrolFreeze: public MonsterSm {
 public:
-    MonsterPatrolFreeze(MonsterModel* model, BasicBehavior *rotate);
+    MonsterPatrolFreeze(MonsterModel* model, Behavior *rotate);
 
     virtual void tick() override;
     void exit() override;
@@ -109,130 +109,130 @@ public:
     virtual ~MonsterPatrolFreeze() override;
 
 private:
-    BasicBehavior* _rotate;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
+    Behavior* _rotate;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
     int _freeze_time=25;
     bool _in_position = false;
 };
 
 class MonsterPatrolDecide: public MonsterSm {
 public:
-    MonsterPatrolDecide(MonsterModel* model, BasicBehavior* selector);
+    MonsterPatrolDecide(MonsterModel* model, Behavior* selector);
 
     virtual void tick() override;
     virtual ~MonsterPatrolDecide();
 protected:
 private:
-    BasicBehavior* _selector;
+    Behavior* _selector;
 
 };
 
 class MonsterPatrolMove: public MonsterSm {
 public:
-    MonsterPatrolMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
+    MonsterPatrolMove(MonsterModel* model,Behavior *move,Behavior *rotate);
 
     virtual void tick() override;
     virtual ~MonsterPatrolMove() override;
     void exit() override;
 
 private:
-    BasicBehavior* _move;
-    BasicBehavior* _walls_checker;
-    BasicBehavior* _player_checker;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
-    BasicBehavior* _rotate;
+    Behavior* _move;
+    Behavior* _walls_checker;
+    Behavior* _player_checker;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
+    Behavior* _rotate;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };
 
 class MonsterAttackFreeze: public MonsterSm {
 public:
-    MonsterAttackFreeze(MonsterModel* model, BasicBehavior *rotate);
+    MonsterAttackFreeze(MonsterModel* model, Behavior *rotate);
 
     virtual void tick() override;
     void exit() override;
     virtual ~MonsterAttackFreeze() override;
 private:
-    BasicBehavior* _rotate;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
+    Behavior* _rotate;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
     int _freeze_time=10;
     bool _in_position = false;
 };
 
 class MonsterAttackDecide: public MonsterSm {
 public:
-    MonsterAttackDecide(MonsterModel* model, BasicBehavior* selector);
+    MonsterAttackDecide(MonsterModel* model, Behavior* selector);
 
     virtual void tick() override;
     virtual ~MonsterAttackDecide() override {}
 protected:
 private:
-    BasicBehavior* _selector;
+    Behavior* _selector;
 
 };
 
 class MonsterAttackMove: public MonsterSm {
 public:
-    MonsterAttackMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
+    MonsterAttackMove(MonsterModel* model,Behavior *move,Behavior *rotate);
 
     virtual void tick() override;
     virtual ~MonsterAttackMove();
 private:
-    BasicBehavior* _move;
-    BasicBehavior* _rotate;
+    Behavior* _move;
+    Behavior* _rotate;
 
-    BasicBehavior* _walls_checker;
-    BasicBehavior* _player_checker;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
+    Behavior* _walls_checker;
+    Behavior* _player_checker;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };
 
 class MonsterFleeFreeze: public MonsterSm {
 public:
-    MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate);
+    MonsterFleeFreeze(MonsterModel *model, Behavior *rotate);
 
     virtual void tick() override;
     void exit() override;
     virtual ~MonsterFleeFreeze() override;
 private:
-    BasicBehavior* _rotate;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
+    Behavior* _rotate;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
     int _freeze_time=10;
     bool _in_position = false;
 };
 
 class MonsterFleeDecide: public MonsterSm {
 public:
-    MonsterFleeDecide(MonsterModel* model, BasicBehavior* selector);
+    MonsterFleeDecide(MonsterModel* model, Behavior* selector);
 
     virtual void tick() override;
     virtual ~MonsterFleeDecide() override;
 protected:
 private:
-    BasicBehavior* _selector;
+    Behavior* _selector;
 
 };
 
 class MonsterFleeMove: public MonsterSm {
 public:
-    MonsterFleeMove(MonsterModel* model,BasicBehavior *move,BasicBehavior *rotate);
+    MonsterFleeMove(MonsterModel* model,Behavior *move,Behavior *rotate);
 
     virtual void tick() override;
     virtual ~MonsterFleeMove() override;
 private:
-    BasicBehavior* _move;
-    BasicBehavior* _rotate;
+    Behavior* _move;
+    Behavior* _rotate;
 
-    BasicBehavior* _walls_checker;
-    BasicBehavior* _player_checker;
-    BasicBehavior* _player_scanner;
-    BasicBehavior* _player_proximity_checker;
+    Behavior* _walls_checker;
+    Behavior* _player_checker;
+    Behavior* _player_scanner;
+    Behavior* _player_proximity_checker;
 
     BehaviorStatus _rotation_status = BehaviorStatus::fail;
 };

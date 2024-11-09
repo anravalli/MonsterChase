@@ -22,7 +22,7 @@
 #include "monstersm.h"
 #include "base_game/gameworld.h"
 #include "player/player.h"
-#include "lib/animations.h"
+#include "monsters_animations.h"
 
 namespace Monster{
 
@@ -67,10 +67,10 @@ MonsterSm* MonsterStateFactory::stateFactory(MonsterStates state, MonsterType mo
 
 MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel* model)
 {
-    BasicBehavior* selector = nullptr;
-    BasicBehavior* mover = nullptr;
-    BasicBehavior* rotator = nullptr;
-    BasicBehavior* freeze_rotator = nullptr;
+    Behavior* selector = nullptr;
+    Behavior* mover = nullptr;
+    Behavior* rotator = nullptr;
+    Behavior* freeze_rotator = nullptr;
 
     MonsterSm* patrol_state = new MonsterPatrol(model);
 
@@ -101,10 +101,10 @@ MonsterSm* MonsterStateFactory::patrolFactory(MonsterType monster, MonsterModel*
 
 MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel* model)
 {
-    BasicBehavior* selector = nullptr;
-    BasicBehavior* mover = nullptr;
-    BasicBehavior* rotator = nullptr;
-    BasicBehavior* freeze_rotator = nullptr;
+    Behavior* selector = nullptr;
+    Behavior* mover = nullptr;
+    Behavior* rotator = nullptr;
+    Behavior* freeze_rotator = nullptr;
 
     MonsterSm* attack_state = new MonsterPatrol(model);
 
@@ -135,10 +135,10 @@ MonsterSm* MonsterStateFactory::attackFactory(MonsterType monster, MonsterModel*
 
 MonsterSm* MonsterStateFactory::fleeFactory(MonsterType monster, MonsterModel* model)
 {
-    BasicBehavior* selector = nullptr;
-    BasicBehavior* mover = nullptr;
-    BasicBehavior* rotator = nullptr;
-    BasicBehavior* freeze_rotator = nullptr;
+    Behavior* selector = nullptr;
+    Behavior* mover = nullptr;
+    Behavior* rotator = nullptr;
+    Behavior* freeze_rotator = nullptr;
 
     MonsterSm* flee_state = new MonsterPatrol(model);
 
@@ -194,7 +194,7 @@ void MonsterPatrol::tick(){
 /*
  * Monster Patrol Sub State
  */
-MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, BasicBehavior *rotate)
+MonsterPatrolFreeze::MonsterPatrolFreeze(MonsterModel *model, Behavior *rotate)
     :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
@@ -244,7 +244,7 @@ MonsterPatrolFreeze::~MonsterPatrolFreeze() {
     delete _rotate;
 }
 
-MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, BasicBehavior *selector)
+MonsterPatrolDecide::MonsterPatrolDecide(MonsterModel *model, Behavior *selector)
     : MonsterSm(model), _selector(selector)
 {
 }
@@ -261,7 +261,7 @@ MonsterPatrolDecide::~MonsterPatrolDecide(){
     delete _selector;
 }
 
-MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+MonsterPatrolMove::MonsterPatrolMove(MonsterModel *model, Behavior *move, Behavior *rotate)
     :MonsterSm(model),_move(move),_rotate(rotate)
 {
     int monster_size = 30; //temporary harcoded
@@ -340,7 +340,7 @@ void MonsterAttack::tick(){
 /*
  * Monster Attack Sub State
  */
-MonsterAttackMove::MonsterAttackMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+MonsterAttackMove::MonsterAttackMove(MonsterModel *model, Behavior *move, Behavior *rotate)
     :MonsterSm(model),_move(move),_rotate(rotate)
 {
     int monster_size = 30; //temporary harcoded
@@ -414,7 +414,7 @@ void MonsterAttackDecide::tick(){
     return;
 }
 
-MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, BasicBehavior *rotate)
+MonsterAttackFreeze::MonsterAttackFreeze(MonsterModel *model, Behavior *rotate)
     :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
@@ -481,7 +481,7 @@ void MonsterFlee::tick(){
 /*
  * Monster Flee Sub State
  */
-MonsterFleeMove::MonsterFleeMove(MonsterModel *model, BasicBehavior *move, BasicBehavior *rotate)
+MonsterFleeMove::MonsterFleeMove(MonsterModel *model, Behavior *move, Behavior *rotate)
     :MonsterSm(model),_move(move),_rotate(rotate){
     int monster_size = 30; //temporary harcoded
     _walls_checker = new WallsCollisionChecker(model, monster_size);
@@ -530,7 +530,7 @@ MonsterFleeMove::~MonsterFleeMove() {
     delete _rotate;
 }
 
-MonsterFleeDecide::MonsterFleeDecide(MonsterModel *model, BasicBehavior *selector)
+MonsterFleeDecide::MonsterFleeDecide(MonsterModel *model, Behavior *selector)
     :MonsterSm(model), _selector(selector)
 {
 }
@@ -545,7 +545,7 @@ MonsterFleeDecide::~MonsterFleeDecide() {
     delete _selector;
 }
 
-MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, BasicBehavior *rotate)
+MonsterFleeFreeze::MonsterFleeFreeze(MonsterModel *model, Behavior *rotate)
     :MonsterSm(model), _rotate(rotate){
     int monster_size = 30;
     _player_scanner = new PlayerAtSightChecker(model, monster_size);
