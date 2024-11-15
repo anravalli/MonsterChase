@@ -50,26 +50,29 @@ SOURCES += main.cpp\
     highscores/hiscorepage_controller.cpp \
     highscores/hiscorepage_view.cpp \
     lib/algorithms.cpp \
+    lib/animations.cpp \
     lib/behaviors.cpp \
+    lib/persistence.cpp \
     lib/ui_framework/uipagecontroller.cpp \
     lib/ui_framework/uipagemenu.cpp \
     lib/ui_framework/uipagemenuwidgets_qt.cpp \
     lib/ui_framework/uipageview_qt.cpp \
     lib/ui_framework/uiviewitems_qt.cpp \
-    lib/animations.cpp \
-    lib/persistence.cpp \
     match/matchmenu.cpp \
     match/match.cpp \
     match/match_sm.cpp \
     monsters/monster.cpp \
     monsters/monstersm.cpp \
     monsters/monsterviews.cpp \
+    monsters/monsters_animations.cpp \
+    monsters/monsters_behaviors.cpp \
     options/optionpage_controller.cpp \
     options/optionpage_view.cpp \
     options/optionsmenu.cpp \
     player/player.cpp \
     player/playersm.cc \
     player/playerqtviews.cpp \
+    player/player_animations.cpp \
     player_profile/playerprofile.cpp \
     player_profile/playerprofile_manager.cpp \
     monsterchase.cpp
@@ -101,9 +104,12 @@ HEADERS  += monsterchase.h \
     monsters/monster.h \
     monsters/monstersm.h \
     monsters/monsterviews.h \
+    monsters/monsters_animations.h \
+    monsters/monsters_behaviors.h \
     player/player.h \
     player/playersm.h \
     player/playerqtviews.h \
+    player/player_animations.h \
     player_profile/playerprofile.h \
     player_profile/playerprofile_manager.h \
 	monsterchase_mainpage.h
