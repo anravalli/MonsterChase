@@ -61,19 +61,19 @@ protected:
 private:
     GameController *game_controller = nullptr;
 
-    UiPageMenu *current_menu;
-    UiPageMenu *base_menu;
-    UiPageMenu *match_menu;
-    UiPageMenu *match_selection_menu;
-    UiPageMenu *player_selection_menu;
-    UiPageMenu *confirm_exit_menu;
+    UiPageMenu *current_menu = nullptr;
+    UiPageMenu *base_menu = nullptr;
+    UiPageMenu *match_menu = nullptr;
+    UiPageMenu *match_selection_menu = nullptr;
+    UiPageMenu *player_selection_menu = nullptr;
+    UiPageMenu *confirm_exit_menu = nullptr;
     //QGraphicsPixmapItem *logo;
 
     int pli_main_theme;
 
-    LevelEditor::LevelEditor *level_editor;
-    OptionPageController *options_panel;
-    HighScorePageController *hiscore_panel;
+    LevelEditor::LevelEditor *level_editor = nullptr;
+    OptionPageController *options_panel = nullptr;
+    HighScorePageController *hiscore_panel = nullptr;
 
     UiPageMenu *populate_base_menu();
     UiPageMenu *populate_match_menu();
