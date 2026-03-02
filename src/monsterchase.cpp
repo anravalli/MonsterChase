@@ -288,6 +288,9 @@ UiPageMenu *MonsterChase::populate_confirm_exit_menu()
 MonsterChase::~MonsterChase()
 {
 	current_menu = nullptr;
+	delete player_selection_menu;
+	delete match_selection_menu;
+	delete match_menu;
 	delete confirm_exit_menu;
 	delete base_menu;
 }

@@ -33,6 +33,10 @@ MonsterSm::MonsterSm(MonsterModel* model):_model(model){
 MonsterSm::~MonsterSm()
 {
 	qDebug("MonsterSm::~MonsterSm - _animation: %p", _animation);
+	for (auto &sstate : sstates) {
+		delete sstate;
+		sstate = nullptr;
+	}
 	delete _animation;
 }
 
@@ -241,6 +245,7 @@ void MonsterPatrolFreeze::exit() {
 
 MonsterPatrolFreeze::~MonsterPatrolFreeze() {
     delete _player_scanner;
+    delete _player_proximity_checker;
     delete _rotate;
 }
 
@@ -467,6 +472,7 @@ void MonsterAttackFreeze::exit() {
 
 MonsterAttackFreeze::~MonsterAttackFreeze(){
     delete _player_scanner;
+    delete _player_proximity_checker;
     delete _rotate;
 }
 
@@ -592,6 +598,7 @@ void MonsterFleeFreeze::exit() {
 }
 
 MonsterFleeFreeze::~MonsterFleeFreeze() {
+    delete _player_scanner;
     delete _player_proximity_checker;
     delete _rotate;
 }
